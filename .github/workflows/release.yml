@@ -1,0 +1,63 @@
+name: Release
+
+# 0.2.0 → release; 0.2.0-beta.1 → pre-release (offered only with "Auch Beta-Versionen anbieten" and to installed betas).
+# The release is only created after tests and both builds are green.
+on:
+  push:
+    tags: ['[0-9]+.[0-9]+.[0-9]+', '[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/desktop-build.yml
+    with:
+      version: ${{ github.ref_name }}
+
+  # One release with both installers; the in-app update check picks .pkg on macOS and .msi on Windows.
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: desktop/update-key.pub
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: dist
+          merge-multiple: true
+
+      # The app installs an update only with a valid signature by the key in desktop/update-key.pub.
+      # The trusted comment names the file, so an old signed package cannot pass as a newer one.
+      - name: Sign installers
+        env:
+          MINISIGN_SECRET_KEY: ${{ secrets.MINISIGN_SECRET_KEY }}
+        run: |
+          if [ -z "$MINISIGN_SECRET_KEY" ]; then
+            echo "::error::Secret MINISIGN_SECRET_KEY is missing; refusing to publish unsigned installers"
+            exit 1
+          fi
+          sudo apt-get install -y -qq minisign
+          KEY="$RUNNER_TEMP/update.key"
+          (umask 077 && printf '%s\n' "$MINISIGN_SECRET_KEY" > "$KEY")
+          for f in "dist/HomeStats-$GITHUB_REF_NAME.pkg" "dist/HomeStats-$GITHUB_REF_NAME.msi"; do
+            minisign -S -s "$KEY" -m "$f" -t "$(basename "$f")"
+            minisign -V -p desktop/update-key.pub -m "$f"
+          done
+          rm -f "$KEY"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          PRE=()
+          [[ "$GITHUB_REF_NAME" == *-* ]] && PRE=(--prerelease)
+          gh release create "$GITHUB_REF_NAME" "dist/HomeStats-$GITHUB_REF_NAME.pkg" "dist/HomeStats-$GITHUB_REF_NAME.msi" \
+            "dist/HomeStats-$GITHUB_REF_NAME.pkg.minisig" "dist/HomeStats-$GITHUB_REF_NAME.msi.minisig" \
+            --title "HomeStats $GITHUB_REF_NAME" --generate-notes "${PRE[@]}"

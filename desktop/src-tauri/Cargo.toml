@@ -1,0 +1,24 @@
+[package]
+name = "homestats"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+default-run = "homestats"
+
+[[bin]]
+name = "homestats"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+homestats-core = { path = "../core" }
+serde = { version = "1", features = ["derive"] }
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-opener = "2"
+
+# Windows has no system-wide "app is already running": two windows would write the same data file.
+[target.'cfg(windows)'.dependencies]
+tauri-plugin-single-instance = "2"

@@ -1,0 +1,8 @@
+[workspace]
+members = ["core", "src-tauri"]
+resolver = "2"
+
+# macOS 27 refuses to load proc-macro dylibs whose debug info cargo stripped ("mis-aligned LINKEDIT string pool"),
+# which breaks release builds. Only affects build-time code (proc macros, build scripts), not the shipped app.
+[profile.release.build-override]
+strip = "none"

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "HomeStats",
+  "mainBinaryName": "HomeStats",
+  "version": "0.1.0",
+  "identifier": "io.github.bl0rb.homestats",
+  "build": {
+    "frontendDist": "../ui",
+    "beforeDevCommand": "node scripts/sync-ui.mjs",
+    "beforeBuildCommand": "node scripts/sync-ui.mjs"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "HomeStats",
+        "width": 1180,
+        "height": 860,
+        "minWidth": 400,
+        "minHeight": 560
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:",
+      "dangerousDisableAssetCspModification": ["style-src"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Productivity",
+    "copyright": "© 2026 bl0rb · MIT License · github.com/bl0rb/HomeStats",
+    "shortDescription": "Zählerstände, Fahrzeuge und Gefriergut im Blick",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+    "macOS": {
+      "minimumSystemVersion": "13.0"
+    }
+  }
+}
