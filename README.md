@@ -1,10 +1,11 @@
 # HomeStats
 
-Haushalts-Tool für Zählerstände, Fahrzeuge und Gefriergut – als einzelne HTML-Datei für den Browser und als Desktop-App für macOS und Windows.
+Haushalts-Tool für Zählerstände, Fahrzeuge, Gefriergut und Finanzen – als einzelne HTML-Datei für den Browser und als Desktop-App für macOS und Windows.
 
 - **Zähler**: Strom, Wasser, Gastank, zwei Solaranlagen – Tagesverbrauch, geschätzte Gasreichweite, Kostenschätzung, Monats- und Jahresvergleich
 - **Fahrzeuge**: beliebig viele KFZ mit Tanken/Laden, Kilometerständen und Kosten (Versicherung, Steuer, Werkstatt …) – Verbrauch, Kosten pro km, Fixkosten, Fälligkeiten (HU, Inspektion, Zahlungen)
 - **Kühlen & Gefrieren**: Geräte mit Fächern, Einlagern mit Haltbarkeit, „Diese Woche verbrauchen“, QR-Code-Etiketten drucken (Etikettendrucker oder A4-Bogen), Entnehmen per Scan (Kamera, QR-fähiger Handscanner oder Eintippen)
+- **Finanzen**: Einnahmen und Ausgaben mit Kategorien und Daueraufträgen, Fahrzeugkosten automatisch einbezogen, Monats-/Jahresübersicht mit Sparquote; Import von Kontoumsätzen als CSV (Sparkasse, ING, DKB, comdirect, Volksbank u. a.) mit Kategorie-Vorschlägen und Schutz vor Doppelten
 - **Daten & Einstellungen**: JSON-Sicherung, CSV-Export, Import der alten `energie_verbrauch.csv`
 
 ## Browser
