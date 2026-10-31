@@ -126,14 +126,13 @@ button[disabled]:hover{background:inherit}
 .sheet{background:var(--sheet); border:1px solid var(--line); border-radius:12px; overflow:hidden}
 .sheet-head{display:flex; flex-wrap:wrap; align-items:center; gap:12px 14px; padding:16px 20px; border-bottom:1px solid var(--line)}
 .sheet-head h2{margin:0; font-size:var(--fs-base); font-weight:600; flex:1 1 auto}
-.field-date{display:flex; align-items:center; gap:8px}
+.field-date{display:flex; flex-wrap:wrap; align-items:center; gap:8px; min-width:0; max-width:100%}
+.field-date input{flex:1 1 170px; min-width:0}
 .field-date label{font-size:var(--fs-sm); color:var(--muted)}
 input[type=datetime-local],input[type=date],input[type=month]{min-height:var(--ctl-h); padding:0 10px; border:1px solid var(--line); border-radius:8px; background:var(--sheet)}
 
 .meter{display:grid; grid-template-columns:170px 210px 1fr; align-items:center; gap:4px 18px;
   padding:14px 20px; border-bottom:1px solid var(--line-soft); border-left:3px solid var(--c)}
-.meter[data-m=strom]{--c:var(--strom)} .meter[data-m=wasser]{--c:var(--wasser)}
-.meter[data-m=lng]{--c:var(--lng)} .meter[data-m=home]{--c:var(--home)} .meter[data-m=eet]{--c:var(--eet)}
 .meter .name{font-weight:600; font-size:var(--fs-base)}
 .meter .name small{display:block; font-weight:400; font-size:var(--fs-sm); color:var(--muted)}
 .entry{display:flex; align-items:center; gap:8px}
@@ -148,7 +147,14 @@ input.flag{border-color:var(--warn) !important; background:var(--flag-bg) !impor
 .readout .big{font-size:var(--fs-lg); color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
 .hint{color:var(--warn)}
 .refill{grid-column:2 / -1; display:flex; align-items:center; gap:7px; font-size:var(--fs-sm); color:var(--muted)}
-.refill input{accent-color:var(--lng); width:15px; height:15px}
+.refill input{accent-color:var(--c); width:15px; height:15px}
+.mlist{display:flex; flex-direction:column}
+.mrow{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 12px; align-items:center; padding:10px 2px 10px 12px; border-bottom:1px solid var(--line-soft); border-left:3px solid var(--c)}
+.mrow:last-child{border-bottom:0}
+.mrow .nm{font-weight:600}
+.mrow .sub{font-size:var(--fs-sm); color:var(--muted)}
+.mrow .acts{display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end}
+.mrow.off .nm{color:var(--muted)}
 
 .sheet-foot{display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:16px 20px; background:var(--soft); border-top:1px solid var(--line)}
 .sheet-foot input[type=text]{flex:1 1 240px; min-height:var(--ctl-h); padding:0 11px; border:1px solid var(--line); border-radius:8px; background:var(--sheet)}
@@ -175,7 +181,7 @@ input.flag{border-color:var(--warn) !important; background:var(--flag-bg) !impor
 .seg button[aria-pressed=true]{background:var(--sheet); color:var(--ink); font-weight:600; box-shadow:0 0 0 1px var(--line)}
 
 /* ---------- Kennzahlen ---------- */
-.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1px; margin:0 0 22px;
+.stats{display:flex; flex-wrap:wrap; gap:1px; margin:0 0 22px;
   background:var(--line); border:1px solid var(--line); border-radius:12px; overflow:hidden}
 .stat{background:var(--sheet); padding:15px 18px; border-left:3px solid var(--c,transparent); min-width:0}
 .stat .label{font-size:var(--fs-sm); color:var(--muted)}
@@ -226,7 +232,8 @@ svg.chart .endval{fill:var(--ink); font-size:12px; font-weight:600; font-variant
 .emptybox p{margin:0 auto 16px; max-width:520px}
 .emptybox.compact{padding:20px 18px; border-style:solid}
 .emptybox.compact p{margin-bottom:12px}
-.stats > .emptybox{grid-column:1 / -1; border:0; border-radius:0}
+.stats > *{flex:1 1 200px}   /* Flex statt Raster: eine unvollständige letzte Zeile füllt die Breite */
+.stats > .emptybox{flex-basis:100%; border:0; border-radius:0}
 a{color:inherit; text-underline-offset:2px}
 
 /* ---------- Verlaufslisten ---------- */
@@ -242,8 +249,6 @@ a{color:inherit; text-underline-offset:2px}
 .badge::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--c,var(--muted)); flex:none}
 .cells{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:9px 10px}
 .cell{border-left:3px solid var(--c); padding:1px 0 1px 9px; min-width:0}
-.cell[data-m=strom]{--c:var(--strom)} .cell[data-m=wasser]{--c:var(--wasser)}
-.cell[data-m=lng]{--c:var(--lng)} .cell[data-m=home]{--c:var(--home)} .cell[data-m=eet]{--c:var(--eet)}
 .cell .k{font-size:var(--fs-xs); color:var(--muted)}
 .cell .v{font-size:var(--fs-base); font-variant-numeric:tabular-nums; line-height:1.3; overflow-wrap:anywhere}
 .cell .d{font-size:var(--fs-sm); color:var(--muted); font-variant-numeric:tabular-nums}
@@ -374,7 +379,7 @@ input[aria-invalid=true]{border-color:var(--bad) !important}
 .ch-head .ch-link{font-size:var(--fs-sm); color:var(--muted)}
 .ch-head .ch-link:hover{color:var(--ink)}
 .chartcard svg.chart{margin-top:10px}
-.stats.tiles{grid-template-columns:repeat(auto-fit, minmax(min(100%, 280px), 1fr))}
+.stats.tiles > *{flex-basis:280px}
 a.stat{color:inherit; text-decoration:none; transition:background-color .12s}
 a.stat:hover{background:var(--soft)}
 a.stat .label::after{content:" ›"; color:var(--muted)}
@@ -389,8 +394,8 @@ a.stat .label::after{content:" ›"; color:var(--muted)}
 .plate{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:var(--fs-md); font-weight:600; letter-spacing:.06em;
   border:1.5px solid var(--ink); border-left:7px solid #2b4ea2; border-radius:4px; padding:0 7px; white-space:nowrap}
 .dues{display:flex; flex-direction:column}
-#vehStats{grid-template-columns:repeat(4,minmax(0,1fr))}
-@media (max-width:1040px){ #vehStats{grid-template-columns:repeat(2,minmax(0,1fr))} }
+#vehStats > *{flex-basis:calc(25% - 1px)}
+@media (max-width:1040px){ #vehStats > *{flex-basis:calc(50% - 1px)} }
 .due{display:grid; grid-template-columns:1fr auto; gap:0 16px; padding:8px 0; border-bottom:1px solid var(--line-soft); font-size:var(--fs-md); align-items:baseline}
 .due:last-child{border-bottom:0}
 .due .dd{grid-column:1 / -1; font-variant-numeric:tabular-nums; color:var(--muted); font-size:var(--fs-sm)}
@@ -513,7 +518,7 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
   .viewhead h2{font-size:var(--fs-xl)}
   .meter{grid-template-columns:1fr 1fr; gap:8px 12px; padding:14px 16px}
   .meter .name,.entry,.readout,.refill{grid-column:1 / -1}
-  .stats,#vehStats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats > *,.stats.tiles > *,#vehStats > *{flex-basis:calc(50% - 1px)}
   .stat{padding:12px 14px}
   .two{grid-template-columns:1fr}
   .tx{grid-template-columns:minmax(0,1fr) auto}
@@ -605,11 +610,16 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
 
   <!-- ================= Zähler ================= -->
   <section class="view" id="view-zaehler" hidden>
-    <div class="viewhead"><h2 tabindex="-1">Zähler</h2><p>Strom, Wasser, Gastank und beide Solaranlagen.</p></div>
+    <div class="viewhead"><h2 tabindex="-1">Zähler</h2><p id="enSub">Zählerstände und Solarerträge.</p></div>
 
     <div class="topbar">
       <div class="topbar-info"><span class="muted">Letzte Ablesung</span> <b id="enLast">–</b></div>
+      <button class="btn-line" id="btnMeters">Zähler verwalten</button>
       <button class="btn-solid" id="btnEnOpen" aria-controls="sheet" aria-expanded="false">Ablesung erfassen</button>
+    </div>
+    <div class="emptybox" id="meterNone" hidden>
+      <p>Lege deine Zähler an – Strom, Wasser, Gas, Wärme, Tanks und beliebig viele Solaranlagen.</p>
+      <button class="btn-solid" id="btnMeterFirst">Zähler anlegen</button>
     </div>
     <div class="stats" id="stats"></div>
 
@@ -624,42 +634,14 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
         <button class="btn-quiet btn-sm" id="btnEnClose">Schließen</button>
       </div>
 
-      <div class="meter" data-m="strom">
-        <div class="name">Strom<small>Zählerstand in kWh</small></div>
-        <div class="entry"><input type="text" id="in-strom" inputmode="decimal" autocomplete="off" placeholder="0,000" aria-label="Strom, Zählerstand in kWh"><span class="unit">kWh</span></div>
-        <div class="readout" id="out-strom"></div>
-      </div>
-      <div class="meter" data-m="wasser">
-        <div class="name">Wasser<small>Zählerstand in m³</small></div>
-        <div class="entry"><input type="text" id="in-wasser" inputmode="decimal" autocomplete="off" placeholder="0,000" aria-label="Wasser, Zählerstand in m³"><span class="unit">m³</span></div>
-        <div class="readout" id="out-wasser"></div>
-      </div>
-      <div class="meter" data-m="lng">
-        <div class="name">Gastank<small>Restmenge im Tank</small></div>
-        <div class="entry">
-          <input type="text" id="in-lng" inputmode="decimal" autocomplete="off" placeholder="0,00" aria-label="Gastank, Restmenge">
-          <select id="lngUnit" aria-label="Einheit Gastank"><option>%</option><option>kg</option><option>Liter</option><option>m³</option></select>
-        </div>
-        <div class="readout" id="out-lng"></div>
-        <label class="refill"><input type="checkbox" id="lngRefill"> Tank wurde seit der letzten Ablesung befüllt</label>
-      </div>
-      <div class="meter" data-m="home">
-        <div class="name">Solar Heimpower<small>Ertrag seit der letzten Ablesung, kWh</small></div>
-        <div class="entry"><input type="text" id="in-home" inputmode="decimal" autocomplete="off" placeholder="0,000" aria-label="Solar Heimpower, Ertrag in kWh"><span class="unit">kWh</span></div>
-        <div class="readout" id="out-home"></div>
-      </div>
-      <div class="meter" data-m="eet">
-        <div class="name">Solar EET<small>Ertrag seit der letzten Ablesung, kWh</small></div>
-        <div class="entry"><input type="text" id="in-eet" inputmode="decimal" autocomplete="off" placeholder="0,000" aria-label="Solar EET, Ertrag in kWh"><span class="unit">kWh</span></div>
-        <div class="readout" id="out-eet"></div>
-      </div>
+      <div id="meterRows"></div>
 
       <div class="editing-bar" id="editingBar">
         <span id="editingText">Ablesung wird bearbeitet.</span>
         <button class="btn-line btn-sm" id="btnCancelEdit">Bearbeitung abbrechen</button>
       </div>
       <div class="sheet-foot">
-        <input type="text" id="note" placeholder="Notiz, z. B. Gastank gefüllt oder Zähler gewechselt" autocomplete="off" aria-label="Notiz">
+        <input type="text" id="note" placeholder="Notiz, z. B. Tank gefüllt oder Zähler gewechselt" autocomplete="off" aria-label="Notiz">
         <button class="btn-solid" id="btnSave">Ablesung speichern</button>
         <span class="kbd-hint">Enter springt zum nächsten Feld, Strg + Enter speichert. Eingaben bleiben als Entwurf erhalten.</span>
       </div>
@@ -922,8 +904,7 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
     <h3 class="title">Allgemein</h3>
     <div class="sheet">
       <div class="formgrid">
-        <label class="fld"><span>Strompreis (€/kWh)</span><input id="setStrom" class="numin" inputmode="decimal" placeholder="z. B. 0,32"></label>
-        <label class="fld"><span>Wasser + Abwasser (€/m³)</span><input id="setWasser" class="numin" inputmode="decimal" placeholder="z. B. 4,80"></label>
+        <div class="fld"><span>Zähler und Preise</span><button class="btn-line" id="btnSetMeters">Zähler verwalten</button><small>Preise stehen jetzt beim jeweiligen Zähler.</small></div>
         <label class="fld"><span>Präfix für QR-Etikett-Codes</span><input id="setPrefix" autocomplete="off" maxlength="4" placeholder="HS"><small>Nächster Code: <span id="setNext" class="code"></span></small></label>
         <label class="check wide" style="grid-column:1/-1"><input type="checkbox" id="setCodeMode"> Kühlvorrat: QR deaktivieren – nur 5-stellige Codes</label>
       </div>
@@ -1019,6 +1000,38 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
     <button class="btn-quiet btn-danger left" id="daDelete">Gerät löschen</button>
     <button class="btn-line" data-close>Abbrechen</button>
     <button class="btn-solid" id="daSave">Speichern</button>
+  </div>
+</dialog>
+
+<dialog id="dlgMeters" aria-labelledby="dmsTitle">
+  <div class="dlg-head"><h2 id="dmsTitle">Zähler verwalten</h2><button class="btn-quiet" data-close aria-label="Schließen">✕</button></div>
+  <div class="dlg-body">
+    <p class="muted" style="margin:0 0 10px">Reihenfolge, Namen, Einheiten und Preise. Ausgeblendete Zähler verschwinden aus dem Formular, ihre Werte bleiben erhalten.</p>
+    <div class="mlist" id="meterList"></div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn-line left" id="btnMeterNew">Zähler anlegen</button>
+    <button class="btn-solid" data-close>Fertig</button>
+  </div>
+</dialog>
+
+<dialog id="dlgMeter" aria-labelledby="dmTitle">
+  <div class="dlg-head"><h2 id="dmTitle">Zähler anlegen</h2><button class="btn-quiet" data-close aria-label="Schließen">✕</button></div>
+  <div class="dlg-body">
+    <div class="formgrid">
+      <label class="fld"><span>Name *</span><input id="dmName" autocomplete="off" placeholder="z. B. Strom Wärmepumpe, Solar Garage"></label>
+      <label class="fld"><span>Art</span><select id="dmType"></select></label>
+      <label class="fld"><span>Erfassung</span><select id="dmKind"></select><small id="dmKindHint"></small></label>
+      <label class="fld"><span>Einheit</span><input id="dmUnit" autocomplete="off" list="dmUnits" placeholder="kWh"><datalist id="dmUnits"><option>kWh</option><option>m³</option><option>%</option><option>Liter</option><option>kg</option><option>MWh</option></datalist></label>
+      <label class="fld" id="dmPriceWrap"><span id="dmPriceLabel">Preis je Einheit (€)</span><input id="dmPrice" class="numin" inputmode="decimal" placeholder="optional, z. B. 0,32"><small>Für die Kostenschätzung pro Monat.</small></label>
+      <label class="fld"><span>Farbe</span><select id="dmColor"></select></label>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn-quiet btn-danger left" id="dmDelete">Löschen</button>
+    <button class="btn-line" id="dmArchive">Ausblenden</button>
+    <button class="btn-line" data-close>Abbrechen</button>
+    <button class="btn-solid" id="dmSave">Speichern</button>
   </div>
 </dialog>
 
@@ -1212,10 +1225,35 @@ const LS_OLD = "energie_monitor_v2";      // Daten der alten Zähler-Seite
 const LS_DRAFT = "energie_monitor_draft";
 const FILE_NAME = "homestats.json";
 
+// Zählerarten mit Vorgaben für neue Zähler; "solar" gilt als Erzeugung, alle anderen als Verbrauch
+const METER_TYPES = {
+  strom:{label:"Strom", unit:"kWh", kind:"counter", color:"strom"},
+  wasser:{label:"Wasser", unit:"m³", kind:"counter", color:"wasser"},
+  gas:{label:"Gas", unit:"m³", kind:"counter", color:"lng"},
+  waerme:{label:"Wärme", unit:"kWh", kind:"counter", color:"lng"},
+  solar:{label:"Solaranlage (Erzeugung)", unit:"kWh", kind:"period", color:"home"},
+  tank:{label:"Tank (Gas, Öl, Pellets)", unit:"%", kind:"tank", color:"lng"},
+  sonst:{label:"Sonstiges", unit:"", kind:"counter", color:"eet"}
+};
+// Die früheren festen Zähler; ihre IDs sind die Felder in älteren Ablesungen
+const LEGACY_METERS = [
+  {id:"strom", name:"Strom", type:"strom", kind:"counter", unit:"kWh", color:"strom"},
+  {id:"wasser", name:"Wasser", type:"wasser", kind:"counter", unit:"m³", color:"wasser"},
+  {id:"lng", name:"Gastank", type:"tank", kind:"tank", unit:"%", color:"lng"},
+  {id:"home", name:"Solar Heimpower", type:"solar", kind:"period", unit:"kWh", color:"home"},
+  {id:"eet", name:"Solar EET", type:"solar", kind:"period", unit:"kWh", color:"eet"}
+];
+// Ohne Ablesungen: Strom und Wasser als Start; sonst jeder frühere Zähler, der Werte hat (Preise aus den alten Einstellungen)
+function legacyMeters(s){
+  const fresh = !s.energy.length, P = s.settings || {};
+  return LEGACY_METERS.filter(m => fresh ? m.id === "strom" || m.id === "wasser" : s.energy.some(r => r[m.id] != null))
+    .map(m => ({...m, archived:false, price: m.id === "strom" ? P.priceStrom ?? null : m.id === "wasser" ? P.priceWasser ?? null : null}));
+}
 function blankState(){
   return {
     version:3, updated:null,
-    energy:[], vehicles:[], ventries:[], appliances:[], items:[], finance:[], recurring:[],
+    energy:[], meters: legacyMeters({energy:[]}),
+    vehicles:[], ventries:[], appliances:[], items:[], finance:[], recurring:[],
     settings:{priceStrom:null, priceWasser:null, codePrefix:"HS", nextCode:1, labelFormat:"62x29", lastAppl:null, lastVeh:null}
   };
 }
@@ -1224,6 +1262,8 @@ function normalize(s){
   const out = {...b, ...s, settings:{...b.settings, ...(s && s.settings || {})}};
   ["energy","vehicles","ventries","appliances","items","finance","recurring"].forEach(k => { if (!Array.isArray(out[k])) out[k] = []; });
   out.energy.sort((a, b) => new Date(a.date) - new Date(b.date));
+  // Ältere Stände kennen nur die fünf festen Zähler: die mit Werten werden zu Zählern mit denselben Schlüsseln
+  if (!Array.isArray(s && s.meters)) out.meters = legacyMeters(out);
   return out;
 }
 const hasData = s => s.energy.length + s.vehicles.length + s.appliances.length + s.items.length + s.finance.length + s.recurring.length > 0;
@@ -1489,9 +1529,11 @@ function renderNavBadges(){
     (W.over.length + W.week.length) + " diese Woche verbrauchen" + (W.over.length ? ", " + W.over.length + " mit überschrittenem Datum" : ""));
   const dues = state.vehicles.flatMap(v => vehStats(v).dues).map(d => daysUntil(d.date)).filter(d => d <= 30 && d >= -120);
   set("kfz", dues.length, dues.some(d => d < 0), dues.length + (dues.length === 1 ? " Termin" : " Termine") + " in den nächsten 30 Tagen" + (dues.some(d => d < 0) ? ", davon überfällig" : ""));
-  const g = state.energy.length ? gasEstimate(computed()) : {status:"none"};
-  const gasAlert = g.status === "stale" || g.status === "empty" || (g.status === "ok" && g.daysLeft <= 14);
-  set("zaehler", gasAlert ? 1 : 0, g.status !== "ok", "Gastank: " + (g.status === "ok" ? "bald leer" : "neue Ablesung nötig"));
+  // Tanks, die bald leer sind oder neu abgelesen werden müssen
+  const tanks = activeMeters().filter(m => m.kind === "tank"), rows = tanks.length && state.energy.length ? computed() : [];
+  const alerts = tanks.map(m => ({m, g: gasEstimate(rows, m)})).filter(({g}) => g.status === "stale" || g.status === "empty" || (g.status === "ok" && g.daysLeft <= 14));
+  set("zaehler", alerts.length, alerts.some(({g}) => g.status !== "ok"),
+    alerts.map(({m, g}) => m.name + ": " + (g.status === "ok" ? "bald leer" : "neue Ablesung nötig")).join(", "));
 }
 
 // Seitenleiste auf schmalen Fenstern als Schublade: Fokus bleibt im Menü, der Inhalt dahinter ist gesperrt (inert)
@@ -1571,40 +1613,91 @@ function trapNavFocus(ev){
 /* =====================================================================
    ZÄHLER
    ===================================================================== */
-// kind: "counter" = aufsteigender Zählerstand, "tank" = Restmenge, "period" = Ertrag des Zeitraums
-const MEDIA = [
-  {k:"strom",  label:"Strom",           unit:"kWh", kind:"counter"},
-  {k:"wasser", label:"Wasser",          unit:"m³",  kind:"counter"},
-  {k:"lng",    label:"Gastank",         unit:"%",   kind:"tank"   },
-  {k:"home",   label:"Solar Heimpower", unit:"kWh", kind:"period" },
-  {k:"eet",    label:"Solar EET",       unit:"kWh", kind:"period" }
-];
-const kindOf = k => MEDIA.find(m => m.k === k).kind;
-const KEYS = MEDIA.map(m => m.k);
+// Zähler sind frei anlegbar (state.meters, Reihenfolge = Formular). Jede Ablesung speichert die Werte unter der
+// Zähler-ID, bei Tanks zusätzlich <id>Unit und <id>Refill (beim Gastank also wie bisher lngUnit/lngRefill).
+// kind: "counter" = aufsteigender Zählerstand, "tank" = Restmenge, "period" = Menge des Zeitraums
+const METER_KINDS = {counter:"Zählerstand (fortlaufend)", period:"Menge seit der letzten Ablesung", tank:"Füllstand (Tank)"};
+const METER_COLORS = {strom:"Gelb", wasser:"Türkis", lng:"Rot", home:"Grün", eet:"Violett"};
+const meterById = id => state.meters.find(m => m.id === id);
+const activeMeters = () => state.meters.filter(m => !m.archived);
+const kindOf = k => meterById(k)?.kind || "counter";
+const isGen = m => m.type === "solar";
+const mColor = m => "var(--" + (METER_COLORS[m.color] ? m.color : "eet") + ")";
+// Einheit eines Werts: beim Tank je Ablesung wählbar, sonst die des Zählers
+const unitAt = (rec, m) => m.kind === "tank" ? (rec && rec[m.id + "Unit"]) || m.unit || "%" : m.unit || "";
+const tankUnits = m => [...new Set([m.unit || "%", "%", "kg", "Liter", "m³"])];
+const mDigits = m => m.unit === "m³" ? [2, 3] : m.unit === "kWh" ? [0, 2] : [1, 2];   // [Summe, pro Tag]
+const meterSub = m => m.kind === "tank" ? "Restmenge im Tank"
+  : m.kind === "period" ? (isGen(m) ? "Ertrag" : "Menge") + " seit der letzten Ablesung" + (m.unit ? ", " + m.unit : "")
+  : "Zählerstand" + (m.unit ? " in " + m.unit : "");
 
 let editing = null;       // Ablesung, die gerade bearbeitet wird
 let chartKey = "strom";
-const inputs = {}; KEYS.forEach(k => inputs[k] = $("in-" + k));
+let inputs = {};          // Eingabefelder der eingeblendeten Zähler (id → input)
+let meterSig = "";
+
+// Formularzeilen aus der Zählerliste. Beim Neuaufbau bleiben Eingaben in weiter vorhandenen Zählern stehen.
+function renderMeterRows(){
+  const act = activeMeters();
+  const sig = JSON.stringify(act.map(m => [m.id, m.name, m.kind, m.unit, m.color, m.type]));
+  if (sig === meterSig) return;
+  const keep = energyFields();
+  meterSig = sig;
+  $("meterRows").innerHTML = act.map(m => {
+    const id = h(m.id), lab = h(m.name + ", " + meterSub(m));
+    const entry = m.kind === "tank"
+      ? '<input type="text" id="in-' + id + '" inputmode="decimal" autocomplete="off" placeholder="0,00" aria-label="' + lab + '">' +
+        '<select id="unit-' + id + '" aria-label="Einheit ' + h(m.name) + '">' + tankUnits(m).map(u => "<option>" + h(u) + "</option>").join("") + "</select>"
+      : '<input type="text" id="in-' + id + '" inputmode="decimal" autocomplete="off" placeholder="0,000" aria-label="' + lab + '"><span class="unit">' + h(m.unit) + "</span>";
+    return '<div class="meter" style="--c:' + mColor(m) + '"><div class="name">' + h(m.name) + "<small>" + h(meterSub(m)) + "</small></div>" +
+      '<div class="entry">' + entry + '</div><div class="readout" id="out-' + id + '"></div>' +
+      (m.kind === "tank" ? '<label class="refill"><input type="checkbox" id="refill-' + id + '"> Tank wurde seit der letzten Ablesung befüllt</label>' : "") + "</div>";
+  }).join("");
+  inputs = {};
+  act.forEach(m => inputs[m.id] = $("in-" + m.id));
+  setEnergyFields(keep, false);
+}
+const firstInput = () => Object.values(inputs)[0] || null;
+
+// Formularinhalt als Entwurf {date, note, <id>, <id>Unit, <id>Refill} – und zurück
+function energyFields(){
+  const d = {date: $("date").value, note: $("note").value};
+  Object.keys(inputs).forEach(id => {
+    d[id] = inputs[id].value;
+    if ($("unit-" + id)){ d[id + "Unit"] = $("unit-" + id).value; d[id + "Refill"] = $("refill-" + id).checked; }
+  });
+  return d;
+}
+function setEnergyFields(d, all = true){
+  Object.keys(inputs).forEach(id => {
+    inputs[id].value = d[id] || "";
+    const u = $("unit-" + id), m = meterById(id);
+    if (u){ u.value = d[id + "Unit"] || m.unit || "%"; if (u.selectedIndex < 0) u.selectedIndex = 0; $("refill-" + id).checked = !!d[id + "Refill"]; }
+  });
+  if (all){ $("note").value = d.note || ""; $("date").value = d.date || localNow(); }
+}
 
 // Zeitraumwerte stehen für sich. Beim Tank gilt vorher minus jetzt, nach dem Befüllen ist der Verbrauch unbekannt.
 function delta(rec, prev, k){
   if (rec[k] == null) return null;
-  if (kindOf(k) === "period") return rec[k];
+  const kind = kindOf(k);
+  if (kind === "period") return rec[k];
   if (!prev || prev[k] == null) return null;
-  if (k === "lng"){
-    if (rec.lngRefill) return null;
-    if ((rec.lngUnit || "%") !== (prev.lngUnit || "%")) return null;
+  if (kind === "tank"){
+    const m = meterById(k);
+    if (rec[k + "Refill"]) return null;
+    if (unitAt(rec, m) !== unitAt(prev, m)) return null;
     return prev[k] - rec[k];
   }
   return rec[k] - prev[k];
 }
 
-// Vergleicht mit der letzten Ablesung, die für das jeweilige Medium einen Wert hat.
+// Vergleicht mit der letzten Ablesung, die für den jeweiligen Zähler einen Wert hat.
 function computed(){
-  const lastBy = {};
+  const lastBy = {}, keys = state.meters.map(m => m.id);
   return state.energy.map(r => {
     const row = {...r};
-    KEYS.forEach(k => {
+    keys.forEach(k => {
       const p = lastBy[k];
       const d = delta(r, p, k);
       const days = p ? (new Date(r.date) - new Date(p.date)) / 86400000
@@ -1617,7 +1710,7 @@ function computed(){
     return row;
   });
 }
-// Zeitraum für Solarwerte ohne Vorgänger-Wert: Abstand zur vorherigen Ablesung überhaupt
+// Zeitraum für Mengen ohne Vorgänger-Wert: Abstand zur vorherigen Ablesung überhaupt
 function periodDays(r){
   const i = state.energy.indexOf(r);
   return i > 0 ? (new Date(r.date) - new Date(state.energy[i - 1].date)) / 86400000 : null;
@@ -1643,28 +1736,28 @@ function lastWith(k, exclude){
 }
 
 function preview(){
-  const unit = $("lngUnit").value;
   const when = new Date($("date").value || localNow());
-  MEDIA.forEach(m => {
-    const box = $("out-" + m.k);
-    const raw = inputs[m.k].value.trim();
+  activeMeters().forEach(m => {
+    const inp = inputs[m.id], box = $("out-" + m.id);
+    if (!inp || !box) return;
+    const raw = inp.value.trim();
     const cur = num(raw);
-    const ref = lastWith(m.k, editing);
-    const u = m.kind === "tank" ? unit : m.unit;
+    const ref = lastWith(m.id, editing);
+    const u = m.kind === "tank" ? $("unit-" + m.id).value : m.unit;
     const days = ref ? (when - new Date(ref.date)) / 86400000 : null;
-    inputs[m.k].classList.remove("flag");
+    inp.classList.remove("flag");
 
     if (raw && cur == null){ box.innerHTML = '<span class="hint">Das ist keine gültige Zahl.</span>'; return; }
     const parts = [];
 
     if (m.kind === "period"){
       parts.push(ref
-        ? "<span>Zuletzt " + fmt(ref[m.k]) + " " + m.unit + " für den Zeitraum bis " + dateShort(ref.date) + "</span>"
-        : "<span>Trage den Ertrag ein, den die Anlage seit der letzten Ablesung erzeugt hat.</span>");
+        ? "<span>Zuletzt " + fmt(ref[m.id]) + " " + h(u) + " für den Zeitraum bis " + dateShort(ref.date) + "</span>"
+        : "<span>" + (isGen(m) ? "Trage den Ertrag ein, den die Anlage seit der letzten Ablesung erzeugt hat." : "Trage die Menge seit der letzten Ablesung ein.") + "</span>");
       if (cur != null){
-        parts.push('<span class="big">' + fmt(cur) + " " + u + "</span>");
-        if (days > 0) parts.push("<span>" + fmtN(cur / days, 2) + " " + u + " pro Tag über " + fmtN(days, 1) + " Tage</span>");
-        if (cur < 0){ inputs[m.k].classList.add("flag"); parts.push('<span class="hint">Ein Ertrag kann nicht negativ sein.</span>'); }
+        parts.push('<span class="big">' + fmt(cur) + " " + h(u) + "</span>");
+        if (days > 0) parts.push("<span>" + fmtN(cur / days, 2) + " " + h(u) + " pro Tag über " + fmtN(days, 1) + " Tage</span>");
+        if (cur < 0){ inp.classList.add("flag"); parts.push('<span class="hint">Der Wert kann nicht negativ sein.</span>'); }
       }
       box.innerHTML = parts.join(""); return;
     }
@@ -1673,22 +1766,21 @@ function preview(){
       box.innerHTML = "<span>Erste Ablesung – der Verbrauch erscheint ab der nächsten.</span>";
       return;
     }
-    parts.push("<span>Zuletzt " + fmt(ref[m.k]) + " " + (m.kind === "tank" ? (ref.lngUnit || "%") : m.unit) +
-               " am " + dateShort(ref.date) + "</span>");
+    parts.push("<span>Zuletzt " + fmt(ref[m.id]) + " " + h(unitAt(ref, m)) + " am " + dateShort(ref.date) + "</span>");
 
     if (cur != null){
       let d = null, note = "";
       if (m.kind === "tank"){
-        if ($("lngRefill").checked) note = "Nach dem Befüllen wird kein Verbrauch berechnet.";
-        else if (unit !== (ref.lngUnit || "%")) note = "Andere Einheit als zuletzt – kein Vergleich möglich.";
-        else { d = ref[m.k] - cur; if (d < 0){ note = "Der Tank ist voller als zuletzt. Befüllung ankreuzen?"; inputs[m.k].classList.add("flag"); } }
+        if ($("refill-" + m.id).checked) note = "Nach dem Befüllen wird kein Verbrauch berechnet.";
+        else if (u !== unitAt(ref, m)) note = "Andere Einheit als zuletzt – kein Vergleich möglich.";
+        else { d = ref[m.id] - cur; if (d < 0){ note = "Der Tank ist voller als zuletzt. Befüllung ankreuzen?"; inp.classList.add("flag"); } }
       } else {
-        d = cur - ref[m.k];
-        if (d < 0){ note = "Kleiner als der letzte Stand – bitte prüfen."; inputs[m.k].classList.add("flag"); }
+        d = cur - ref[m.id];
+        if (d < 0){ note = "Kleiner als der letzte Stand – bitte prüfen."; inp.classList.add("flag"); }
       }
       if (d != null){
-        parts.push('<span class="big">' + fmt(d) + " " + u + "</span>");
-        if (days > 0) parts.push("<span>" + fmtN(d / days, 2) + " " + u + " pro Tag</span>");
+        parts.push('<span class="big">' + fmt(d) + " " + h(u) + "</span>");
+        if (days > 0) parts.push("<span>" + fmtN(d / days, 2) + " " + h(u) + " pro Tag</span>");
       }
       if (note) parts.push('<span class="hint">' + note + "</span>");
     }
@@ -1699,43 +1791,44 @@ function preview(){
 
 function saveDraft(){
   if (editing) return;
-  const d = {date: $("date").value, note: $("note").value, lngUnit: $("lngUnit").value, lngRefill: $("lngRefill").checked};
-  KEYS.forEach(k => d[k] = inputs[k].value);
-  try { localStorage.setItem(LS_DRAFT, JSON.stringify(d)); } catch(e){}
+  try { localStorage.setItem(LS_DRAFT, JSON.stringify(energyFields())); } catch(e){}
 }
 function loadDraft(){
+  renderMeterRows();
   try {
     const d = JSON.parse(localStorage.getItem(LS_DRAFT) || "null");
     if (!d) return;
-    KEYS.forEach(k => { if (d[k]) inputs[k].value = d[k]; });
+    setEnergyFields(d, false);
     if (d.note) $("note").value = d.note;
-    if (d.lngUnit) $("lngUnit").value = d.lngUnit;
-    $("lngRefill").checked = !!d.lngRefill;
   } catch(e){}
 }
 const clearDraft = () => { try { localStorage.removeItem(LS_DRAFT); } catch(e){} };
 
 function clearForm(){
-  KEYS.forEach(k => inputs[k].value = "");
+  setEnergyFields({}, false);
   $("note").value = "";
-  $("lngRefill").checked = false;
   $("date").value = localNow();
   clearDraft();
 }
 
 async function saveEntry(){
+  const act = activeMeters();
+  if (!act.length){ toast("Lege zuerst einen Zähler an."); openMeters(); return; }
   const date = $("date").value;
   if (!date){ toast("Bitte ein Ablesedatum eintragen."); $("date").focus(); return; }
 
-  const rec = {date, lngUnit: $("lngUnit").value, lngRefill: $("lngRefill").checked, note: $("note").value.trim()};
+  // Nur eingeblendete Zähler: Werte ausgeblendeter Zähler bleiben beim Bearbeiten unberührt
+  const rec = {date, note: $("note").value.trim()};
   let bad = null;
-  KEYS.forEach(k => {
-    const raw = inputs[k].value.trim();
-    rec[k] = num(raw);
-    if (raw && rec[k] == null) bad = k;
+  act.forEach(m => {
+    if (!inputs[m.id]) return;
+    const raw = inputs[m.id].value.trim();
+    rec[m.id] = num(raw);
+    if (raw && rec[m.id] == null && !bad) bad = m;
+    if (m.kind === "tank"){ rec[m.id + "Unit"] = $("unit-" + m.id).value; rec[m.id + "Refill"] = $("refill-" + m.id).checked; }
   });
-  if (bad){ toast("Der Wert bei " + MEDIA.find(m => m.k === bad).label + " ist keine gültige Zahl."); inputs[bad].focus(); return; }
-  if (KEYS.every(k => rec[k] == null)){ toast("Bitte mindestens einen Zählerstand eintragen."); inputs.strom.focus(); return; }
+  if (bad){ toast("Der Wert bei " + bad.name + " ist keine gültige Zahl."); inputs[bad.id].focus(); return; }
+  if (act.every(m => rec[m.id] == null)){ toast("Bitte mindestens einen Zählerstand eintragen."); firstInput()?.focus(); return; }
 
   if (editing){
     Object.assign(editing, rec);
@@ -1754,39 +1847,32 @@ async function saveEntry(){
 
 // Ein angefangener Entwurf wird beim Bearbeiten einer alten Ablesung beiseitegelegt und danach wiederhergestellt.
 let energyStash = null;
-function energyFields(){
-  const d = {date: $("date").value, note: $("note").value, lngUnit: $("lngUnit").value, lngRefill: $("lngRefill").checked};
-  KEYS.forEach(k => d[k] = inputs[k].value);
-  return d;
-}
 function restoreEnergyStash(){
   if (!energyStash) return false;
   const d = energyStash; energyStash = null;
-  KEYS.forEach(k => inputs[k].value = d[k] || "");
-  $("note").value = d.note || ""; $("lngUnit").value = d.lngUnit || "%"; $("lngRefill").checked = !!d.lngRefill; $("date").value = d.date || localNow();
+  setEnergyFields(d);
   saveDraft();
   return true;
 }
-const energyHasDraft = () => KEYS.some(k => inputs[k].value.trim()) || !!$("note").value.trim();
+const energyHasDraft = () => Object.values(inputs).some(i => i.value.trim()) || !!$("note").value.trim();
 function openEnergyForm(){
+  if (!activeMeters().length){ openMeters(); return; }
   if (!$("date").value) $("date").value = localNow();
   preview();
-  openSheet("sheet", "btnEnOpen", inputs.strom);
+  openSheet("sheet", "btnEnOpen", firstInput());
 }
 function startEdit(rec){
   if (!editing && energyHasDraft()) energyStash = energyFields();
   editing = rec;
-  $("date").value = rec.date;
-  KEYS.forEach(k => inputs[k].value = inNum(rec[k]));
-  $("lngUnit").value = rec.lngUnit || "%";
-  $("lngRefill").checked = !!rec.lngRefill;
-  $("note").value = rec.note || "";
+  const d = {date: rec.date, note: rec.note || ""};
+  Object.keys(inputs).forEach(id => { d[id] = inNum(rec[id]); d[id + "Unit"] = rec[id + "Unit"]; d[id + "Refill"] = rec[id + "Refill"]; });
+  setEnergyFields(d);
   $("editingText").textContent = "Ablesung vom " + dateLong(rec.date) + " wird bearbeitet.";
   $("editingBar").classList.add("on");
   $("sheetTitle").textContent = "Ablesung bearbeiten";
   $("btnSave").textContent = "Änderung speichern";
   preview();
-  openSheet("sheet", "btnEnOpen", inputs.strom);
+  openSheet("sheet", "btnEnOpen", firstInput());
 }
 function endEdit(){
   editing = null;
@@ -1803,16 +1889,131 @@ async function removeEntry(rec){
   toast("Ablesung gelöscht.");
 }
 
+/* ---------- Zähler verwalten ---------- */
+let dmEditing = null;
+const meterCount = id => state.energy.filter(r => r[id] != null).length;
+function openMeters(){
+  renderMeterList();
+  if (!$("dlgMeters").open) $("dlgMeters").showModal();
+  if (!state.meters.length) $("btnMeterNew").focus();
+}
+function renderMeterList(){
+  const box = $("meterList");
+  box.innerHTML = state.meters.length ? "" : '<p class="empty">Noch keine Zähler angelegt.</p>';
+  state.meters.forEach((m, i) => {
+    const n = meterCount(m.id);
+    const row = document.createElement("div");
+    row.className = "mrow" + (m.archived ? " off" : "");
+    row.style.setProperty("--c", mColor(m));
+    row.innerHTML = '<div><div class="nm">' + h(m.name) + (m.archived ? ' <span class="tag">ausgeblendet</span>' : "") + '</div><div class="sub">' +
+      h((METER_TYPES[m.type] || METER_TYPES.sonst).label + " · " + METER_KINDS[m.kind] + (m.unit ? " · " + m.unit : "") +
+        (m.price != null ? " · " + inNum(m.price) + " €/" + (m.unit || "Einheit") : "") + " · " + (n === 1 ? "1 Wert" : n + " Werte")) +
+      '</div></div><div class="acts"></div>';
+    const acts = row.querySelector(".acts");
+    const up = toolBtn(acts, "↑", () => moveMeter(i, -1));
+    up.disabled = i === 0; up.setAttribute("aria-label", m.name + " nach oben");
+    const dn = toolBtn(acts, "↓", () => moveMeter(i, 1));
+    dn.disabled = i === state.meters.length - 1; dn.setAttribute("aria-label", m.name + " nach unten");
+    toolBtn(acts, "Bearbeiten", () => openMeterForm(m)).setAttribute("aria-label", m.name + " bearbeiten");
+    box.appendChild(row);
+  });
+}
+function moveMeter(i, d){
+  const a = state.meters, j = i + d;
+  [a[i], a[j]] = [a[j], a[i]];
+  commit();
+  renderMeterList();
+  const btns = $("meterList").children[j].querySelectorAll(".acts button");
+  (btns[d < 0 ? 0 : 1].disabled ? btns[2] : btns[d < 0 ? 0 : 1]).focus();
+}
+function nextColor(type){
+  if (type !== "solar") return METER_TYPES[type].color;
+  const used = activeMeters().filter(m => m.type === "solar").map(m => m.color);
+  return ["home", "eet"].find(c => !used.includes(c)) || "home";
+}
+function openMeterForm(m){
+  dmEditing = m;
+  const t = m ? m.type : "strom", n = m ? meterCount(m.id) : 0;
+  $("dmTitle").textContent = m ? "Zähler bearbeiten" : "Zähler anlegen";
+  $("dmName").value = m ? m.name : "";
+  $("dmType").value = METER_TYPES[t] ? t : "sonst";
+  $("dmKind").value = m ? m.kind : METER_TYPES[t].kind;
+  $("dmUnit").value = m ? m.unit : METER_TYPES[t].unit;
+  $("dmPrice").value = m && m.price != null ? inNum(m.price) : "";
+  $("dmColor").value = m ? m.color : nextColor(t);
+  // Die Erfassungsart bestimmt, wie vorhandene Werte gerechnet werden – nach der ersten Ablesung fest
+  $("dmKind").disabled = n > 0;
+  $("dmKindHint").textContent = n > 0 ? "Fest, weil schon " + (n === 1 ? "ein Wert erfasst ist." : n + " Werte erfasst sind.") : "";
+  $("dmDelete").hidden = $("dmArchive").hidden = !m;
+  if (m) $("dmArchive").textContent = m.archived ? "Wieder einblenden" : "Ausblenden";
+  dmFormLabels();
+  $("dlgMeter").showModal();
+  $("dmName").focus();
+}
+function dmFormLabels(){
+  $("dmPriceWrap").hidden = $("dmType").value === "solar" || $("dmKind").value === "tank";
+  $("dmPriceLabel").textContent = "Preis je " + ($("dmUnit").value.trim() || "Einheit") + " (€)";
+}
+// Die Art belegt Erfassung, Einheit und Farbe vor (bei bestehenden Zählern nur die Erfassung, solange frei)
+function dmTypeChanged(){
+  const t = METER_TYPES[$("dmType").value];
+  if (!$("dmKind").disabled) $("dmKind").value = t.kind;
+  if (!dmEditing){ $("dmUnit").value = t.unit; $("dmColor").value = nextColor($("dmType").value); }
+  dmFormLabels();
+}
+function saveMeter(){
+  const name = $("dmName").value.trim();
+  if (!name){ toast("Bitte einen Namen eintragen."); $("dmName").focus(); return; }
+  const priced = !$("dmPriceWrap").hidden, rawP = $("dmPrice").value.trim(), price = num(rawP);
+  if (priced && rawP && price == null){ toast("Bitte einen gültigen Preis eintragen."); $("dmPrice").focus(); return; }
+  const kind = $("dmKind").value;
+  const rec = {name, type: $("dmType").value, kind, unit: $("dmUnit").value.trim() || (kind === "tank" ? "%" : ""),
+    color: $("dmColor").value, price: priced ? price : null};
+  if (dmEditing) Object.assign(dmEditing, rec);
+  else state.meters.push({id: "m_" + uid(), ...rec, archived: false});
+  $("dlgMeter").close();
+  commit();
+  renderMeterList();
+  toast(name + " gespeichert.");
+}
+function toggleMeterArchive(){
+  const m = dmEditing; if (!m) return;
+  m.archived = !m.archived;
+  $("dlgMeter").close();
+  commit();
+  renderMeterList();
+  toast(m.archived ? m.name + " ist ausgeblendet – die Werte bleiben erhalten." : m.name + " ist wieder eingeblendet.");
+}
+async function deleteMeter(){
+  const m = dmEditing; if (!m) return;
+  const n = meterCount(m.id);
+  if (!(await ask(n ? m.name + " mit " + (n === 1 ? "einem Wert" : n + " Werten") + " endgültig löschen? Die Werte verschwinden aus allen Ablesungen, leere Ablesungen werden entfernt. „Ausblenden“ behält sie."
+    : m.name + " löschen?", "Endgültig löschen", true))) return;
+  state.meters = state.meters.filter(x => x !== m);
+  state.energy.forEach(r => { delete r[m.id]; delete r[m.id + "Unit"]; delete r[m.id + "Refill"]; });
+  state.energy = state.energy.filter(r => state.meters.some(x => r[x.id] != null));
+  $("dlgMeter").close();
+  commit();
+  renderMeterList();
+  toast("Zähler gelöscht.");
+}
+
 /* ---------- Zähler-CSV ---------- */
-const HEAD = ["Datum","Strom_kWh","Wasser_m3","LNG_Rest","LNG_Einheit","LNG_Nachgefuellt","Solar_Heimpower_kWh","Solar_EET_kWh","Notiz"];
+// Spalten: frühere Zähler unter ihren alten Namen (passt zur alten Zähler-Seite), weitere als „Name_Einheit“
+const LEGACY_COLS = {strom:"Strom_kWh", wasser:"Wasser_m3", lng:"LNG_Rest", home:"Solar_Heimpower_kWh", eet:"Solar_EET_kWh"};
+function meterCols(m){
+  const base = LEGACY_COLS[m.id] || (m.name + (m.unit ? "_" + m.unit : "")).replace(/[;"\r\n]/g, " ");
+  if (m.kind !== "tank") return [base];
+  return m.id === "lng" ? [base, "LNG_Einheit", "LNG_Nachgefuellt"] : [base, m.name + "_Einheit", m.name + "_Befuellt"];
+}
 const esc = v => { const s = v == null ? "" : String(v); return /[;"\n\r]/.test(s) ? '"' + s.replaceAll('"', '""') + '"' : s; };
 const csvOut = (head, rows) => "﻿" + [head, ...rows].map(r => r.map(esc).join(";")).join("\r\n") + "\r\n";
 
 function energyCSV(){
-  return csvOut(HEAD, state.energy.map(r => [
-    r.date, csvNum(r.strom), csvNum(r.wasser), csvNum(r.lng), r.lngUnit || "%",
-    r.lngRefill ? "ja" : "", csvNum(r.home), csvNum(r.eet), r.note || ""
-  ]));
+  const ms = state.meters;
+  return csvOut(["Datum", ...ms.flatMap(meterCols), "Notiz"], state.energy.map(r => [r.date,
+    ...ms.flatMap(m => m.kind === "tank" ? [csvNum(r[m.id]), r[m.id] != null ? unitAt(r, m) : "", r[m.id + "Refill"] ? "ja" : ""] : [csvNum(r[m.id])]),
+    r.note || ""]));
 }
 
 function splitLine(line, sep){
@@ -1827,25 +2028,25 @@ function splitLine(line, sep){
 }
 
 function energyFromCSV(text){
-  const t = text.replace(/^﻿/, "");
+  const t = text.replace(/^\uFEFF/, "");
   const lines = t.split(/\r?\n/).filter(l => l.trim() !== "");
   if (lines.length < 2) return [];
   const sep = (lines[0].split(";").length >= lines[0].split(",").length) ? ";" : ",";
-  const head = splitLine(lines[0], sep).map(x => x.trim());
-  const at = (cells, name) => { const i = head.indexOf(name); return i > -1 ? cells[i] : undefined; };
-  return lines.slice(1).map(line => {
-    const c = splitLine(line, sep);
-    const rec = {
-      date: (at(c, "Datum") || "").trim(),
-      strom: num(at(c, "Strom_kWh")),
-      wasser: num(at(c, "Wasser_m3")),
-      lng: num(at(c, "LNG_Rest")),
-      lngUnit: (at(c, "LNG_Einheit") || "%").trim() || "%",
-      lngRefill: /^(ja|1|true|x)$/i.test((at(c, "LNG_Nachgefuellt") || "").trim()),
-      home: num(at(c, "Solar_Heimpower_kWh")),
-      eet: num(at(c, "Solar_EET_kWh")),
-      note: (at(c, "Notiz") || "").trim()
-    };
+  const head = splitLine(lines[0], sep).map(x => x.trim()), col = name => head.indexOf(name);
+  const rows = lines.slice(1).map(line => splitLine(line, sep));
+  // Frühere Zähler, die in der Datei Werte haben, hier aber fehlen, werden angelegt
+  LEGACY_METERS.forEach(L => {
+    const i = col(LEGACY_COLS[L.id]);
+    if (!meterById(L.id) && i > -1 && rows.some(c => num(c[i]) != null)) state.meters.push({...L, archived:false, price:null});
+  });
+  const cols = state.meters.map(m => { const [v, u, f] = meterCols(m).map(col); return {m, v, u, f}; }).filter(x => x.v > -1);
+  const at = (c, i) => i > -1 ? (c[i] || "").trim() : "";
+  return rows.map(c => {
+    const rec = {date: at(c, col("Datum")), note: at(c, col("Notiz"))};
+    cols.forEach(({m, v, u, f}) => {
+      rec[m.id] = num(c[v]);
+      if (m.kind === "tank"){ rec[m.id + "Unit"] = at(c, u) || m.unit || "%"; rec[m.id + "Refill"] = /^(ja|1|true|x)$/i.test(at(c, f)); }
+    });
     if (rec.date && rec.date.length === 10) rec.date += "T00:00";
     return rec;
   }).filter(r => r.date && !isNaN(new Date(r.date)));
@@ -1859,19 +2060,23 @@ function mergeEnergy(list){
 
 /* ---------- Zähler-Ausgabe ---------- */
 function energyCards(rows){
-  const s30 = perDay(rows, "strom", 30), sAll = perDay(rows, "strom");
-  const w30 = perDay(rows, "wasser", 30), wAll = perDay(rows, "wasser");
-  const h30 = perDay(rows, "home", 30), e30 = perDay(rows, "eet", 30);
-  const solar = (h30 == null && e30 == null) ? null : (h30 || 0) + (e30 || 0);
-  const P = state.settings;
+  const act = activeMeters(), cards = [];
   const month = (rate, price) => rate != null && price != null ? " · ≈ " + fmtEur(rate * 30.44 * price, 0) + " im Monat" : "";
-  const g = gasCard(gasEstimate(rows));
-
+  act.filter(m => !isGen(m) && m.kind !== "tank").forEach(m => {
+    const dd = mDigits(m)[1], r30 = perDay(rows, m.id, 30), all = perDay(rows, m.id);
+    cards.push(card(h(m.name), fmtN(r30, dd), h((m.unit ? m.unit + "/" : "pro ") + "Tag"),
+      (all == null ? "Letzte 30 Tage" : "Letzte 30 Tage, insgesamt " + fmtN(all, dd)) + month(r30, m.price), mColor(m)));
+  });
   // Solar: nur Ertrag. Ohne erfasste Einspeisemenge gibt es keinen Erlös und keinen Eigenverbrauch.
-  return card("Strom", fmtN(s30, 2), "kWh/Tag", (sAll == null ? "Letzte 30 Tage" : "Letzte 30 Tage, insgesamt " + fmtN(sAll, 2)) + month(s30, P.priceStrom), "var(--strom)") +
-    card("Wasser", fmtN(w30, 3), "m³/Tag", (wAll == null ? "Letzte 30 Tage" : "Letzte 30 Tage, insgesamt " + fmtN(wAll, 3)) + month(w30, P.priceWasser), "var(--wasser)") +
-    card("Solarertrag", fmtN(solar, 2), "kWh/Tag", "Letzte 30 Tage: Heimpower " + fmtN(h30, 2) + " + EET " + fmtN(e30, 2) + " kWh/Tag", "var(--home)") +
-    card("Gastank-Reichweite", g.value, g.unit, g.sub, "var(--lng)");
+  const gens = act.filter(isGen);
+  if (gens.length){
+    const v = gens.map(m => perDay(rows, m.id, 30)), u = gens[0].unit;
+    const tot = v.every(x => x == null) ? null : sum(v.map(x => x || 0));
+    cards.push(card(gens.length > 1 ? "Solarertrag" : h(gens[0].name), fmtN(tot, 2), h(u + "/Tag"),
+      gens.length > 1 ? "Letzte 30 Tage: " + gens.map((m, i) => h(m.name) + " " + fmtN(v[i], 2)).join(" + ") + " " + h(u) + "/Tag" : "Letzte 30 Tage", mColor(gens[0])));
+  }
+  act.filter(m => m.kind === "tank").forEach(m => { const g = gasCard(gasEstimate(rows, m), m); cards.push(card("Reichweite " + h(m.name), g.value, g.unit, g.sub, mColor(m))); });
+  return cards.join("");
 }
 
 /* ---------- Gastank-Reichweite ---------- */
@@ -1879,24 +2084,24 @@ function energyCards(rows){
 // Einheit wie die letzte Ablesung, ohne Befüllung dazwischen; ein höherer Stand ohne Befüllungs-Haken
 // (negative Differenz) zählt nicht. Bevorzugt die 90 Tage vor der letzten Ablesung, sonst alle Intervalle.
 const DAY = 86400000;
-function gasEstimate(rows){
-  const last = lastWith("lng", null);
+function gasEstimate(rows, m){
+  const k = m.id, last = lastWith(k, null), dk = "d" + k, tk = "t" + k;
   if (!last) return {status:"none"};
-  const unit = last.lngUnit || "%", lastT = new Date(last.date).getTime();
-  const usable = rows.filter(r => r.dlng != null && r.dlng >= 0 && r.tlng > 0 && (r.lngUnit || "%") === unit && new Date(r.date).getTime() <= lastT);
-  const basisOf = list => { const span = sum(list.map(r => r.tlng)); return span > 0 ? {rate: sum(list.map(r => r.dlng)) / span, days: span, n: list.length} : null; };
+  const unit = unitAt(last, m), lastT = new Date(last.date).getTime();
+  const usable = rows.filter(r => r[dk] != null && r[dk] >= 0 && r[tk] > 0 && unitAt(r, m) === unit && new Date(r.date).getTime() <= lastT);
+  const basisOf = list => { const span = sum(list.map(r => r[tk])); return span > 0 ? {rate: sum(list.map(r => r[dk])) / span, days: span, n: list.length} : null; };
   const recent = usable.filter(r => new Date(r.date).getTime() > lastT - 90 * DAY);
   const basis = basisOf(recent) || basisOf(usable);
-  const out = {last, unit, level: last.lng, basis, elapsed: (Date.now() - lastT) / DAY};
-  if (!(last.lng > 0)) return {...out, status:"empty"};
+  const out = {last, unit, level: last[k], basis, elapsed: (Date.now() - lastT) / DAY};
+  if (!(last[k] > 0)) return {...out, status:"empty"};
   if (!basis) return {...out, status:"norate"};
   if (!(basis.rate > 0)) return {...out, status:"zero"};
-  const emptyT = lastT + last.lng / basis.rate * DAY;    // fest ab der Ablesung, unabhängig von heute
+  const emptyT = lastT + last[k] / basis.rate * DAY;    // fest ab der Ablesung, unabhängig von heute
   const daysLeft = (emptyT - Date.now()) / DAY;
   return {...out, status: daysLeft < 0.5 ? "stale" : "ok", rate: basis.rate, emptyDate: new Date(emptyT), daysLeft};
 }
-function gasCard(g){
-  if (g.status === "none") return {value:"–", unit:"", sub:"Noch keine Ablesung des Gastanks."};
+function gasCard(g, m){
+  if (g.status === "none") return {value:"–", unit:"", sub:"Noch keine Ablesung für " + h(m.name) + "."};
   const stand = "Ablesung vom " + dDay(g.last.date.slice(0, 10)) + ": " + fmt(g.level, 2) + " " + g.unit;
   if (g.status === "empty") return {value:"leer", unit:"", sub: stand + " · bitte nach dem Befüllen neu ablesen."};
   if (g.status === "norate") return {value:"–", unit:"", sub: stand + " · für eine Schätzung fehlen zwei vergleichbare Ablesungen (gleiche Einheit, keine Befüllung dazwischen)."};
@@ -1914,8 +2119,15 @@ function renderEnergy(){
   const ago = last ? -daysUntil(last.date.slice(0, 10)) : 0;
   $("enLast").textContent = last ? dateLong(last.date) + " (" + (ago === 0 ? "heute" : ago === 1 ? "gestern" : "vor " + ago + " Tagen") + ")" : "noch keine – trage die ersten Zählerstände ein";
   openLabels();
+  renderMeterRows();
+  const act = activeMeters(), names = act.map(m => m.name);
+  $("enSub").textContent = names.length ? (names.length > 1 ? names.slice(0, -1).join(", ") + " und " + names[names.length - 1] : names[0]) + "." : "Noch keine Zähler angelegt.";
+  $("meterNone").hidden = act.length > 0;
+  $("btnEnOpen").hidden = !act.length || !$("sheet").hidden;
+  if (!act.length) $("sheet").hidden = true;
   $("stats").innerHTML = energyCards(rows);
-  $("stats").hidden = !state.energy.length;
+  $("stats").hidden = !state.energy.length || !act.length;
+  renderChartTabs();
   selEnTab(viewTab.zaehler);
   renderEnergyLog(rows);
   if (viewTab.zaehler === "verlauf"){ renderEnergyChart(rows); renderCompare($("enCmp"), {energy:true, vehicles:null}); }
@@ -1941,9 +2153,9 @@ function renderEnergyLog(rows){
     item.className = "item";
 
     let cells = "";
-    MEDIA.forEach(m => {
-      const val = r[m.k], d = r["d" + m.k], days = r["t" + m.k];
-      const u = m.kind === "tank" ? (r.lngUnit || "%") : m.unit;
+    state.meters.filter(m => !m.archived || r[m.id] != null).forEach(m => {
+      const val = r[m.id], d = r["d" + m.id], days = r["t" + m.id];
+      const u = h(unitAt(r, m));
       let main = "–", sub = "";
       if (val != null){
         main = fmt(val) + " " + u;
@@ -1951,18 +2163,18 @@ function renderEnergyLog(rows){
           sub = days > 0 ? fmtN(val / days, 2) + " " + u + " pro Tag" : "Zeitraum unbekannt";
         } else {
           sub = d == null
-            ? (m.kind === "tank" && r.lngRefill ? "nach dem Befüllen" : "kein Vergleichswert")
+            ? (m.kind === "tank" && r[m.id + "Refill"] ? "nach dem Befüllen" : "kein Vergleichswert")
             : fmt(d, 2) + " " + u + (days > 0 ? " · " + fmtN(d / days, 2) + "/Tag" : "");
         }
       }
-      cells += '<div class="cell' + (val == null ? " off" : "") + '" data-m="' + m.k + '">' +
-               '<div class="k">' + m.label + "</div>" +
+      cells += '<div class="cell' + (val == null ? " off" : "") + '" style="--c:' + mColor(m) + '">' +
+               '<div class="k">' + h(m.name) + "</div>" +
                '<div class="v">' + main + "</div>" +
                '<div class="d">' + sub + "</div></div>";
     });
 
     item.innerHTML = '<div class="top2"><span class="when">' + dateLong(r.date) + "</span>" +
-      (r.lngRefill ? '<span class="badge" style="--c:var(--lng)">Tank befüllt</span>' : "") +
+      state.meters.filter(m => m.kind === "tank" && r[m.id + "Refill"]).map(m => '<span class="badge" style="--c:' + mColor(m) + '">' + h(m.name) + " befüllt</span>").join("") +
       (r.note ? '<span class="memo">' + h(r.note) + "</span>" : "") +
       '<span class="tools"></span></div><div class="cells">' + cells + "</div>";
 
@@ -1987,12 +2199,29 @@ function moreBar(box, total, shown, step, all, noun, fn){
   box.appendChild(bar);
 }
 
+// Auswahl des Zählers für den Verlauf; fehlt der gewählte, gilt der erste eingeblendete
+function renderChartTabs(){
+  const box = $("chartTabs"), act = activeMeters();
+  if (!act.some(m => m.id === chartKey)) chartKey = act[0]?.id || null;
+  box.replaceChildren(...act.map(m => {
+    const b = document.createElement("button");
+    b.className = "tab"; b.textContent = m.name;
+    b.setAttribute("aria-pressed", m.id === chartKey);
+    b.addEventListener("click", () => {
+      chartKey = m.id;
+      [...box.children].forEach(c => c.setAttribute("aria-pressed", c === b));
+      renderEnergyChart(computed());
+    });
+    return b;
+  }));
+}
 function renderEnergyChart(rows){
-  const m = MEDIA.find(x => x.k === chartKey);
-  const pts = rows.filter(r => r["r" + chartKey] != null)
-                  .map(r => ({t: new Date(r.date).getTime(), v: r["r" + chartKey], d: r.date}));
-  const unit = m.kind === "tank" ? (lastWith("lng", null)?.lngUnit || "%") : m.unit;
-  const ok = lineChart($("chart"), pts, {color:"var(--" + chartKey + ")", unit: unit + " pro Tag", digits:2});
+  const m = meterById(chartKey);
+  if (!m){ clearChart($("chart")); $("chartEmpty").hidden = false; return; }
+  const pts = rows.filter(r => r["r" + m.id] != null)
+                  .map(r => ({t: new Date(r.date).getTime(), v: r["r" + m.id], d: r.date}));
+  const unit = unitAt(lastWith(m.id, null), m);
+  const ok = lineChart($("chart"), pts, {color: mColor(m), unit: unit + " pro Tag", digits:2});
   $("chartEmpty").hidden = ok;
 }
 
@@ -4021,13 +4250,14 @@ function spark(vals, labels, color, fmtV){
 const dCell = (label, main, sub) => '<div class="cm-d"><span class="k">' + h(label) + "</span>" + main + (sub ? "<span>" + sub + "</span>" : "") + "</div>";
 const naB = t => '<b class="na">' + h(t) + "</b>";
 
-const CMP_ENERGY = [
-  {k:"strom", label:"Strom", unit:"kWh", d:0, dd:2, c:"var(--strom)"},
-  {k:"wasser", label:"Wasser", unit:"m³", d:2, dd:3, c:"var(--wasser)"},
-  {k:"home", label:"Solar Heimpower", unit:"kWh", d:0, dd:2, c:"var(--home)"},
-  {k:"eet", label:"Solar EET", unit:"kWh", d:0, dd:2, c:"var(--eet)"},
-  {k:"solar", label:"Solar gesamt", unit:"kWh", d:0, dd:2, c:"var(--home)", parts:["home", "eet"]}
-];
+// Zeilen im Zeitvergleich: alle eingeblendeten Zähler außer Tanks, bei mehreren Solaranlagen zusätzlich die Summe
+function cmpEnergy(){
+  const act = activeMeters().filter(m => m.kind !== "tank"), gens = act.filter(isGen);
+  const rows = act.map(m => { const [d, dd] = mDigits(m); return {k: m.id, label: m.name, unit: m.unit, d, dd, c: mColor(m)}; });
+  if (gens.length > 1) rows.push({k:"", label:"Solar gesamt", unit: gens[0].unit, d:0, dd:2, c: mColor(gens[0]), parts: gens.map(m => m.id),
+    small: gens.length === 2 ? "Summe beider Anlagen" : "Summe aller Anlagen"});
+  return rows;
+}
 
 // Baut den Vergleich in `box`. opt.energy: Zählerzeilen; opt.vehicles: Fahrzeugliste (oder null)
 function renderCompare(box, opt){
@@ -4058,7 +4288,7 @@ function renderCompare(box, opt){
     if (opt.vehicles) html += '<div class="cmp-group">Zähler</div>';
     const ivCache = {};
     const ivs = k => ivCache[k] || (ivCache[k] = energyIntervals(k));
-    // Solar gesamt nur, wenn beide Anlagen Daten für den Zeitraum haben
+    // Solar gesamt nur, wenn alle Anlagen Daten für den Zeitraum haben
     const calc = (m, Pp) => {
       if (!m.parts) return energyPeriod(ivs(m.k), Pp);
       const ps = m.parts.map(k => energyPeriod(ivs(k), Pp));
@@ -4066,14 +4296,14 @@ function renderCompare(box, opt){
       return {val: sum(ps.map(p => p.val)), perDay: sum(ps.map(p => p.perDay)), covDays: Math.min(...ps.map(p => p.covDays)), days: ps[0].days,
         coverage: Math.min(...ps.map(p => p.coverage)), est: ps.some(p => p.est), running: ps[0].running};
     };
-    CMP_ENERGY.forEach(m => {
+    cmpEnergy().forEach(m => {
       const cur = calc(m, P), u = m.unit;
       const has = cur && cur.val != null;
       const tags = has ? (cur.est ? '<span class="tag est">geschätzt*</span>' : "") +
         (cur.coverage < 0.98 ? '<span class="tag">Daten für ' + fmt(cur.covDays, 0) + " von " + fmt(Math.ceil(cur.days), 0) + " Tagen</span>" : "") : "";
-      html += '<div class="cmp-row"><div class="cm-name" style="--c:' + m.c + '">' + h(m.label) + (m.parts ? "<small>Summe beider Anlagen</small>" : "") + "</div>" +
-        '<div class="cm-val">' + (has ? "<b>" + fmtN(cur.val, m.d) + " " + u + "</b><span>Ø " + fmtN(cur.perDay, m.dd) + " " + u + " pro Tag</span>" + tags
-          : naB("keine Daten") + "<span>" + (m.parts ? "Nicht für beide Anlagen erfasst." : "Keine passenden Ablesungen.") + "</span>") + "</div>";
+      html += '<div class="cmp-row"><div class="cm-name" style="--c:' + m.c + '">' + h(m.label) + (m.parts ? "<small>" + m.small + "</small>" : "") + "</div>" +
+        '<div class="cm-val">' + (has ? "<b>" + fmtN(cur.val, m.d) + " " + h(u) + "</b><span>Ø " + fmtN(cur.perDay, m.dd) + " " + h(u) + " pro Tag</span>" + tags
+          : naB("keine Daten") + "<span>" + (m.parts ? "Nicht für alle Anlagen erfasst." : "Keine passenden Ablesungen.") + "</span>") + "</div>";
       refs.forEach(R => {
         const r = calc(m, R.P), lab = "ggü. " + R.label;
         if (!r || r.val == null){ html += dCell(lab, naB("kein Vergleichswert"), "keine Daten für " + h(periodName(R.P))); return; }
@@ -4196,11 +4426,13 @@ function reminders(rows){
     if (s.cls) out.push({days: s.days, mod: isFrozen(it) ? "Gefrierer" : "Kühlschrank", c:"var(--kalt)", text: it.name + " (" + qtyText(it) + ")", sub: whereText(it) + " · bis " + dDay(it.bestBefore), href:"#kalt", item: it.id,
       label: s.days < 0 ? "Bitte prüfen" : s.txt});
   });
-  const g = gasEstimate(rows);
-  if (g.status === "ok" && g.daysLeft <= 30) out.push({days: Math.round(g.daysLeft), mod:"Zähler", c:"var(--lng)", text:"Gastank bald leer (Schätzung)",
-    sub:"leer etwa am " + dDay(isoDay(g.emptyDate)) + " · Ablesung vom " + dDay(g.last.date.slice(0, 10)), href:"#zaehler", label:"in etwa " + Math.round(g.daysLeft) + " Tagen"});
-  if (g.status === "stale" || g.status === "empty") out.push({days:-1, mod:"Zähler", c:"var(--lng)", text: g.status === "empty" ? "Gastank laut Ablesung leer" : "Gastank: Vorrat rechnerisch aufgebraucht",
-    sub:"Bitte neu ablesen · letzte Ablesung " + dDay(g.last.date.slice(0, 10)), href:"#zaehler", label:"neue Ablesung nötig"});
+  activeMeters().filter(m => m.kind === "tank").forEach(m => {
+    const g = gasEstimate(rows, m), c = mColor(m);
+    if (g.status === "ok" && g.daysLeft <= 30) out.push({days: Math.round(g.daysLeft), mod:"Zähler", c, text: m.name + " bald leer (Schätzung)",
+      sub:"leer etwa am " + dDay(isoDay(g.emptyDate)) + " · Ablesung vom " + dDay(g.last.date.slice(0, 10)), href:"#zaehler", label:"in etwa " + Math.round(g.daysLeft) + " Tagen"});
+    if (g.status === "stale" || g.status === "empty") out.push({days:-1, mod:"Zähler", c, text: g.status === "empty" ? m.name + " laut Ablesung leer" : m.name + ": Vorrat rechnerisch aufgebraucht",
+      sub:"Bitte neu ablesen · letzte Ablesung " + dDay(g.last.date.slice(0, 10)), href:"#zaehler", label:"neue Ablesung nötig"});
+  });
   return out.sort((a, b) => a.days - b.days);
 }
 
@@ -4225,16 +4457,19 @@ function renderHomeCharts(rows){
         return {label: monthLabel(P), title: periodName(P), parts:[{v: ok ? r.inc : null, color:"var(--ch-a)", name:"Einnahmen"}, {v: ok ? r.out : null, color:"var(--ch-b)", name:"Ausgaben"}]}; }),
         {unit:"€ pro Monat", grouped:true})});
   }
-  // Strom: Verbrauch gegen Solarertrag, beides kWh pro Tag (Monatsmittel, zeitanteilig geschätzt)
-  if (state.energy.some(r => r.strom != null)){
-    const iv = {strom: energyIntervals("strom"), home: energyIntervals("home"), eet: energyIntervals("eet")};
-    const hasSolar = iv.home.length + iv.eet.length > 0;
+  // Strom: Verbrauch (alle Stromzähler) gegen Solarertrag (alle Anlagen), beides kWh pro Tag (Monatsmittel, zeitanteilig geschätzt)
+  const useS = activeMeters().filter(m => m.type === "strom" && m.kind !== "tank"), gens = activeMeters().filter(isGen);
+  if (useS.some(m => lastWith(m.id, null))){
+    const iv = {};
+    [...useS, ...gens].forEach(m => iv[m.id] = energyIntervals(m.id));
+    const hasSolar = gens.some(m => iv[m.id].length);
     const per = (k, P) => { const r = energyPeriod(iv[k], P); return r && r.val != null ? r.perDay : null; };
+    const total = (list, P) => { const v = list.map(m => per(m.id, P)); return v.every(x => x == null) ? null : sum(v.map(x => x || 0)); };
     charts.push({id:"hcStrom", title:"Strom", sub: hasSolar ? "Verbrauch und Solarertrag, kWh pro Tag (Monatsmittel)" : "Verbrauch, kWh pro Tag (Monatsmittel)", href:"#zaehler",
       legend: hasSolar ? [["var(--ch-a)", "Verbrauch"], ["var(--ch-b)", "Solarertrag"]] : null,
       draw: svg => barChart(svg, months.map(P => {
-        const parts = [{v: per("strom", P), color:"var(--ch-a)", name:"Verbrauch"}];
-        if (hasSolar){ const a = per("home", P), b = per("eet", P); parts.push({v: a == null && b == null ? null : (a || 0) + (b || 0), color:"var(--ch-b)", name:"Solarertrag"}); }
+        const parts = [{v: total(useS, P), color:"var(--ch-a)", name:"Verbrauch"}];
+        if (hasSolar) parts.push({v: total(gens, P), color:"var(--ch-b)", name:"Solarertrag"});
         return {label: monthLabel(P), title: periodName(P), parts};
       }), {unit:"kWh pro Tag", grouped:true, fmt: v => fmtN(v, 1) + " kWh/Tag"})});
   }
@@ -4246,15 +4481,16 @@ function renderHomeCharts(rows){
         return {label: monthLabel(P), title: periodName(P), parts:[{v: ok ? r.fuel : null, color:"var(--ch-a)", name:"Tanken/Laden"}, {v: ok ? r.other : null, color:"var(--ch-b)", name:"Sonstige Kosten"}]}; }),
         {unit:"€ pro Monat"})});
   }
-  // Gastank: Füllstand der letzten 12 Monate (nur Ablesungen in der Einheit der letzten)
-  const lastGas = lastWith("lng", null);
-  if (lastGas){
-    const unit = lastGas.lngUnit || "%", from = months[0].p0.getTime();
-    const pts = state.energy.filter(r => r.lng != null && (r.lngUnit || "%") === unit && new Date(r.date).getTime() >= from)
-      .map(r => ({t: new Date(r.date).getTime(), v: r.lng, d: r.date}));
-    if (pts.length) charts.push({id:"hcGas", title:"Gastank", sub:"Füllstand laut Ablesung (" + unit + ")", href:"#zaehler",
-      draw: svg => lineChart(svg, pts, {color:"var(--lng)", unit: unit === "%" ? "% Füllstand" : unit, digits: unit === "%" ? 0 : 1})});
-  }
+  // Tanks: Füllstand der letzten 12 Monate (nur Ablesungen in der Einheit der letzten)
+  activeMeters().filter(m => m.kind === "tank").forEach((m, i) => {
+    const last = lastWith(m.id, null);
+    if (!last) return;
+    const unit = unitAt(last, m), from = months[0].p0.getTime();
+    const pts = state.energy.filter(r => r[m.id] != null && unitAt(r, m) === unit && new Date(r.date).getTime() >= from)
+      .map(r => ({t: new Date(r.date).getTime(), v: r[m.id], d: r.date}));
+    if (pts.length) charts.push({id:"hcTank" + i, title: m.name, sub:"Füllstand laut Ablesung (" + unit + ")", href:"#zaehler",
+      draw: svg => lineChart(svg, pts, {color: mColor(m), unit: unit === "%" ? "% Füllstand" : unit, digits: unit === "%" ? 0 : 1})});
+  });
   const box = $("homeCharts");
   box.innerHTML = charts.map(c => '<div class="panel chartcard"><div class="ch-head"><div class="ptitle">' + h(c.title) + '</div><span class="ch-sub">' + h(c.sub) +
     '</span><a class="ch-link" href="' + c.href + '">Details ›</a></div><svg class="chart" id="' + c.id + '" role="img" aria-label="' + h(c.title + ": " + c.sub) + '"></svg>' +
@@ -4271,15 +4507,20 @@ function renderHomeTiles(rows){
     tiles.push(tile("#fin", "Saldo " + periodName(P), ok ? fmtSaldo(r.saldo) : "–", "", ok ? "Einnahmen " + fmtEur(r.inc) + " · Ausgaben " + fmtEur(r.out) : "Noch keine Buchungen in diesem Monat", "var(--ink)"));
   }
   if (state.energy.length){
-    const s30 = perDay(rows, "strom", 30), w30 = perDay(rows, "wasser", 30);
-    const sol = [perDay(rows, "home", 30), perDay(rows, "eet", 30)];
-    const solar = sol.every(v => v == null) ? null : (sol[0] || 0) + (sol[1] || 0);
-    if (s30 != null || state.energy.some(e => e.strom != null)) tiles.push(tile("#zaehler", "Strom Ø pro Tag", fmtN(s30, 1), s30 != null ? "kWh" : "", "letzte 30 Tage" + (solar != null ? " · Solar Ø " + fmtN(solar, 1) + " kWh" : ""), "var(--strom)"));
-    if (state.energy.some(e => e.wasser != null)) tiles.push(tile("#zaehler", "Wasser Ø pro Tag", fmtN(w30, 2), w30 != null ? "m³" : "", "letzte 30 Tage", "var(--wasser)"));
-    if (lastWith("lng", null)){
-      const est = gasEstimate(rows), g = gasCard(est);
-      tiles.push(tile("#zaehler", "Gastank-Reichweite", g.value, g.unit, est.status === "ok" ? "Schätzung · leer etwa am " + dDay(isoDay(est.emptyDate)) : g.sub, "var(--lng)"));
-    }
+    const act = activeMeters(), gens = act.filter(isGen);
+    const sv = gens.map(m => perDay(rows, m.id, 30)), solar = sv.every(v => v == null) ? null : sum(sv.map(v => v || 0));
+    let solarShown = !gens.length;
+    act.filter(m => !isGen(m) && m.kind !== "tank" && lastWith(m.id, null)).forEach(m => {
+      const r30 = perDay(rows, m.id, 30);
+      let sub = "letzte 30 Tage";
+      if (m.type === "strom" && !solarShown && solar != null){ sub += " · Solar Ø " + fmtN(solar, 1) + " " + h(gens[0].unit); solarShown = true; }
+      tiles.push(tile("#zaehler", h(m.name) + " Ø pro Tag", fmtN(r30, m.unit === "m³" ? 2 : 1), r30 != null ? h(m.unit) : "", sub, mColor(m)));
+    });
+    if (!solarShown && solar != null) tiles.push(tile("#zaehler", "Solarertrag Ø pro Tag", fmtN(solar, 1), h(gens[0].unit), "letzte 30 Tage", mColor(gens[0])));
+    act.filter(m => m.kind === "tank" && lastWith(m.id, null)).forEach(m => {
+      const est = gasEstimate(rows, m), g = gasCard(est, m);
+      tiles.push(tile("#zaehler", "Reichweite " + h(m.name), g.value, g.unit, est.status === "ok" ? "Schätzung · leer etwa am " + dDay(isoDay(est.emptyDate)) : g.sub, mColor(m)));
+    });
   }
   if (state.appliances.length){
     const W = weekItems(false), wn = W.over.length + W.week.length, st = stock();
@@ -4407,8 +4648,6 @@ function renderData(){
   renderCodeModeUI();
   renderUpd();
   const s = state.settings;
-  $("setStrom").value = inNum(s.priceStrom);
-  $("setWasser").value = inNum(s.priceWasser);
   $("setPrefix").value = s.codePrefix || "HS";
   $("setNext").textContent = codeMode() === "digits" ? (allocShorts(1, false)?.[0] || "kein freier Code") + " (5-stellig)" : peekCodes(1).codes[0];
   $("appSectionLink").hidden = !native;
@@ -4418,11 +4657,6 @@ function renderData(){
 }
 function saveSettings(){
   const s = state.settings;
-  for (const [id, k] of [["setStrom", "priceStrom"], ["setWasser", "priceWasser"]]){
-    const raw = $(id).value.trim(), v = num(raw);
-    if (raw && v == null){ toast("Bitte eine gültige Zahl eintragen."); $(id).focus(); return; }
-    s[k] = v;
-  }
   const p = $("setPrefix").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
   s.codePrefix = p || "HS";
   commit();
@@ -4491,18 +4725,18 @@ function wire(){
     if ($("homeEval").open) renderHomeEval();
   });
 
-  // Zähler
-  const order = [...KEYS.map(k => inputs[k]), $("note")];
-  order.forEach((el, i) => {
-    el.addEventListener("keydown", ev => {
-      if (ev.key !== "Enter") return;
-      ev.preventDefault();
-      if (ev.ctrlKey || ev.metaKey || i === order.length - 1) saveEntry();
-      else order[i + 1].focus();
-    });
+  // Zähler: die Felder entstehen aus der Zählerliste, daher Ereignisse am Container
+  const rowsBox = $("meterRows");
+  rowsBox.addEventListener("keydown", ev => {
+    if (ev.key !== "Enter" || ev.target.tagName !== "INPUT" || ev.target.type !== "text") return;
+    ev.preventDefault();
+    const order = [...Object.values(inputs), $("note")];
+    if (ev.ctrlKey || ev.metaKey) saveEntry(); else order[order.indexOf(ev.target) + 1].focus();
   });
-  KEYS.forEach(k => inputs[k].addEventListener("input", preview));
-  ["lngUnit", "lngRefill", "date"].forEach(id => $(id).addEventListener("change", preview));
+  rowsBox.addEventListener("input", preview);
+  rowsBox.addEventListener("change", preview);
+  $("note").addEventListener("keydown", ev => { if (ev.key === "Enter"){ ev.preventDefault(); saveEntry(); } });
+  $("date").addEventListener("change", preview);
   $("note").addEventListener("input", saveDraft);
   $("btnSave").addEventListener("click", saveEntry);
   $("btnNow").addEventListener("click", () => { $("date").value = localNow(); preview(); });
@@ -4513,18 +4747,18 @@ function wire(){
     viewTab.zaehler = v;
     if (v === "verlauf"){ renderEnergyChart(computed()); renderCompare($("enCmp"), {energy:true, vehicles:null}); }
   });
-  const box = $("chartTabs");
-  MEDIA.forEach(m => {
-    const b = document.createElement("button");
-    b.className = "tab"; b.textContent = m.label;
-    b.setAttribute("aria-pressed", m.k === chartKey);
-    b.addEventListener("click", () => {
-      chartKey = m.k;
-      [...box.children].forEach(c => c.setAttribute("aria-pressed", c === b));
-      renderEnergyChart(computed());
-    });
-    box.appendChild(b);
-  });
+  $("dmType").innerHTML = Object.entries(METER_TYPES).map(([k, v]) => '<option value="' + k + '">' + h(v.label) + "</option>").join("");
+  $("dmKind").innerHTML = Object.entries(METER_KINDS).map(([k, v]) => '<option value="' + k + '">' + h(v) + "</option>").join("");
+  $("dmColor").innerHTML = Object.entries(METER_COLORS).map(([k, v]) => '<option value="' + k + '">' + h(v) + "</option>").join("");
+  ["btnMeters", "btnMeterFirst", "btnSetMeters"].forEach(id => $(id).addEventListener("click", openMeters));
+  $("btnMeterNew").addEventListener("click", () => openMeterForm(null));
+  $("dmType").addEventListener("change", dmTypeChanged);
+  $("dmKind").addEventListener("change", dmFormLabels);
+  $("dmUnit").addEventListener("input", dmFormLabels);
+  $("dmSave").addEventListener("click", saveMeter);
+  $("dmDelete").addEventListener("click", deleteMeter);
+  $("dmArchive").addEventListener("click", toggleMeterArchive);
+  $("dlgMeter").addEventListener("keydown", ev => { if (ev.key === "Enter" && ev.target.tagName === "INPUT"){ ev.preventDefault(); saveMeter(); } });
 
   // Fahrzeuge
   $("veCat").innerHTML = COSTCATS.map(c => "<option>" + h(c) + "</option>").join("");
@@ -4734,7 +4968,7 @@ async function init(){
     else {
       // Einmalige Übernahme aus der alten Zähler-Seite
       const old = JSON.parse(localStorage.getItem(LS_OLD) || "[]");
-      if (Array.isArray(old) && old.length){ state.energy = old; state = normalize(state); state.updated = new Date().toISOString(); saveLocal(); }
+      if (Array.isArray(old) && old.length){ state.energy = old; delete state.meters; state = normalize(state); state.updated = new Date().toISOString(); saveLocal(); }
     }
   } catch(e){ state = blankState(); }
   if (bookRecurring()) commit();   // fällige Daueraufträge buchen

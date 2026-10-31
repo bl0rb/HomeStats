@@ -2,11 +2,11 @@
 
 Haushalts-Tool für Zählerstände, Fahrzeuge, Gefriergut und Finanzen – als einzelne HTML-Datei für den Browser und als Desktop-App für macOS und Windows.
 
-- **Zähler**: Strom, Wasser, Gastank, zwei Solaranlagen – Tagesverbrauch, geschätzte Gasreichweite, Kostenschätzung, Monats- und Jahresvergleich
+- **Zähler**: frei anlegbar – Strom, Wasser, Gas, Wärme, Tanks und beliebig viele Solaranlagen, als fortlaufender Zählerstand, Menge seit der letzten Ablesung oder Füllstand; Tagesverbrauch, Tank-Reichweite, Kostenschätzung je Zähler, Monats- und Jahresvergleich
 - **Fahrzeuge**: beliebig viele KFZ mit Tanken/Laden, Kilometerständen und Kosten (Versicherung, Steuer, Werkstatt …) – Verbrauch, Kosten pro km, Fixkosten, Fälligkeiten (HU, Inspektion, Zahlungen)
-- **Kühlen & Gefrieren**: Geräte mit Fächern, Einlagern mit Haltbarkeit, „Diese Woche verbrauchen“, QR-Code-Etiketten drucken (Etikettendrucker oder A4-Bogen), Entnehmen per Scan (Kamera, QR-fähiger Handscanner oder Eintippen)
-- **Finanzen**: Einnahmen und Ausgaben mit Kategorien und Daueraufträgen, Fahrzeugkosten automatisch einbezogen, Monats-/Jahresübersicht mit Sparquote; Import von Kontoumsätzen als CSV (Sparkasse, ING, DKB, comdirect, Volksbank u. a.) mit Kategorie-Vorschlägen und Schutz vor Doppelten
-- **Daten & Einstellungen**: JSON-Sicherung, CSV-Export, Import der alten `energie_verbrauch.csv`
+- **Kühlvorrat**: Geräte mit Fächern, Einlagern mit Haltbarkeit, „Diese Woche verbrauchen“, QR-Code-Etiketten drucken (Etikettendrucker oder A4-Bogen), Entnehmen per Scan (Kamera, QR-fähiger Handscanner oder Eintippen); wahlweise nur 5-stellige Codes statt QR
+- **Finanzen**: Einnahmen und Ausgaben mit Kategorien und wiederkehrenden Buchungen, Fahrzeugkosten automatisch einbezogen, Monats-/Jahresübersicht mit Sparquote; Import von Kontoumsätzen als CSV (Sparkasse, ING, DKB, comdirect, Volksbank u. a.) mit Kategorie-Vorschlägen und Schutz vor Doppelten
+- **Einstellungen**: JSON-Sicherung, CSV-Export, Import der alten `energie_verbrauch.csv`
 
 ## Browser
 
@@ -16,7 +16,7 @@ Haushalts-Tool für Zählerstände, Fahrzeuge, Gefriergut und Finanzen – als e
 
 Die App ([Tauri 2](https://tauri.app)) zeigt dieselbe `homestats.html` in einem eigenen Fenster. Installer gibt es auf der [Release-Seite](https://github.com/bl0rb/HomeStats/releases): `HomeStats-<version>.pkg` für macOS (Apple silicon), `HomeStats-<version>.msi` für Windows.
 
-- **Daten**: jede Änderung wird sofort in `homestats.json` im App-Datenordner gespeichert – macOS `~/Library/Application Support/io.github.bl0rb.homestats/`, Windows `%APPDATA%\io.github.bl0rb.homestats\`. Der vorherige Stand bleibt als `homestats.json.bak` erhalten, dazu eine Tagessicherung im Unterordner `Sicherungen` (30 Tage). Daten aus dem Browser übernimmst du über *Daten & Einstellungen → Sicherung einspielen*.
+- **Daten**: jede Änderung wird sofort in `homestats.json` im App-Datenordner gespeichert – macOS `~/Library/Application Support/io.github.bl0rb.homestats/`, Windows `%APPDATA%\io.github.bl0rb.homestats\`. Der vorherige Stand bleibt als `homestats.json.bak` erhalten, dazu eine Tagessicherung im Unterordner `Sicherungen` (30 Tage). Daten aus dem Browser übernimmst du über *Einstellungen → Sicherung einspielen*.
 - **Updates**: die App sucht beim Start nach einer neuen Version (abschaltbar, Beta-Versionen optional) und installiert sie auf Wunsch. Installiert wird nur ein Paket, dessen SHA-256 zur Angabe von GitHub passt und das mit dem Release-Schlüssel (`desktop/update-key.pub`, derselbe wie bei KeyZapper und OpenReleasePilot) signiert ist. macOS fragt nach dem Administrator-Passwort und startet die App neu; unter Windows übernimmt der Windows Installer und startet die neue Version.
 - **Nicht in der App**: der Kamera-Scan (die WebViews haben keine Barcode-Erkennung) – QR-Handscanner und Eintippen funktionieren.
 
