@@ -311,6 +311,60 @@ a{color:inherit; text-underline-offset:2px}
 .bankprev tr.skip td{color:var(--muted); text-decoration:line-through}
 .bankprev tr.skip td:last-child{text-decoration:none}
 
+/* ---------- Aufbau der Bereiche: Kopfleiste, Ansichten, Aufklappbereiche, Menü ---------- */
+.viewhead h2:focus{outline:none}
+.viewhead h2:focus-visible{outline:2px solid var(--ink); outline-offset:4px; border-radius:4px}
+.topbar{display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; margin:0 0 16px}
+.topbar-info{flex:1 1 220px; min-width:0; font-size:var(--fs-md)}
+.topbar-info b{font-weight:600}
+.topbar-info:empty{flex-basis:0}
+.muted{color:var(--muted)}
+.vtabs{display:flex; gap:4px; border-bottom:1px solid var(--line); margin:22px 0 16px; overflow-x:auto; scrollbar-width:none}
+.vtabs::-webkit-scrollbar{display:none}
+.panel .vtabs{margin-top:0}
+.vtabs [role=tab]{min-height:var(--ctl-h); padding:0 12px; border:0; border-bottom:2px solid transparent; border-radius:8px 8px 0 0;
+  color:var(--muted); font-size:var(--fs-md); background:none}
+.vtabs [role=tab]:hover{color:var(--ink); background:var(--soft)}
+.vtabs [role=tab][aria-selected=true]{color:var(--ink); border-bottom-color:var(--ink); font-weight:600}
+.vtabs .cnt{margin-left:6px; min-width:18px; padding:0 6px; border-radius:999px; background:var(--chip); font-size:var(--fs-xs); font-weight:600; line-height:18px}
+.vtabs .cnt:empty{display:none}
+@media (max-width:520px){ .vtabs{gap:0} .vtabs [role=tab]{padding:0 8px} }
+.fold{margin-top:26px}
+.fold > summary{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px; cursor:pointer; list-style:none; padding:12px 16px;
+  background:var(--sheet); border:1px solid var(--line); border-radius:12px}
+.fold > summary::-webkit-details-marker{display:none}
+.fold > summary::before{content:"▸"; color:var(--muted); width:12px}
+.fold[open] > summary::before{content:"▾"}
+.fold[open] > summary{border-radius:12px 12px 0 0; border-bottom-color:var(--line-soft)}
+.fold-title{font-weight:600; font-size:var(--fs-lg)}
+.fold-sub{color:var(--muted); font-size:var(--fs-sm)}
+.fold-body{padding:16px 0 0}
+.quick{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; margin:0 0 6px}
+.quick-btn{min-height:56px; justify-content:flex-start; gap:10px; padding:0 16px; font-size:var(--fs-base); font-weight:600; border-radius:12px}
+.quick-btn .icon,.menu-item .icon{width:20px; height:20px; flex:none; fill:none; stroke:var(--muted); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.menu-wrap{position:relative}
+.menu{position:absolute; right:0; top:calc(100% + 6px); z-index:40; min-width:270px; padding:6px; background:var(--sheet); border:1px solid var(--line);
+  border-radius:10px; box-shadow:0 10px 28px rgba(8,12,16,.16); display:flex; flex-direction:column}
+.menu hr{border:0; border-top:1px solid var(--line-soft); margin:4px 0}
+.menu-item{justify-content:flex-start; width:100%; min-height:34px; padding:0 10px; border-radius:6px; font-weight:500}
+.menu-item:hover{background:var(--soft)}
+.filterbox{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px 14px; padding:12px; margin:0 0 8px;
+  background:var(--soft); border:1px solid var(--line-soft); border-radius:10px}
+.chips{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:0 0 8px}
+.chip{min-height:26px; padding:0 4px 0 10px; border-radius:999px; border:1px solid var(--line); background:var(--sheet); font-size:var(--fs-sm); gap:4px}
+.chip b{font-weight:600}
+.chip .x{display:inline-flex; width:20px; height:20px; align-items:center; justify-content:center; border-radius:50%; color:var(--muted)}
+.chip:hover .x{background:var(--soft); color:var(--ink)}
+.filters .cnt{margin-left:6px; min-width:18px; padding:0 6px; border-radius:999px; background:var(--ink); color:var(--on-ink); font-size:var(--fs-xs); line-height:18px}
+.filters .cnt:empty{display:none}
+.modeline{flex:1 1 100%; font-size:var(--fs-sm); color:var(--muted); display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px}
+.modeline b{color:var(--ink)}
+.savealert{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; padding:10px 14px; margin-bottom:18px; border-radius:10px;
+  background:var(--flag-bg); border:1px solid var(--warn); font-size:var(--fs-md)}
+.savealert span{flex:1 1 240px}
+.navclose{display:none}
+input[aria-invalid=true]{border-color:var(--bad) !important}
+
 /* ---------- Übersicht ---------- */
 .dash{display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap:14px; margin-bottom:8px}
 .chartcard{display:flex; flex-direction:column; min-width:0}
@@ -335,7 +389,8 @@ a.stat .label::after{content:" ›"; color:var(--muted)}
 .plate{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:var(--fs-md); font-weight:600; letter-spacing:.06em;
   border:1.5px solid var(--ink); border-left:7px solid #2b4ea2; border-radius:4px; padding:0 7px; white-space:nowrap}
 .dues{display:flex; flex-direction:column}
-#vehStats{grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr))}
+#vehStats{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:1040px){ #vehStats{grid-template-columns:repeat(2,minmax(0,1fr))} }
 .due{display:grid; grid-template-columns:1fr auto; gap:0 16px; padding:8px 0; border-bottom:1px solid var(--line-soft); font-size:var(--fs-md); align-items:baseline}
 .due:last-child{border-bottom:0}
 .due .dd{grid-column:1 / -1; font-variant-numeric:tabular-nums; color:var(--muted); font-size:var(--fs-sm)}
@@ -375,6 +430,14 @@ a.stat .label::after{content:" ›"; color:var(--muted)}
 .grp{font-size:var(--fs-xs); font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:16px 4px 4px; border-bottom:1px solid var(--line)}
 .grp.bad{color:var(--bad)}
 .row.hl{background:var(--note-bg); border-radius:8px}
+/* Die Liste bricht nach ihrer eigenen Breite um – auch mit Seitenleiste in mittelbreiten Fenstern */
+#invPanel{container-type:inline-size}
+@container (max-width:720px){
+  .inv-head{display:none}
+  .row{grid-template-columns:22px minmax(0,1fr) auto; align-items:start}
+  .row .where,.row .qty,.row .exp{grid-column:2 / -1}
+  .row .acts{grid-column:1 / -1; justify-content:flex-start}
+}
 .seg .cnt{margin-left:6px; font-variant-numeric:tabular-nums; opacity:.75}
 .code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:var(--fs-xs); letter-spacing:.03em}
 .selbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:10px 14px; margin-top:10px; border-radius:10px; background:var(--note-bg); font-size:var(--fs-md)}
@@ -402,11 +465,14 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
 
 /* ---------- Etiketten ---------- */
 /* --s ist die Bezugsgröße für Schrift; der QR-Code nimmt höchstens 40 % der Breite ein */
-.label{--s:min(var(--h), 27mm); width:var(--w); height:var(--h); padding:1.5mm 2mm; display:flex; gap:1.6mm; align-items:center; overflow:hidden;
+/* Etiketten (Druck und Vorschau); .stat .label ist etwas anderes */
+.label:not(.stat .label){--s:min(var(--h), 27mm); width:var(--w); height:var(--h); padding:1.5mm 2mm; display:flex; gap:1.6mm; align-items:center; overflow:hidden;
   background:#fff; color:#000; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; flex:none}
 .label .lb-qr{width:min(calc(var(--h) - 3mm), calc(var(--w) * .4)); aspect-ratio:1; flex:none}
 .label .lb-text{align-self:stretch}
 .label .lb-qr svg{width:100%; height:100%; display:block}
+.label .lb-num{flex:none; align-self:center; font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-weight:800;
+  font-size:calc(var(--s) * .3); letter-spacing:.02em; line-height:1; padding:1mm 1.6mm; border:.4mm solid #000; border-radius:1.2mm}
 .label .lb-text{flex:1 1 auto; min-width:0; display:flex; flex-direction:column}
 .label .lb-name{font-weight:700; font-size:calc(var(--s) * .14); line-height:1.1; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; flex:none; margin-bottom:.5mm; overflow-wrap:anywhere}
 .label .lb-meta{font-size:max(2.4mm, calc(var(--s) * .088)); line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:none}
@@ -428,6 +494,7 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
 @media (prefers-reduced-motion:reduce){#toast{transition:none}}
 
 @media(max-width:860px){
+  .navclose{display:inline-flex; align-self:flex-end; margin-bottom:4px}
   .shell{grid-template-columns:minmax(0,1fr)}
   .sidebar{position:fixed; left:0; top:0; bottom:0; width:min(280px, 86vw); transform:translateX(-100%); transition:transform .18s ease; box-shadow:none}
   .sidebar.open{transform:none; box-shadow:0 0 40px rgba(8,12,16,.3)}
@@ -439,6 +506,9 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
 }
 @media (max-width:860px) and (prefers-reduced-motion:reduce){.sidebar{transition:none}}
 @media(max-width:760px){
+  .quick{grid-template-columns:repeat(2, minmax(0,1fr))}
+  .quick-btn{min-height:48px; padding:0 12px}
+  .menu{right:auto; left:0; min-width:240px}
   .wrap{padding:18px 16px 60px}
   .viewhead h2{font-size:var(--fs-xl)}
   .meter{grid-template-columns:1fr 1fr; gap:8px 12px; padding:14px 16px}
@@ -457,10 +527,6 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
   .spark{grid-column:1 / -1; width:100%}
   .vehrow{grid-template-columns:1fr 1fr}
   .vehrow > :first-child{grid-column:1 / -1}
-  .inv-head{display:none}
-  .row{grid-template-columns:22px minmax(0,1fr) auto; align-items:start}
-  .row .where,.row .qty,.row .exp{grid-column:2 / -1}
-  .row .acts{grid-column:1 / -1; justify-content:flex-start}
   .remind a{grid-template-columns:1fr; gap:2px}
   .remind .rs{text-align:left}
   .formgrid,.sheet-head,.sheet-foot{padding-left:16px; padding-right:16px}
@@ -480,14 +546,15 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
 <div class="shell">
 <!-- Seitenleiste wie in OpenReleasePilot und KeyZapper: Bereiche oben, Einstellungen, Speicherstatus und Version unten -->
 <nav class="sidebar" id="nav" aria-label="Bereiche">
+  <button class="btn-quiet btn-sm navclose" id="navClose">Menü schließen</button>
   <div class="brand"><svg class="logo" viewBox="100 100 824 824" aria-hidden="true"><rect x="100" y="100" width="824" height="824" rx="185" fill="#16202b"/><path fill="#fff" fill-rule="evenodd" d="M240 462 L512 236 L784 462 L784 798 L240 798 Z M284 482 L512 293 L740 482 L740 754 L284 754 Z"/><rect x="352" y="560" width="72" height="150" rx="14" fill="#e0a13a"/><rect x="476" y="480" width="72" height="230" rx="14" fill="#3bb3c4"/><rect x="600" y="600" width="72" height="110" rx="14" fill="#5cbde6"/></svg><h1>HomeStats</h1></div>
   <a class="nav-item" href="#home" style="--c:var(--ink)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span>Übersicht</span><span class="nav-badge" id="nb-home" hidden></span></a>
   <a class="nav-item" href="#zaehler" style="--c:var(--strom)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3 5 13h6l-1 8 8-10h-6z"/></svg><span>Zähler</span><span class="nav-badge" id="nb-zaehler" hidden></span></a>
   <a class="nav-item" href="#kfz" style="--c:var(--kfz)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14M3 17v-4l2-5a2 2 0 0 1 2-1h10a2 2 0 0 1 2 1l2 5v4"/><circle cx="7.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/><path d="M3 13h18"/></svg><span>Fahrzeuge</span><span class="nav-badge" id="nb-kfz" hidden></span></a>
-  <a class="nav-item" href="#kalt" style="--c:var(--kalt)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/><path d="m9.5 4.5 2.5 2 2.5-2M9.5 19.5l2.5-2 2.5 2"/></svg><span>Kühlen &amp; Gefrieren</span><span class="nav-badge" id="nb-kalt" hidden></span></a>
+  <a class="nav-item" href="#kalt" style="--c:var(--kalt)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/><path d="m9.5 4.5 2.5 2 2.5-2M9.5 19.5l2.5-2 2.5 2"/></svg><span>Kühlvorrat</span><span class="nav-badge" id="nb-kalt" hidden></span></a>
   <a class="nav-item" href="#fin" style="--c:var(--ch-a)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M16 15h2"/></svg><span>Finanzen</span><span class="nav-badge" id="nb-fin" hidden></span></a>
   <div class="sidebar-footer">
-    <a class="nav-item" href="#daten" style="--c:var(--ink)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Daten &amp; Einstellungen</span><span class="nav-badge" id="nb-daten" hidden></span></a>
+    <a class="nav-item" href="#daten" style="--c:var(--ink)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Einstellungen</span><span class="nav-badge" id="nb-daten" hidden></span></a>
     <a class="savestate" id="saveState" href="#daten"><span class="dot" id="saveDot"></span><span id="saveText">…</span></a>
     <div class="version" id="navVersion" hidden></div>
   </div>
@@ -498,36 +565,55 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
   <button class="btn-quiet btn-icon" id="navToggle" aria-label="Menü öffnen" aria-controls="nav" aria-expanded="false"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
   <span class="mb-title" id="mbTitle">HomeStats</span>
 </header>
-<main class="wrap">
+<main class="wrap" id="main">
 
   <div class="updbar" id="updBar" hidden role="status">
     <span id="updBarText"></span>
     <button class="btn-solid btn-sm" id="updBarInstall">Jetzt installieren</button>
     <button class="btn-quiet btn-sm" id="updBarLater">Später</button>
   </div>
+  <div class="savealert" id="saveAlert" hidden role="alert">
+    <span id="saveAlertText"></span>
+    <a class="btn btn-line btn-sm" href="#daten">Zu den Einstellungen</a>
+  </div>
 
   <!-- ================= Übersicht ================= -->
   <section class="view" id="view-home" hidden>
-    <div class="viewhead"><h2>Übersicht</h2><p id="homeDate"></p></div>
-    <div class="dash" id="homeCharts"></div>
+    <div class="viewhead"><h2 tabindex="-1">Übersicht</h2><p id="homeDate"></p></div>
+    <div class="quick" role="group" aria-label="Schnellaktionen">
+      <button class="btn-line quick-btn" id="qaRead"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3 5 13h6l-1 8 8-10h-6z"/></svg>Ablesen</button>
+      <button class="btn-line quick-btn" id="qaScan"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></svg><span id="qaScanLabel">Scannen</span></button>
+      <button class="btn-line quick-btn" id="qaFuel"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v15M3 20h12M4 10h10M14 8l3 2v7a1.5 1.5 0 0 0 3 0V9l-3-3"/></svg>Tanken/Laden</button>
+      <button class="btn-line quick-btn" id="qaFin"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Buchung</button>
+    </div>
     <div id="homeStart"></div>
-    <h3 class="title" id="homeTilesTitle">Kennzahlen</h3>
-    <div class="stats tiles" id="homeTiles"></div>
     <h3 class="title">Was ansteht</h3>
     <div class="panel" id="homeRemindPanel">
       <div class="remind" id="homeRemind"></div>
     </div>
-    <h3 class="title">Zeitvergleich</h3>
-    <div class="panel" id="homeCmp"></div>
+    <h3 class="title" id="homeTilesTitle">Kennzahlen</h3>
+    <div class="stats tiles" id="homeTiles"></div>
+    <details class="fold" id="homeEval">
+      <summary><span class="fold-title">Auswertungen</span><span class="fold-sub">Diagramme der letzten 12 Monate und Zeitvergleich</span></summary>
+      <div class="fold-body">
+        <div class="dash" id="homeCharts"></div>
+        <h3 class="title">Zeitvergleich</h3>
+        <div class="panel" id="homeCmp"></div>
+      </div>
+    </details>
   </section>
 
   <!-- ================= Zähler ================= -->
   <section class="view" id="view-zaehler" hidden>
-    <div class="viewhead"><h2>Zähler</h2><p>Strom, Wasser, Gastank und beide Solaranlagen.</p></div>
+    <div class="viewhead"><h2 tabindex="-1">Zähler</h2><p>Strom, Wasser, Gastank und beide Solaranlagen.</p></div>
 
+    <div class="topbar">
+      <div class="topbar-info"><span class="muted">Letzte Ablesung</span> <b id="enLast">–</b></div>
+      <button class="btn-solid" id="btnEnOpen" aria-controls="sheet" aria-expanded="false">Ablesung erfassen</button>
+    </div>
     <div class="stats" id="stats"></div>
 
-    <section class="sheet" id="sheet">
+    <section class="sheet" id="sheet" hidden aria-labelledby="sheetTitle">
       <div class="sheet-head">
         <h2 id="sheetTitle">Neue Ablesung</h2>
         <div class="field-date">
@@ -535,22 +621,23 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
           <input id="date" type="datetime-local">
           <button class="btn-quiet btn-sm" id="btnNow">Jetzt</button>
         </div>
+        <button class="btn-quiet btn-sm" id="btnEnClose">Schließen</button>
       </div>
 
       <div class="meter" data-m="strom">
         <div class="name">Strom<small>Zählerstand in kWh</small></div>
-        <div class="entry"><input type="text" id="in-strom" inputmode="decimal" autocomplete="off" placeholder="0,000"><span class="unit">kWh</span></div>
+        <div class="entry"><input type="text" id="in-strom" inputmode="decimal" autocomplete="off" placeholder="0,000" aria-label="Strom, Zählerstand in kWh"><span class="unit">kWh</span></div>
         <div class="readout" id="out-strom"></div>
       </div>
       <div class="meter" data-m="wasser">
         <div class="name">Wasser<small>Zählerstand in m³</small></div>
-        <div class="entry"><input type="text" id="in-wasser" inputmode="decimal" autocomplete="off" placeholder="0,000"><span class="unit">m³</span></div>
+        <div class="entry"><input type="text" id="in-wasser" inputmode="decimal" autocomplete="off" placeholder="0,000" aria-label="Wasser, Zählerstand in m³"><span class="unit">m³</span></div>
         <div class="readout" id="out-wasser"></div>
       </div>
       <div class="meter" data-m="lng">
         <div class="name">Gastank<small>Restmenge im Tank</small></div>
         <div class="entry">
-          <input type="text" id="in-lng" inputmode="decimal" autocomplete="off" placeholder="0,00">
+          <input type="text" id="in-lng" inputmode="decimal" autocomplete="off" placeholder="0,00" aria-label="Gastank, Restmenge">
           <select id="lngUnit" aria-label="Einheit Gastank"><option>%</option><option>kg</option><option>Liter</option><option>m³</option></select>
         </div>
         <div class="readout" id="out-lng"></div>
@@ -558,12 +645,12 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
       </div>
       <div class="meter" data-m="home">
         <div class="name">Solar Heimpower<small>Ertrag seit der letzten Ablesung, kWh</small></div>
-        <div class="entry"><input type="text" id="in-home" inputmode="decimal" autocomplete="off" placeholder="0,000"><span class="unit">kWh</span></div>
+        <div class="entry"><input type="text" id="in-home" inputmode="decimal" autocomplete="off" placeholder="0,000" aria-label="Solar Heimpower, Ertrag in kWh"><span class="unit">kWh</span></div>
         <div class="readout" id="out-home"></div>
       </div>
       <div class="meter" data-m="eet">
         <div class="name">Solar EET<small>Ertrag seit der letzten Ablesung, kWh</small></div>
-        <div class="entry"><input type="text" id="in-eet" inputmode="decimal" autocomplete="off" placeholder="0,000"><span class="unit">kWh</span></div>
+        <div class="entry"><input type="text" id="in-eet" inputmode="decimal" autocomplete="off" placeholder="0,000" aria-label="Solar EET, Ertrag in kWh"><span class="unit">kWh</span></div>
         <div class="readout" id="out-eet"></div>
       </div>
 
@@ -572,32 +659,36 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
         <button class="btn-line btn-sm" id="btnCancelEdit">Bearbeitung abbrechen</button>
       </div>
       <div class="sheet-foot">
-        <input type="text" id="note" placeholder="Notiz, z. B. Gastank gefüllt oder Zähler gewechselt" autocomplete="off">
+        <input type="text" id="note" placeholder="Notiz, z. B. Gastank gefüllt oder Zähler gewechselt" autocomplete="off" aria-label="Notiz">
         <button class="btn-solid" id="btnSave">Ablesung speichern</button>
-        <span class="kbd-hint">Enter springt zum nächsten Feld, Strg + Enter speichert.</span>
+        <span class="kbd-hint">Enter springt zum nächsten Feld, Strg + Enter speichert. Eingaben bleiben als Entwurf erhalten.</span>
       </div>
     </section>
 
-    <h3 class="title">Verlauf</h3>
-    <div class="panel">
-      <div class="pills" id="chartTabs"></div>
-      <svg class="chart" id="chart" viewBox="0 0 760 240" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Verlauf des Tagesverbrauchs"></svg>
-      <div class="empty" id="chartEmpty" hidden>Ab der zweiten Ablesung wird hier der Tagesverbrauch gezeichnet.</div>
+    <div class="vtabs" role="tablist" aria-label="Ansicht" id="enTabs">
+      <button role="tab" data-v="verlauf" id="enTabVerlauf" aria-controls="enPanelVerlauf">Verlauf</button>
+      <button role="tab" data-v="hist" id="enTabHist" aria-controls="enPanelHist">Historie</button>
     </div>
-
-    <h3 class="title">Monats- und Jahresvergleich</h3>
-    <div class="panel" id="enCmp"></div>
-
-    <h3 class="title">Messhistorie</h3>
-    <div class="log" id="log"></div>
-    <p class="footnote">Bei Strom, Wasser und Gastank steht oben der abgelesene Stand und darunter der Verbrauch seit der Ablesung davor. Bei den Solaranlagen ist der eingetragene Wert schon der Ertrag des Zeitraums. Preise für die Kostenschätzung von Strom und Wasser stellst du unter <a href="#daten">Daten &amp; Einstellungen</a> ein. Für den Solarertrag gibt es bewusst keine Geldschätzung: Ohne erfasste Einspeisemenge ist unbekannt, wie viel Strom eingespeist und wie viel selbst verbraucht wurde.</p>
+    <div role="tabpanel" id="enPanelVerlauf" aria-labelledby="enTabVerlauf">
+      <div class="panel">
+        <div class="pills" id="chartTabs"></div>
+        <svg class="chart" id="chart" viewBox="0 0 760 240" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Verlauf des Tagesverbrauchs"></svg>
+        <div class="empty" id="chartEmpty" hidden>Ab der zweiten Ablesung wird hier der Tagesverbrauch gezeichnet.</div>
+      </div>
+      <h3 class="title">Monats- und Jahresvergleich</h3>
+      <div class="panel" id="enCmp"></div>
+    </div>
+    <div role="tabpanel" id="enPanelHist" aria-labelledby="enTabHist" hidden>
+      <div class="log" id="log"></div>
+      <p class="footnote">Bei Strom, Wasser und Gastank steht oben der abgelesene Stand und darunter der Verbrauch seit der Ablesung davor. Bei den Solaranlagen ist der eingetragene Wert schon der Ertrag des Zeitraums. Preise für die Kostenschätzung von Strom und Wasser stellst du unter <a href="#daten">Einstellungen</a> ein. Für den Solarertrag gibt es bewusst keine Geldschätzung: Ohne erfasste Einspeisemenge ist unbekannt, wie viel Strom eingespeist und wie viel selbst verbraucht wurde.</p>
+    </div>
   </section>
 
   <!-- ================= Fahrzeuge ================= -->
   <section class="view" id="view-kfz" hidden>
     <div class="viewhead">
-      <h2>Fahrzeuge</h2>
-      <div class="pills grow" id="vehPills"></div>
+      <h2 tabindex="-1">Fahrzeuge</h2>
+      <div class="pills grow" id="vehPills" role="group" aria-label="Fahrzeug wählen"></div>
       <button class="btn-line btn-sm" id="btnVehNew">Fahrzeug anlegen</button>
     </div>
 
@@ -609,8 +700,17 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
     <div id="vehBody" hidden>
       <div class="vehcard" id="vehCard"></div>
       <div class="stats" id="vehStats"></div>
+      <div class="topbar">
+        <div class="topbar-info" id="vehNext"></div>
+        <button class="btn-quiet btn-sm" id="btnVehDues" aria-controls="vehDuesWrap" aria-expanded="false">Alle Termine</button>
+        <button class="btn-solid" id="btnVeOpen" aria-controls="vehSheet" aria-expanded="false">Eintrag hinzufügen</button>
+      </div>
+      <div class="panel" id="vehDuesWrap" hidden>
+        <div class="ptitle">Alle Termine und Fälligkeiten</div>
+        <div class="dues" id="vehDues"></div>
+      </div>
 
-      <section class="sheet" id="vehSheet">
+      <section class="sheet" id="vehSheet" hidden aria-labelledby="veTitle">
         <div class="sheet-head">
           <h2 id="veTitle">Neuer Eintrag</h2>
           <div class="seg" id="veSeg" role="group" aria-label="Art des Eintrags">
@@ -619,8 +719,10 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
             <button data-t="km" aria-pressed="false">Kilometerstand</button>
           </div>
           <div class="field-date"><label for="veDate">Datum</label><input id="veDate" type="date"></div>
+          <button class="btn-quiet btn-sm" id="btnVeClose">Schließen</button>
         </div>
         <div class="formgrid">
+          <label class="fld veh-pick" id="veVehWrap" hidden><span>Fahrzeug</span><select id="veVeh"></select></label>
           <label class="fld" data-for="fuel cost km"><span id="veKmLabel">Kilometerstand</span><input id="veKm" class="numin" inputmode="decimal" autocomplete="off" placeholder="0"></label>
           <label class="fld" data-for="fuel"><span id="veAmountLabel">Getankt (L)</span><input id="veAmount" class="numin" inputmode="decimal" autocomplete="off" placeholder="0,00"></label>
           <label class="fld" data-for="fuel"><span id="vePpuLabel">Preis pro Liter (€)</span><input id="vePpu" class="numin" inputmode="decimal" autocomplete="off" placeholder="0,000"></label>
@@ -637,40 +739,50 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
           <button class="btn-line btn-sm" id="btnVeCancel">Bearbeitung abbrechen</button>
         </div>
         <div class="sheet-foot">
-          <input type="text" id="veNote" placeholder="Notiz, z. B. Winterreifen montiert oder HUK Haftpflicht + Teilkasko" autocomplete="off">
+          <input type="text" id="veNote" placeholder="Notiz, z. B. Winterreifen montiert oder HUK Haftpflicht + Teilkasko" autocomplete="off" aria-label="Notiz">
           <button class="btn-solid" id="btnVeSave">Eintrag speichern</button>
         </div>
       </section>
 
-      <div class="two">
+      <div class="vtabs" role="tablist" aria-label="Ansicht" id="vehTabs">
+        <button role="tab" data-v="log" id="vehTabLog" aria-controls="vehPanelLog">Einträge</button>
+        <button role="tab" data-v="eval" id="vehTabEval" aria-controls="vehPanelEval">Auswertung</button>
+      </div>
+      <div role="tabpanel" id="vehPanelLog" aria-labelledby="vehTabLog">
+        <div class="pills" id="vehLogTabs" style="margin-bottom:10px" role="group" aria-label="Einträge filtern"></div>
+        <div class="log" id="vehLog"></div>
+        <p class="footnote">Der Verbrauch wird von Volltankung zu Volltankung gerechnet. Teilbetankungen dazwischen werden mitgezählt. Wiederkehrende Kosten (z. B. Versicherung jährlich) ergeben die Fixkosten pro Monat und die nächste Fälligkeit – trage jede Zahlung als eigenen Eintrag ein.</p>
+      </div>
+      <div role="tabpanel" id="vehPanelEval" aria-labelledby="vehTabEval" hidden>
         <div class="panel">
           <div class="pills" id="vehChartTabs"></div>
           <svg class="chart" id="vehChart" viewBox="0 0 760 240" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Fahrzeugdiagramm"></svg>
           <div class="legend" id="vehLegend"></div>
           <div class="empty" id="vehChartEmpty" hidden></div>
         </div>
-        <div class="panel">
-          <div class="ptitle">Fälligkeiten</div>
-          <div class="dues" id="vehDues"></div>
-        </div>
+        <h3 class="title">Kosten im Zeitvergleich</h3>
+        <div class="panel" id="vehCmp"></div>
       </div>
-
-      <h3 class="title">Kosten im Zeitvergleich</h3>
-      <div class="panel" id="vehCmp"></div>
-
-      <h3 class="title">Fahrtenbuch &amp; Kosten</h3>
-      <div class="pills" id="vehLogTabs" style="margin-bottom:10px"></div>
-      <div class="log" id="vehLog"></div>
-      <p class="footnote">Der Verbrauch wird von Volltankung zu Volltankung gerechnet. Teilbetankungen dazwischen werden mitgezählt. Wiederkehrende Kosten (z. B. Versicherung jährlich) ergeben die Fixkosten pro Monat und die nächste Fälligkeit – trage jede Zahlung als eigenen Eintrag ein.</p>
     </div>
   </section>
 
-  <!-- ================= Kühlen & Gefrieren ================= -->
+  <!-- ================= Kühlvorrat ================= -->
   <section class="view" id="view-kalt" hidden>
     <div class="viewhead">
-      <h2>Kühlen &amp; Gefrieren</h2>
-      <p>Einlagern, Etikett drucken, aufkleben – beim Entnehmen scannen.</p>
-      <button class="btn-line btn-sm" id="btnApplNew">Gerät anlegen</button>
+      <h2 tabindex="-1">Kühlvorrat</h2>
+      <p id="kaltSub">Einlagern, Etikett drucken, aufkleben – beim Entnehmen scannen.</p>
+      <div class="menu-wrap">
+        <button class="btn-line btn-sm" id="kaltMenuBtn" aria-expanded="false" aria-controls="kaltMenu">Verwalten ▾</button>
+        <div class="menu" id="kaltMenu" hidden>
+          <button class="menu-item" id="btnBlank">Leere Etiketten drucken</button>
+          <button class="menu-item" id="btnSelPrintAll">Etiketten für Auswahl drucken</button>
+          <hr>
+          <button class="menu-item" id="btnApplNew">Gerät anlegen</button>
+          <button class="menu-item" id="btnApplEdit" hidden>Gerät bearbeiten</button>
+          <hr>
+          <button class="menu-item" id="btnCodeMode">QR deaktivieren – nur 5-stellige Codes</button>
+        </div>
+      </div>
     </div>
 
     <div class="emptybox" id="kaltEmpty" hidden>
@@ -680,36 +792,40 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
 
     <div id="kaltBody" hidden>
       <div class="scanbar">
-        <label for="scanInput">Scannen</label>
-        <input id="scanInput" autocomplete="off" spellcheck="false" placeholder="QR-Code scannen oder Code eintippen, dann Enter">
-        <button class="btn-line" id="btnCam">Kamera</button>
-        <button class="btn-solid" id="btnItemNew">Einlagern</button>
-        <button class="btn-line" id="btnBlank">Leere Etiketten drucken</button>
+        <label for="scanInput" id="scanLabel">Code</label>
+        <input id="scanInput" autocomplete="off" spellcheck="false" placeholder="QR-Code scannen oder Code eintippen, dann Enter" aria-describedby="modeText">
+        <button class="btn-solid" id="btnScanMain">QR scannen</button>
+        <button class="btn-line" id="btnItemNew">Ohne Scan einlagern</button>
+        <div class="modeline"><span id="modeText">Modus: QR-Codes</span> <button class="btn-quiet btn-sm" id="btnModeChip">5-stellige Codes verwenden</button></div>
       </div>
 
       <div class="applbar">
-        <div class="pills" id="applPills"></div>
-        <button class="btn-quiet btn-sm" id="btnApplEdit" hidden>Gerät bearbeiten</button>
+        <div class="pills" id="applPills" role="group" aria-label="Gerät wählen"></div>
       </div>
 
       <div class="stats" id="kaltStats"></div>
 
-      <div class="panel">
-        <div class="seg" id="invMode" role="group" aria-label="Ansicht" style="margin-bottom:12px">
-          <button data-v="all" aria-pressed="true">Bestand</button>
-          <button data-v="week" aria-pressed="false">Diese Woche verbrauchen<span class="cnt" id="weekCnt"></span></button>
+      <div class="panel" id="invPanel">
+        <div class="vtabs" role="tablist" aria-label="Bestandsansicht" id="invTabs">
+          <button role="tab" data-v="all" id="invTabAll" aria-controls="invPanel">Bestand</button>
+          <button role="tab" data-v="week" id="invTabWeek" aria-controls="invPanel">Diese Woche<span class="cnt" id="weekCnt"></span></button>
+          <button role="tab" data-v="out" id="invTabOut" aria-controls="invPanel">Entnommen</button>
         </div>
         <div class="filters">
-          <input type="search" id="invSearch" placeholder="Suchen: Name, Code, Notiz" autocomplete="off">
-          <select id="invCat" aria-label="Kategorie"></select>
-          <select id="invSort" aria-label="Sortierung">
-            <option value="bb">Haltbarkeit zuerst</option>
-            <option value="in">Am längsten drin</option>
-            <option value="name">Name</option>
-            <option value="where">Gerät &amp; Fach</option>
-          </select>
-          <label class="check"><input type="checkbox" id="invOut"> Entnommene zeigen</label>
+          <input type="search" id="invSearch" placeholder="Suchen: Name, Code, Notiz" autocomplete="off" aria-label="Bestand durchsuchen">
+          <button class="btn-line" id="btnInvFilter" aria-expanded="false" aria-controls="invFilterBox">Filter<span class="cnt" id="invFilterCnt"></span></button>
         </div>
+        <div class="filterbox" id="invFilterBox" hidden>
+          <label class="fld"><span>Kategorie</span><select id="invCat"></select></label>
+          <label class="fld"><span>Sortierung</span>
+            <select id="invSort">
+              <option value="bb">Haltbarkeit zuerst</option>
+              <option value="in">Am längsten drin</option>
+              <option value="name">Name</option>
+              <option value="where">Gerät &amp; Fach</option>
+            </select></label>
+        </div>
+        <div class="chips" id="invChips" hidden></div>
         <div class="inv-head" id="invHead">
           <input type="checkbox" id="invAll" aria-label="Alle auswählen">
           <span>Artikel</span><span>Ort</span><span>Menge</span><span>Haltbar</span><span></span>
@@ -723,22 +839,27 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
           <button class="btn-quiet btn-sm" id="btnSelClear">Auswahl aufheben</button>
         </div>
       </div>
-      <p class="footnote">So funktioniert’s: Beim Einlagern bekommt jeder Artikel einen eigenen Code (z. B. <code>HS00042</code>), der als QR-Code auf das Etikett gedruckt wird. Beim Entnehmen den QR-Code scannen – mit der Kamera (Chrome/Edge), einem QR-fähigen USB-/Bluetooth-Handscanner (2D-Scanner) oder den Code per Hand eintippen. Du kannst auch vorab leere Etiketten drucken, auf Dosen oder Beutel kleben und erst beim Scannen den Inhalt erfassen. Wiederverwendbare Dosen behalten ihr Etikett: einfach erneut scannen und neu belegen. Für Gefriergut tiefkühlgeeignete Etiketten verwenden.</p>
+      <p class="footnote" id="kaltHelp"></p>
     </div>
   </section>
 
-  <!-- ================= Daten ================= -->
   <!-- ================= Finanzen ================= -->
   <section class="view" id="view-fin" hidden>
-    <div class="viewhead"><h2>Finanzen</h2><p>Einnahmen und Ausgaben des Haushalts, mit Daueraufträgen und den Kosten aus „Fahrzeuge“.</p>
-      <button class="btn-line btn-sm" id="btnBankImport">Bank-CSV importieren</button>
+    <div class="viewhead"><h2 tabindex="-1">Finanzen</h2><p>Einnahmen und Ausgaben des Haushalts, mit wiederkehrenden Buchungen und den Kosten aus „Fahrzeuge“.</p></div>
+
+    <div class="panel" style="margin-bottom:16px">
+      <div id="finBar"></div>
+      <label class="check" style="margin-top:8px"><input type="checkbox" id="finVehToggle"> Fahrzeugkosten einbeziehen (Tanken, Versicherung, Werkstatt … aus „Fahrzeuge“)</label>
+    </div>
+    <div class="stats" id="finStats"></div>
+    <div class="topbar">
+      <div class="topbar-info"></div>
+      <button class="btn-line" id="btnBankImport">Importieren</button>
       <input id="bankInput" type="file" accept=".csv,.txt,text/csv" hidden>
+      <button class="btn-solid" id="btnFinOpen" aria-controls="finSheet" aria-expanded="false">Buchung hinzufügen</button>
     </div>
 
-    <div class="panel" style="margin-bottom:16px"><div id="finBar"></div></div>
-    <div class="stats" id="finStats"></div>
-
-    <section class="sheet" id="finSheet">
+    <section class="sheet" id="finSheet" hidden aria-labelledby="finTitle">
       <div class="sheet-head">
         <h2 id="finTitle">Neue Buchung</h2>
         <div class="seg" id="finSeg" role="group" aria-label="Art der Buchung">
@@ -746,6 +867,7 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
           <button data-t="in" aria-pressed="false">Einnahme</button>
         </div>
         <div class="field-date"><label for="finDate">Datum</label><input id="finDate" type="date"></div>
+        <button class="btn-quiet btn-sm" id="btnFinClose">Schließen</button>
       </div>
       <div class="formgrid">
         <label class="fld"><span>Betrag (€)</span><input id="finAmount" class="numin" inputmode="decimal" autocomplete="off" placeholder="0,00"></label>
@@ -758,43 +880,63 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
         <button class="btn-line btn-sm" id="btnFinCancel">Bearbeitung abbrechen</button>
       </div>
       <div class="sheet-foot">
-        <input type="text" id="finNote" placeholder="Notiz, z. B. Miete Oktober, Wocheneinkauf, Gehalt" autocomplete="off">
+        <input type="text" id="finNote" placeholder="Notiz, z. B. Miete Oktober, Wocheneinkauf, Gehalt" autocomplete="off" aria-label="Notiz">
         <button class="btn-solid" id="btnFinSave">Buchung speichern</button>
       </div>
     </section>
 
-    <div class="two">
-      <div class="panel"><div class="ptitle">Ausgaben nach Kategorie</div><div id="finCatsOut"></div></div>
-      <div class="panel"><div class="ptitle">Einnahmen nach Kategorie</div><div id="finCatsIn"></div></div>
+    <div class="vtabs" role="tablist" aria-label="Ansicht" id="finTabs">
+      <button role="tab" data-v="list" id="finTabList" aria-controls="finPanelList">Buchungen</button>
+      <button role="tab" data-v="rec" id="finTabRec" aria-controls="finPanelRec">Wiederkehrend</button>
+      <button role="tab" data-v="eval" id="finTabEval" aria-controls="finPanelEval">Auswertung</button>
     </div>
-
-    <h3 class="title">Verlauf</h3>
-    <div class="panel">
-      <svg class="chart" id="finChart" viewBox="0 0 760 240" role="img" aria-label="Einnahmen und Ausgaben je Zeitraum"></svg>
-      <div class="legend" id="finLegend"></div>
-      <div class="empty" id="finChartEmpty" hidden>Sobald Buchungen vorliegen, erscheinen hier Einnahmen und Ausgaben im Vergleich.</div>
+    <div role="tabpanel" id="finPanelList" aria-labelledby="finTabList">
+      <h3 class="title" id="finListTitle">Buchungen</h3>
+      <div class="pills" id="finListTabs" style="margin-bottom:10px" role="group" aria-label="Buchungen filtern"></div>
+      <div class="panel"><div id="finList"></div></div>
+      <p class="footnote">Fahrzeugkosten erscheinen hier nur zur Ansicht und werden im Bereich „Fahrzeuge“ gepflegt („Im Fahrzeug öffnen“). Strom und Wasser aus den Zählern sind Schätzungen und fließen nicht ein – trage Abschläge als Ausgabe ein (Kategorie „Nebenkosten &amp; Energie“).</p>
     </div>
-
-    <h3 class="title">Daueraufträge</h3>
-    <div class="panel"><div class="dues" id="finRec"></div></div>
-
-    <h3 class="title" id="finListTitle">Buchungen</h3>
-    <div class="pills" id="finListTabs" style="margin-bottom:10px"></div>
-    <div class="panel"><div id="finList"></div></div>
-    <label class="check" style="margin-top:14px"><input type="checkbox" id="finVehToggle"> Kosten aus „Fahrzeuge“ (Tanken, Versicherung, Werkstatt …) als Ausgaben einbeziehen</label>
-    <p class="footnote">Daueraufträge legen fällige Termine automatisch als Buchung an, auch rückwirkend ab dem Startdatum. Fahrzeugkosten erscheinen hier nur zur Ansicht und werden im Bereich „Fahrzeuge“ gepflegt. Strom und Wasser aus den Zählern sind Schätzungen und fließen nicht ein – trage Abschläge als Ausgabe ein (Kategorie „Nebenkosten &amp; Energie“).</p>
+    <div role="tabpanel" id="finPanelRec" aria-labelledby="finTabRec" hidden>
+      <div class="topbar"><div class="topbar-info muted">Fällige Termine werden automatisch als Buchung angelegt, auch rückwirkend ab dem Startdatum.</div>
+        <button class="btn-line btn-sm" id="btnRecNew">Wiederkehrende Buchung anlegen</button></div>
+      <div class="panel"><div class="dues" id="finRec"></div></div>
+    </div>
+    <div role="tabpanel" id="finPanelEval" aria-labelledby="finTabEval" hidden>
+      <div class="two" style="margin-top:0">
+        <div class="panel"><div class="ptitle">Ausgaben nach Kategorie</div><div id="finCatsOut"></div></div>
+        <div class="panel"><div class="ptitle">Einnahmen nach Kategorie</div><div id="finCatsIn"></div></div>
+      </div>
+      <h3 class="title">Verlauf</h3>
+      <div class="panel">
+        <svg class="chart" id="finChart" viewBox="0 0 760 240" role="img" aria-label="Einnahmen und Ausgaben je Zeitraum"></svg>
+        <div class="legend" id="finLegend"></div>
+        <div class="empty" id="finChartEmpty" hidden>Sobald Buchungen vorliegen, erscheinen hier Einnahmen und Ausgaben im Vergleich.</div>
+      </div>
+    </div>
   </section>
 
+  <!-- ================= Einstellungen ================= -->
   <section class="view" id="view-daten" hidden>
-    <div class="viewhead"><h2>Daten &amp; Einstellungen</h2></div>
+    <div class="viewhead"><h2 tabindex="-1">Einstellungen</h2><p>Allgemein · Daten &amp; Sicherung<span id="appSectionLink" hidden> · App &amp; Updates</span></p></div>
 
+    <h3 class="title">Allgemein</h3>
+    <div class="sheet">
+      <div class="formgrid">
+        <label class="fld"><span>Strompreis (€/kWh)</span><input id="setStrom" class="numin" inputmode="decimal" placeholder="z. B. 0,32"></label>
+        <label class="fld"><span>Wasser + Abwasser (€/m³)</span><input id="setWasser" class="numin" inputmode="decimal" placeholder="z. B. 4,80"></label>
+        <label class="fld"><span>Präfix für QR-Etikett-Codes</span><input id="setPrefix" autocomplete="off" maxlength="4" placeholder="HS"><small>Nächster Code: <span id="setNext" class="code"></span></small></label>
+        <label class="check wide" style="grid-column:1/-1"><input type="checkbox" id="setCodeMode"> Kühlvorrat: QR deaktivieren – nur 5-stellige Codes</label>
+      </div>
+      <div class="sheet-foot"><button class="btn-solid" id="btnSettings">Einstellungen speichern</button></div>
+    </div>
+
+    <h3 class="title">Daten &amp; Sicherung</h3>
     <div class="filebar">
       <div class="status"><span class="dot" id="fileDot"></span><span id="fileText">Speicher wird geprüft …</span></div>
       <div id="fileActions"></div>
     </div>
-
-    <h3 class="title">Sicherung</h3>
-    <div class="panel">
+    <div class="panel" style="margin-top:12px">
+      <div class="ptitle">Sicherung</div>
       <p style="margin:0 0 12px; font-size:var(--fs-md); color:var(--muted)" id="dataSummary"></p>
       <div class="pills">
         <button class="btn-line btn-sm" id="btnBackup">Sicherung herunterladen (JSON)</button>
@@ -802,18 +944,17 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
         <input id="restoreInput" type="file" accept=".json,application/json" hidden>
       </div>
     </div>
-
-    <h3 class="title">Export &amp; Import (CSV)</h3>
-    <div class="panel">
+    <div class="panel" style="margin-top:12px">
+      <div class="ptitle">Export &amp; Import (CSV)</div>
       <div class="pills">
         <button class="btn-line btn-sm" id="btnCsvEnergy">Zählerstände (CSV)</button>
         <button class="btn-line btn-sm" id="btnCsvKfz">Fahrzeuge (CSV)</button>
-        <button class="btn-line btn-sm" id="btnCsvKalt">Gefriergut &amp; Kühlware (CSV)</button>
+        <button class="btn-line btn-sm" id="btnCsvKalt">Kühlvorrat (CSV)</button>
         <button class="btn-line btn-sm" id="btnCsvFin">Finanzen (CSV)</button>
         <button class="btn-quiet btn-sm" id="btnImport">Zähler-CSV einlesen</button>
         <input id="fileInput" type="file" accept=".csv,text/csv" hidden>
       </div>
-      <p class="footnote">Die Zähler-CSV hat dasselbe Format wie die alte <code>energie_verbrauch.csv</code> – du kannst die bisherige Datei hier einlesen. Die CSV-Dateien sind für Excel/Numbers gedacht (Semikolon, deutsches Zahlenformat).</p>
+      <p class="footnote">Die Zähler-CSV hat dasselbe Format wie die alte <code>energie_verbrauch.csv</code> – du kannst die bisherige Datei hier einlesen. Kontoumsätze importierst du unter Finanzen → Importieren. Die CSV-Dateien sind für Excel/Numbers gedacht (Semikolon, deutsches Zahlenformat).</p>
     </div>
 
     <section id="appSection" hidden>
@@ -830,16 +971,6 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
         <p class="footnote" id="updStatus" role="status" aria-live="polite"></p>
       </div>
     </section>
-
-    <h3 class="title">Einstellungen</h3>
-    <div class="sheet">
-      <div class="formgrid">
-        <label class="fld"><span>Strompreis (€/kWh)</span><input id="setStrom" class="numin" inputmode="decimal" placeholder="z. B. 0,32"></label>
-        <label class="fld"><span>Wasser + Abwasser (€/m³)</span><input id="setWasser" class="numin" inputmode="decimal" placeholder="z. B. 4,80"></label>
-        <label class="fld"><span>Präfix für Etikett-Codes</span><input id="setPrefix" autocomplete="off" maxlength="4" placeholder="HS"><small>Nächster Code: <span id="setNext" class="code"></span></small></label>
-      </div>
-      <div class="sheet-foot"><button class="btn-solid" id="btnSettings">Einstellungen speichern</button></div>
-    </div>
   </section>
 </main>
 </div>
@@ -904,7 +1035,7 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
       <label class="fld"><span id="itInLabel">Eingefroren am</span><input id="itIn" type="date"></label>
       <label class="fld"><span>Haltbar bis</span><input id="itBB" type="date"><small id="itBBHint"></small></label>
       <label class="fld wide"><span>Notiz</span><input id="itNote" autocomplete="off" placeholder="z. B. für 4 Personen, ungewürzt"></label>
-      <div class="fld wide"><span>Etikett-Code (steht im QR-Code)</span><div><span class="code" id="itCode"></span></div></div>
+      <div class="fld wide"><span id="itCodeLabel">Etikett-Code (steht im QR-Code)</span><div><span class="code" id="itCode"></span></div></div>
       <label class="check wide" style="grid-column:1/-1"><input type="checkbox" id="itPrint"> Nach dem Speichern Etikett drucken</label>
     </div>
   </div>
@@ -966,7 +1097,7 @@ dialog::backdrop{background:rgba(8,12,16,.5)}
       <label class="fld"><span>Betrag</span><select id="bkAmount"></select></label>
       <label class="fld"><span>Name / Gegenseite</span><select id="bkParty"></select></label>
       <label class="fld"><span>Verwendungszweck</span><select id="bkPurpose"></select></label>
-      <label class="check wide" style="grid-column:1/-1"><input type="checkbox" id="bkSkip" checked> Bereits Erfasstes überspringen (gleicher Betrag, Datum ± 3 Tage – z. B. Daueraufträge, Tankungen aus „Fahrzeuge“)</label>
+      <label class="check wide" style="grid-column:1/-1"><input type="checkbox" id="bkSkip" checked> Bereits Erfasstes überspringen (gleicher Betrag, Datum ± 3 Tage – z. B. wiederkehrende Buchungen, Tankungen aus „Fahrzeuge“)</label>
     </div>
     <div class="bankprev"><table id="bkTable"></table></div>
     <p class="footnote" style="margin:10px 20px 16px">Kategorien werden anhand von Name und Verwendungszweck vorgeschlagen. Korrigierst du später die Kategorie einer importierten Buchung, merkt sich HomeStats das für künftige Importe vom selben Empfänger.</p>
@@ -1110,10 +1241,9 @@ let saveChain = Promise.resolve();
 
 function saveLocal(){
   if (native) return;
-  try { localStorage.setItem(LS_STATE, JSON.stringify(state)); }
+  try { localStorage.setItem(LS_STATE, JSON.stringify(state)); if (saveLocal.warned){ saveLocal.warned = false; fileStatus(); } }
   catch(e){
-    if (!saveLocal.warned) toast("Der Browser-Speicher ist voll oder gesperrt – bitte eine Datei verknüpfen oder eine Sicherung herunterladen.");
-    saveLocal.warned = true;
+    if (!saveLocal.warned){ saveLocal.warned = true; fileStatus(); }
   }
 }
 // Nach jeder Änderung: lokal sichern, Datei schreiben, aktuelle Ansicht neu zeichnen.
@@ -1175,8 +1305,9 @@ async function writeFile(){
     const w = await fileHandle.createWritable();
     await w.write(JSON.stringify(state, null, 1));
     await w.close();
+    if (fileStatus.writeErr){ fileStatus.writeErr = null; fileStatus(); }
   } catch(err){
-    fileOk = false; fileStatus();
+    fileOk = false; fileStatus.writeErr = String(err.message || err); fileStatus();
     toast("Die Datei konnte nicht geschrieben werden. Die Daten bleiben im Browser gespeichert.");
   }
 }
@@ -1289,16 +1420,35 @@ function fileStatus(){
   }
   $("saveDot").className = headDot;
   $("saveText").textContent = headTxt;
+  // Speicherprobleme sofort sichtbar, in jedem Bereich
+  const alert = nativeBlocked ? "Die Daten konnten nicht geladen werden – HomeStats speichert vorerst nichts."
+    : nativeErr ? "Speichern fehlgeschlagen: " + nativeErr
+    : saveLocal.warned ? "Der Browser-Speicher ist voll oder gesperrt – Änderungen gehen beim Schließen verloren. Bitte eine Datei verknüpfen oder eine Sicherung herunterladen."
+    : fileHandle && !fileOk && fileStatus.writeErr ? "Die verknüpfte Datei konnte nicht geschrieben werden: " + fileStatus.writeErr : "";
+  $("saveAlert").hidden = !alert;
+  $("saveAlertText").textContent = alert;
 }
 
 /* ============ Navigation ============ */
 const VIEWS = ["home", "zaehler", "kfz", "kalt", "fin", "daten"];
 let current = "home";
 
-function route(target){
+const viewScroll = {};   // Listenposition je Bereich, für Zurück/Vorwärts
+let scanSession = false;  // erst nach einem bewusst gestarteten Scan wieder ins Scanfeld springen
+
+// Bereichswechsel durch Klick oder Aktion: eigener Verlaufseintrag (gleicher Bereich: keiner)
+function navigate(v, opts = {}){
+  if (!VIEWS.includes(v)) v = "home";
+  if (v !== current){ try { history.pushState({v}, "", "#" + v); } catch(e){} }
+  route(v, {focus: opts.focus !== false});
+}
+// Zeigt einen Bereich. restore: Listenposition wiederherstellen (Zurück/Vorwärts); focus: Überschrift fokussieren.
+function route(target, opts = {}){
   let v = typeof target === "string" ? target : location.hash.slice(1);
   if (!VIEWS.includes(v)) v = "home";
-  if (location.hash.slice(1) !== v){ try { history.replaceState(null, "", "#" + v); } catch(e){} }
+  if (location.hash.slice(1) !== v){ try { history.replaceState({v}, "", "#" + v); } catch(e){} }   // ungültige Route ersetzen
+  if (current !== v) viewScroll[current] = window.scrollY;
+  if (current !== v) scanSession = false;
   current = v;
   VIEWS.forEach(x => $("view-" + x).hidden = x !== v);
   document.querySelectorAll("#nav .nav-item").forEach(a => {
@@ -1307,9 +1457,18 @@ function route(target){
   });
   closeNav(false);
   renderView();
-  window.scrollTo(0, 0);
-  if (v === "zaehler") inputs.strom.focus({preventScroll:true});
-  if (v === "kalt" && state.appliances.length) $("scanInput").focus({preventScroll:true});
+  window.scrollTo(0, opts.restore && viewScroll[v] != null ? viewScroll[v] : 0);
+  if (opts.focus) focusView();
+}
+// Fokus an den Anfang des Inhalts (Seitenüberschrift), ohne zu scrollen und ohne Eingabefelder
+function focusView(){
+  const h2 = $("view-" + current).querySelector(".viewhead h2");
+  if (h2) h2.focus({preventScroll:true});
+}
+// Zurück/Vorwärts und von Hand geänderte Adresse
+function syncFromLocation(){
+  const v = location.hash.slice(1);
+  if ((VIEWS.includes(v) ? v : "home") !== current) route(v, {restore:true, focus:true});
 }
 function renderView(){
   ({home:renderHome, zaehler:renderEnergy, kfz:renderKfz, kalt:renderKalt, fin:renderFin, daten:renderData})[current]();
@@ -1335,17 +1494,78 @@ function renderNavBadges(){
   set("zaehler", gasAlert ? 1 : 0, g.status !== "ok", "Gastank: " + (g.status === "ok" ? "bald leer" : "neue Ablesung nötig"));
 }
 
-// Seitenleiste auf schmalen Fenstern als Schublade
+// Seitenleiste auf schmalen Fenstern als Schublade: Fokus bleibt im Menü, der Inhalt dahinter ist gesperrt (inert)
+const narrow = window.matchMedia("(max-width:860px)");
 function openNav(){
   $("nav").classList.add("open"); $("navScrim").hidden = false;
-  $("navToggle").setAttribute("aria-expanded", "true"); $("navToggle").setAttribute("aria-label", "Menü schließen");
+  document.querySelector(".content").inert = true;
+  $("navToggle").setAttribute("aria-expanded", "true");
   ($("nav").querySelector("[aria-current=page]") || $("nav").querySelector(".nav-item")).focus();
 }
 function closeNav(returnFocus){
   if (!$("nav").classList.contains("open")) return;
   $("nav").classList.remove("open"); $("navScrim").hidden = true;
-  $("navToggle").setAttribute("aria-expanded", "false"); $("navToggle").setAttribute("aria-label", "Menü öffnen");
+  document.querySelector(".content").inert = false;
+  $("navToggle").setAttribute("aria-expanded", "false");
   if (returnFocus) $("navToggle").focus();
+}
+// Ansichten als Reiter (role=tab) mit Pfeiltasten, Pos1 und Ende. Teilen sich alle Reiter ein Panel, wird nur umgeschaltet.
+const viewTab = {zaehler:"verlauf", kfz:"log", fin:"list"};
+function setupTabs(listId, onSelect){
+  const tabs = [...$(listId).querySelectorAll("[role=tab]")];
+  const shared = new Set(tabs.map(t => t.getAttribute("aria-controls"))).size === 1;
+  const select = (v, focus) => {
+    const t = tabs.find(x => x.dataset.v === v) || tabs[0];
+    tabs.forEach(x => {
+      const on = x === t;
+      x.setAttribute("aria-selected", on); x.tabIndex = on ? 0 : -1;
+      if (!shared) $(x.getAttribute("aria-controls")).hidden = !on;
+    });
+    if (focus) t.focus();
+    return t.dataset.v;
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", () => onSelect(select(t.dataset.v)));
+    t.addEventListener("keydown", ev => {
+      const j = {ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1}[ev.key];
+      if (j == null) return;
+      ev.preventDefault();
+      onSelect(select(tabs[(j + tabs.length) % tabs.length].dataset.v, true));
+    });
+  });
+  return select;
+}
+// Eingabeformulare erscheinen erst auf Abruf; die Hauptaktion macht so lange Platz für „Speichern“.
+// Schließen behält die Eingaben – sie sind beim nächsten Öffnen wieder da.
+function openSheet(sheetId, btnId, focusEl){
+  $(sheetId).hidden = false;
+  $(btnId).hidden = true; $(btnId).setAttribute("aria-expanded", "true");
+  $(sheetId).scrollIntoView({block:"nearest"});
+  if (focusEl) focusEl.focus({preventScroll:true});
+}
+function closeSheet(sheetId, btnId, focus = true){
+  $(sheetId).hidden = true;
+  $(btnId).hidden = false; $(btnId).setAttribute("aria-expanded", "false");
+  openLabels();
+  if (focus) $(btnId).focus({preventScroll:true});
+}
+// Ungespeicherte Eingaben: beim Schließen des Fensters nachfragen (Zählerstände liegen ohnehin als Entwurf vor)
+const filled = ids => ids.some(id => $(id).value.trim());
+const vehDraft = () => filled(["veKm", "veAmount", "vePpu", "veTotal", "veCost", "veStation", "veNote"]);
+const finDraft = () => filled(["finAmount", "finNote"]);
+function formsDirty(){ return vehDraft() || finDraft() || ($("dlgItem").open && !!$("itName").value.trim()); }
+// Liegt ein Entwurf vor, heißt die Hauptaktion „… fortsetzen“
+function openLabels(){
+  $("btnEnOpen").textContent = energyHasDraft() && !editing ? "Ablesung fortsetzen" : "Ablesung erfassen";
+  $("btnVeOpen").textContent = vehDraft() && !veEditing ? "Eintrag fortsetzen" : "Eintrag hinzufügen";
+  $("btnFinOpen").textContent = finDraft() && !finEditing ? "Buchung fortsetzen" : "Buchung hinzufügen";
+}
+function trapNavFocus(ev){
+  if (ev.key !== "Tab" || !$("nav").classList.contains("open")) return;
+  const f = [...$("nav").querySelectorAll("a[href], button:not([disabled])")].filter(el => el.offsetParent !== null);
+  if (!f.length) return;
+  if (ev.shiftKey && document.activeElement === f[0]){ ev.preventDefault(); f[f.length - 1].focus(); }
+  else if (!ev.shiftKey && document.activeElement === f[f.length - 1]){ ev.preventDefault(); f[0].focus(); }
 }
 
 /* =====================================================================
@@ -1526,13 +1746,35 @@ async function saveEntry(){
     if (clash) Object.assign(clash, rec); else state.energy.push(rec);
   }
 
-  clearForm();
+  if (!restoreEnergyStash()) clearForm();
   commit();
-  inputs.strom.focus();
+  closeSheet("sheet", "btnEnOpen");
   toast(fileOk ? "Gespeichert und in " + fileHandle.name + " geschrieben." : "Ablesung gespeichert.");
 }
 
+// Ein angefangener Entwurf wird beim Bearbeiten einer alten Ablesung beiseitegelegt und danach wiederhergestellt.
+let energyStash = null;
+function energyFields(){
+  const d = {date: $("date").value, note: $("note").value, lngUnit: $("lngUnit").value, lngRefill: $("lngRefill").checked};
+  KEYS.forEach(k => d[k] = inputs[k].value);
+  return d;
+}
+function restoreEnergyStash(){
+  if (!energyStash) return false;
+  const d = energyStash; energyStash = null;
+  KEYS.forEach(k => inputs[k].value = d[k] || "");
+  $("note").value = d.note || ""; $("lngUnit").value = d.lngUnit || "%"; $("lngRefill").checked = !!d.lngRefill; $("date").value = d.date || localNow();
+  saveDraft();
+  return true;
+}
+const energyHasDraft = () => KEYS.some(k => inputs[k].value.trim()) || !!$("note").value.trim();
+function openEnergyForm(){
+  if (!$("date").value) $("date").value = localNow();
+  preview();
+  openSheet("sheet", "btnEnOpen", inputs.strom);
+}
 function startEdit(rec){
+  if (!editing && energyHasDraft()) energyStash = energyFields();
   editing = rec;
   $("date").value = rec.date;
   KEYS.forEach(k => inputs[k].value = inNum(rec[k]));
@@ -1543,8 +1785,8 @@ function startEdit(rec){
   $("editingBar").classList.add("on");
   $("sheetTitle").textContent = "Ablesung bearbeiten";
   $("btnSave").textContent = "Änderung speichern";
-  $("sheet").scrollIntoView({behavior:"smooth", block:"start"});
   preview();
+  openSheet("sheet", "btnEnOpen", inputs.strom);
 }
 function endEdit(){
   editing = null;
@@ -1552,7 +1794,7 @@ function endEdit(){
   $("sheetTitle").textContent = "Neue Ablesung";
   $("btnSave").textContent = "Ablesung speichern";
 }
-function cancelEdit(){ endEdit(); clearForm(); renderEnergy(); }
+function cancelEdit(){ endEdit(); if (!restoreEnergyStash()) clearForm(); renderEnergy(); closeSheet("sheet", "btnEnOpen"); }
 async function removeEntry(rec){
   if (!(await ask("Ablesung vom " + dateLong(rec.date) + " löschen?", "Löschen", true))) return;
   state.energy = state.energy.filter(r => r !== rec);
@@ -1665,12 +1907,18 @@ function gasCard(g){
       (g.elapsed > 30 ? " (" + fmt(Math.floor(g.elapsed), 0) + " Tage alt)" : "")};
 }
 
+let selEnTab = null;
 function renderEnergy(){
   const rows = computed();
+  const last = state.energy[state.energy.length - 1];
+  const ago = last ? -daysUntil(last.date.slice(0, 10)) : 0;
+  $("enLast").textContent = last ? dateLong(last.date) + " (" + (ago === 0 ? "heute" : ago === 1 ? "gestern" : "vor " + ago + " Tagen") + ")" : "noch keine – trage die ersten Zählerstände ein";
+  openLabels();
   $("stats").innerHTML = energyCards(rows);
-  renderCompare($("enCmp"), {energy:true, vehicles:null});
+  $("stats").hidden = !state.energy.length;
+  selEnTab(viewTab.zaehler);
   renderEnergyLog(rows);
-  renderEnergyChart(rows);
+  if (viewTab.zaehler === "verlauf"){ renderEnergyChart(rows); renderCompare($("enCmp"), {energy:true, vehicles:null}); }
   preview();
 }
 
@@ -2038,7 +2286,8 @@ function renderKfz(){
     const b = document.createElement("button");
     b.className = "tab"; b.textContent = v.name;
     b.setAttribute("aria-pressed", v.id === curVeh);
-    b.addEventListener("click", () => { curVeh = v.id; state.settings.lastVeh = v.id; saveLocal(); veCancel(); renderKfz(); });
+    // Ein angefangener neuer Eintrag bleibt beim Fahrzeugwechsel erhalten; nur eine Bearbeitung gehört zum alten Fahrzeug
+    b.addEventListener("click", () => { selectVeh(v.id); });
     pills.appendChild(b);
   });
   $("vehEmpty").hidden = !!vs.length;
@@ -2054,13 +2303,17 @@ function renderKfz(){
   const lastCons = S.cons.pts[S.cons.pts.length - 1];
   const nextDue = S.dues.find(d => daysUntil(d.date) >= -60);
   const fixedTxt = S.rec.length ? S.rec.map(c => c.cat).join(", ") : "Keine wiederkehrenden Kosten";
+  const t = nextDue ? dueText(daysUntil(nextDue.date), 30) : null;
+  $("vehNext").innerHTML = nextDue ? '<span class="muted">Nächster Termin</span> <b>' + h(nextDue.label) + '</b> · <span class="dd ' + t.cls + '">' + dDay(nextDue.date) + " · " + t.txt + "</span>"
+    : '<span class="muted">Keine Termine eingetragen</span>';
+  const nDues = S.dues.length + (S.serviceKmLeft != null ? 1 : 0);
+  $("btnVehDues").textContent = $("vehDuesWrap").hidden ? "Alle Termine" + (nDues ? " (" + nDues + ")" : "") : "Termine ausblenden";
+  $("btnVehDues").hidden = !nDues;
   $("vehStats").innerHTML =
     card("Kilometerstand", fmt(S.kmNow, 0), "km", S.kmYear ? "≈ " + fmt(S.kmYear, 0) + " km pro Jahr" : (S.driven ? fmt(S.driven, 0) + " km erfasst" : "Noch kein Kilometerstand"), "var(--kfz)") +
     card("Ø Verbrauch", fmtN(S.cons.avg, 1), u + "/100 km", lastCons ? "Zuletzt " + fmtN(lastCons.v, 1) + " über " + fmt(lastCons.dist, 0) + " km" : "Ab zwei Volltankungen", "var(--kfz)") +
     card("Kosten pro km", S.perKm != null ? fmtEur(S.perKm, 2) : "–", "", S.total ? fmtEur(S.total, 0) + " insgesamt, " + (S.ppu ? "Ø " + fmtEur(S.ppu, 3) + "/" + u : "") : "Noch keine Kosten", "var(--kfz)") +
-    card("Fixkosten", S.fixed != null ? fmtEur(S.fixed, 0) : "–", S.fixed != null ? "pro Monat" : "", h(fixedTxt), "var(--kfz)") +
-    card("Letzte 12 Monate", fmtEur(S.fuel12 + S.other12, 0), "", "Tanken " + fmtEur(S.fuel12, 0) + " · Sonstiges " + fmtEur(S.other12, 0), "var(--kfz)") +
-    card("Nächster Termin", nextDue ? h(dueText(daysUntil(nextDue.date)).txt) : "–", "", nextDue ? h(nextDue.label) + " · " + dDay(nextDue.date) : "Keine Termine eingetragen", "var(--kfz)");
+    card("Fixkosten", S.fixed != null ? fmtEur(S.fixed, 0) : "–", S.fixed != null ? "pro Monat" : "", h(fixedTxt) + " · 12 Monate: " + fmtEur(S.fuel12 + S.other12, 0), "var(--kfz)");
 
   // Formular-Beschriftungen passend zum Antrieb
   const elec = u === "kWh";
@@ -2071,12 +2324,31 @@ function renderKfz(){
   if (!$("veDate").value) $("veDate").value = isoDay();
   $("stationList").innerHTML = [...new Set(state.ventries.map(e => e.station).filter(Boolean))].map(s => "<option value=\"" + h(s) + "\">").join("");
   setVeType(veType, true);
+  // Fahrzeug im Formular sichtbar und änderbar (bei mehreren Fahrzeugen)
+  $("veVehWrap").hidden = vs.length < 2;
+  $("veVeh").innerHTML = vs.map(x => '<option value="' + x.id + '">' + h(x.name + (x.plate ? " · " + x.plate : "")) + "</option>").join("");
+  $("veVeh").value = curVeh;
+  $("veVeh").disabled = !!veEditing;
   vePreview();
 
-  renderVehChart(v, S);
   renderDues(S);
-  renderCompare($("vehCmp"), {energy:false, vehicles:[v]});
+  selVehTab(viewTab.kfz);
+  if (viewTab.kfz === "eval"){ renderVehChart(v, S); renderCompare($("vehCmp"), {energy:false, vehicles:[v]}); }
   renderVehLog(v, S);
+}
+function selectVeh(id){
+  if (id === curVeh) return;
+  if (veEditing) veCancel();
+  curVeh = id; state.settings.lastVeh = id; saveLocal();
+  renderKfz();
+}
+let selVehTab = null;
+// Formular für einen neuen Eintrag; type wählt Tanken/Laden, Kosten oder Kilometerstand vor
+let veStash = null;
+const veFieldIds = ["veDate", "veKm", "veAmount", "vePpu", "veTotal", "veCost", "veStation", "veNote", "veCat", "veInterval"];
+function openVehEntry(type){
+  if (type && !veEditing) setVeType(type);
+  openSheet("vehSheet", "btnVeOpen", $("veKm"));
 }
 
 function renderDues(S){
@@ -2201,9 +2473,14 @@ function veCancel(){
   $("veEditingBar").classList.remove("on");
   $("veTitle").textContent = "Neuer Eintrag";
   $("btnVeSave").textContent = "Eintrag speichern";
+  $("veVeh").disabled = false;
   veClear();
+  // beiseitegelegten neuen Eintrag zurückholen
+  if (veStash){ const st = veStash; veStash = null; Object.entries(st.vals).forEach(([id, v]) => $(id).value = v); $("veFull").checked = st.full; setVeType(st.type, true); }
 }
 function veStartEdit(e){
+  if (!veEditing && ["veKm", "veAmount", "vePpu", "veTotal", "veCost", "veStation", "veNote"].some(id => $(id).value.trim()))
+    veStash = {type: veType, full: $("veFull").checked, vals: Object.fromEntries(veFieldIds.map(id => [id, $(id).value]))};
   veEditing = e;
   setVeType(e.type, true);
   $("veDate").value = e.date;
@@ -2221,7 +2498,8 @@ function veStartEdit(e){
   $("veEditingBar").classList.add("on");
   $("veTitle").textContent = "Eintrag bearbeiten";
   $("btnVeSave").textContent = "Änderung speichern";
-  $("vehSheet").scrollIntoView({behavior:"smooth", block:"start"});
+  $("veVeh").disabled = true;
+  openSheet("vehSheet", "btnVeOpen", $("veKm"));
   vePreview();
 }
 async function veRemove(e){
@@ -2299,8 +2577,8 @@ function veSave(){
   if (veEditing){ Object.assign(veEditing, r.rec); veCancel(); }
   else { state.ventries.push({id:uid(), ...r.rec}); veClear(); }
   commit();
+  closeSheet("vehSheet", "btnVeOpen");
   toast(TYPE_LABEL[r.rec.type] + " gespeichert.");
-  $("veKm").focus();
 }
 
 /* ---------- Fahrzeug anlegen/bearbeiten ---------- */
@@ -2398,7 +2676,100 @@ function peekCodes(count){
 }
 function takeCodes(count){ const r = peekCodes(count); state.settings.nextCode = r.next; return r.codes; }
 
+/* ---------- 5-stellige Codes (QR abschaltbar) ---------- */
+// Im Code-Modus gelten nur 5-stellige Zahlencodes 00001–99999 (immer als Text, führende Nullen bleiben). Alte Codes wie
+// HS00042 bleiben unverändert – ihre QR-Etiketten funktionieren nach dem Zurückschalten weiter – und bekommen dauerhaft
+// einen eigenen Kurzcode (`short`). Ein Kurzcode wird nie doppelt aktiv vergeben; reservierte (vorgedruckte) bleiben frei.
+const SHORT_RE = /^\d{5}$/;
+const codeMode = () => state.settings.codeMode === "digits" ? "digits" : "qr";
+const pad5 = n => String(n).padStart(5, "0");
+const itemCode = it => codeMode() === "digits" ? (it.short || it.code) : it.code;
+const EXHAUSTED = "Alle 5-stelligen Codes (00001–99999) sind vergeben oder für vorgedruckte Etiketten reserviert. Entnommene Codes lassen sich über „Code öffnen“ bewusst neu belegen.";
+function takenShorts(){
+  const used = new Set(state.settings.reservedShorts || []);
+  state.items.forEach(i => { if (i.short) used.add(i.short); if (SHORT_RE.test(i.code)) used.add(i.code); });
+  return used;
+}
+// Nächster freier Kurzcode ab dem Zähler, danach von vorn; null = Nummernbereich ausgeschöpft (nie sechsstellig)
+function nextShortFrom(used, advance){
+  let k = state.settings.nextShort || 1;
+  for (let t = 0; t < 99999; t++){
+    if (k > 99999) k = 1;
+    const c = pad5(k++);
+    if (!used.has(c)){ used.add(c); if (advance) state.settings.nextShort = k > 99999 ? 1 : k; return c; }
+  }
+  return null;
+}
+function allocShorts(n, advance){
+  const used = takenShorts(), out = [];
+  const keep = state.settings.nextShort;
+  for (let i = 0; i < n; i++){ const c = nextShortFrom(used, true); if (!c) break; out.push(c); }
+  if (!advance) state.settings.nextShort = keep;
+  return out.length === n ? out : null;
+}
+// Fehlende Kurzcodes vergeben (Bestand zuerst); wenn frei, die Ziffern des alten Codes (HS00042 → 00042)
+function ensureShorts(){
+  const used = takenShorts();
+  const todo = state.items.filter(i => !i.short).sort((a, b) => (!!a.outDate - !!b.outDate) || (a.inDate || "").localeCompare(b.inDate || ""));
+  let changed = 0;
+  for (const it of todo){
+    if (SHORT_RE.test(it.code)){ it.short = it.code; changed++; continue; }
+    const m = it.code && String(it.code).match(/(\d{1,5})$/);
+    let c = m && +m[1] > 0 ? pad5(m[1]) : null;
+    if (c && !used.has(c)) used.add(c);
+    else c = nextShortFrom(used, true);
+    if (!c){ toast(EXHAUSTED); break; }
+    it.short = c; changed++;
+  }
+  return changed;
+}
+async function setCodeMode(mode){
+  if (mode === codeMode()) return;
+  state.settings.codeMode = mode;
+  if (mode === "digits"){
+    ensureShorts();
+    const relabel = stock().filter(i => i.short && i.short !== i.code);
+    commit();
+    if (relabel.length && await ask("QR ist deaktiviert – es gelten nur noch 5-stellige Codes. " + relabel.length +
+        (relabel.length === 1 ? " Artikel im Bestand hat" : " Artikel im Bestand haben") + " ein QR-Etikett (z. B. " + relabel[0].code + " → Kurzcode " + relabel[0].short +
+        "). Die Kurzcodes stehen jetzt in der Liste. Für die Eingabe per Hand diese Etiketten neu drucken?", "Etiketten drucken")) openPrint({mode:"items", items: relabel});
+    else toast("Code-Modus aktiv: 5-stellige Codes eingeben, z. B. 00042.");
+  } else {
+    commit();
+    toast("QR ist wieder aktiv. Alle Etiketten funktionieren weiter; Etiketten mit 5-stelligem Code öffnest du durch Eintippen.");
+  }
+}
+// Beschriftungen je Modus (Kühlvorrat, Übersicht, Einstellungen)
+function renderCodeModeUI(){
+  const digits = codeMode() === "digits";
+  $("scanLabel").textContent = digits ? "5-stelliger Code" : "Code";
+  $("scanInput").placeholder = digits ? "z. B. 00042" : "QR-Code scannen oder Code eintippen, dann Enter";
+  $("scanInput").inputMode = digits ? "numeric" : "text";
+  $("scanInput").maxLength = digits ? 5 : 64;
+  $("btnScanMain").textContent = digits ? "Code öffnen" : "QR scannen";
+  $("modeText").innerHTML = digits ? "Modus: <b>5-stellige Codes</b> (QR aus)" : "Modus: <b>QR-Codes</b>";
+  $("btnModeChip").textContent = digits ? "QR wieder aktivieren" : "QR deaktivieren – nur 5-stellige Codes";
+  $("btnCodeMode").textContent = digits ? "QR wieder aktivieren" : "QR deaktivieren – nur 5-stellige Codes";
+  $("qaScanLabel").textContent = digits ? "Code eingeben" : "Scannen";
+  $("kaltSub").textContent = digits ? "Einlagern, Etikett mit 5-stelligem Code drucken, aufkleben – beim Entnehmen den Code eintippen." : "Einlagern, Etikett drucken, aufkleben – beim Entnehmen scannen.";
+  $("setCodeMode").checked = digits;
+  $("itCodeLabel").textContent = digits ? "Etikett-Code (5-stellig)" : "Etikett-Code (steht im QR-Code)";
+  $("kaltHelp").innerHTML = digits
+    ? "So funktioniert’s: Jeder Artikel hat einen eigenen 5-stelligen Code (z. B. <code>00042</code>), der groß auf das Etikett gedruckt wird. Zum Entnehmen den Code eintippen und Enter drücken – ein Handscanner, der Ziffern sendet, funktioniert genauso. Ein neuer Code startet die Einlagerung, ein entnommener kann bewusst neu belegt werden. Vorgedruckte Etiketten reservieren ihre Codes. Für Gefriergut tiefkühlgeeignete Etiketten verwenden."
+    : "So funktioniert’s: Beim Einlagern bekommt jeder Artikel einen eigenen Code (z. B. <code>HS00042</code>), der als QR-Code auf das Etikett gedruckt wird. Beim Entnehmen den QR-Code scannen – mit der Kamera (Chrome/Edge), einem QR-fähigen USB-/Bluetooth-Handscanner (einfach scannen, ohne vorher zu klicken) oder den Code per Hand eintippen. Du kannst auch vorab leere Etiketten drucken, aufkleben und erst beim Scannen den Inhalt erfassen. Wiederverwendbare Dosen behalten ihr Etikett: einfach erneut scannen und neu belegen. Für Gefriergut tiefkühlgeeignete Etiketten verwenden.";
+}
+// „QR scannen“ bzw. „Code öffnen“: Kamera, sonst ins Eingabefeld (Handscanner tippen dort hinein)
+function startScan(){
+  scanSession = true;
+  const inp = $("scanInput");
+  if (codeMode() === "digits"){ if (inp.value.trim()){ const v = inp.value; inp.value = ""; handleScan(v); } else inp.focus(); return; }
+  if ("BarcodeDetector" in window) openCam();
+  else { inp.focus(); toast("Bereit: QR-Code mit dem Handscanner scannen oder den Code eintippen."); }
+}
+
 function renderKalt(){
+  renderCodeModeUI();
+  if (codeMode() === "digits" && ensureShorts()){ commit(); return; }
   const has = state.appliances.length > 0;
   $("kaltEmpty").hidden = has;
   $("kaltBody").hidden = !has;
@@ -2417,6 +2788,7 @@ function renderKalt(){
     pills.appendChild(b);
   });
   $("btnApplEdit").hidden = curAppl === "all";
+  if (curAppl !== "all") $("btnApplEdit").textContent = "Gerät „" + appl(curAppl).name + "“ bearbeiten";
 
   const scope = inStock.filter(i => curAppl === "all" || i.applianceId === curAppl);
   const st = scope.map(i => ({i, s: itemStatus(i)}));
@@ -2436,7 +2808,7 @@ function renderKalt(){
 function invFilter(list){
   const q = $("invSearch").value.trim().toLowerCase(), cat = $("invCat").value;
   return list.filter(i => (curAppl === "all" || i.applianceId === curAppl) && (!cat || i.cat === cat) &&
-    (!q || [i.name, i.code, i.note, i.comp].some(x => x && String(x).toLowerCase().includes(q))));
+    (!q || [i.name, i.code, i.short, i.note, i.comp].some(x => x && String(x).toLowerCase().includes(q))));
 }
 // "Diese Woche verbrauchen": Datum in den nächsten 7 Tagen (heute eingeschlossen) bzw. schon überschritten
 function weekItems(useFilters = true){
@@ -2451,7 +2823,7 @@ function invRow(it){
   row.dataset.id = it.id;
   row.innerHTML =
     '<input type="checkbox" aria-label="' + h(it.name) + ' auswählen"' + (selected.has(it.id) ? " checked" : "") + ">" +
-    '<div><div class="nm">' + h(it.name) + '</div><div class="sub">' + h(catOf(it.cat).label) + ' · <span class="code">' + h(it.code) + "</span>" + (it.note ? " · " + h(it.note) : "") + "</div></div>" +
+    '<div><div class="nm">' + h(it.name) + '</div><div class="sub">' + h(catOf(it.cat).label) + ' · <span class="code">' + h(itemCode(it)) + "</span>" + (it.note ? " · " + h(it.note) : "") + "</div></div>" +
     '<div class="where">' + h(whereText(it)) + "<br>" + (isFrozen(it) ? "eingefroren " : "eingelagert ") + dDay(it.inDate) + "</div>" +
     '<div class="qty">' + h(qtyText(it)) + "</div>" +
     (it.outDate ? '<div class="exp">entnommen<div class="sub">' + dDay(it.outDate) + "</div></div>"
@@ -2466,15 +2838,38 @@ function invRow(it){
   return row;
 }
 
+// Aktive Zusatzfilter als Chips – auch bei zugeklapptem Filterbereich sichtbar und einzeln zurücksetzbar
+function renderInvChips(){
+  const chips = [], cat = $("invCat").value, sort = $("invSort").value, sortable = invMode === "all";
+  if (cat) chips.push(["Kategorie", catOf(cat).label, () => { $("invCat").value = ""; }]);
+  if (sortable && sort !== "bb") chips.push(["Sortierung", $("invSort").selectedOptions[0].textContent, () => { $("invSort").value = "bb"; }]);
+  const box = $("invChips");
+  box.replaceChildren();
+  chips.forEach(([k, v, reset]) => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.setAttribute("aria-label", k + ": " + v + " – zurücksetzen");
+    b.innerHTML = '<span>' + h(k) + ": <b>" + h(v) + '</b></span><span class="x" aria-hidden="true">✕</span>';
+    b.addEventListener("click", () => { reset(); renderInv(); $("invSearch").focus(); });
+    box.appendChild(b);
+  });
+  if (chips.length > 1) toolBtn(box, "Alle zurücksetzen", () => { $("invCat").value = ""; $("invSort").value = "bb"; renderInv(); $("invSearch").focus(); });
+  box.hidden = !chips.length;
+  $("invFilterCnt").textContent = chips.length || "";
+  $("invSort").disabled = !sortable;
+}
+let selInvTab = null, invShown = [];
+function printTargets(){
+  const sel = [...selected].map(itemById).filter(Boolean);
+  return sel.length ? sel : invShown.filter(i => !i.outDate);
+}
 function renderInv(){
   const week = invMode === "week";
-  $("invMode").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === invMode));
+  selInvTab(invMode);
   const W = weekItems();
   $("weekCnt").textContent = W.over.length + W.week.length;
-  $("invOut").disabled = week; $("invSort").disabled = week;
-  $("invOut").closest("label").style.opacity = week ? .5 : "";
   $("weekNote").hidden = !week;
-  invShowOut = !week && $("invOut").checked;
+  invShowOut = invMode === "out";
+  renderInvChips();
   const box = $("invList");
   box.innerHTML = "";
 
@@ -2496,6 +2891,7 @@ function renderInv(){
       box.insertAdjacentHTML("beforeend", '<div class="grp">Bis ' + new Date(addDays(isoDay(), 7) + "T12:00").toLocaleDateString("de-DE", {weekday:"short", day:"numeric", month:"long"}) + " (" + W.week.length + ")</div>");
       W.week.forEach(it => box.appendChild(invRow(it)));
     }
+    invShown = list;
     $("invAll").checked = list.length > 0 && list.every(i => selected.has(i.id));
     $("invAll").onchange = ev => { list.forEach(i => ev.target.checked ? selected.add(i.id) : selected.delete(i.id)); renderInv(); };
     selBar();
@@ -2515,9 +2911,11 @@ function renderInv(){
   [...selected].forEach(id => { if (!list.some(i => i.id === id)) selected.delete(id); });
   $("invHead").hidden = !list.length;
   if (!list.length){
-    box.innerHTML = '<p class="empty">' + (invShowOut ? "Noch nichts entnommen." : q || cat ? "Nichts gefunden." : "Hier ist noch nichts eingelagert. Mit „Einlagern“ legst du den ersten Artikel an.") + "</p>";
+    box.innerHTML = '<p class="empty">' + (invShowOut ? (q || cat ? "Nichts gefunden." : "Noch nichts entnommen.") : q || cat ? "Nichts gefunden." :
+      (codeMode() === "digits" ? "Hier ist noch nichts eingelagert. Code eingeben oder „Ohne Scan einlagern“." : "Hier ist noch nichts eingelagert. QR-Code scannen oder „Ohne Scan einlagern“.")) + "</p>";
   }
   list.forEach(it => box.appendChild(invRow(it)));
+  invShown = list;
   $("invAll").checked = list.length > 0 && list.every(i => selected.has(i.id));
   $("invAll").onchange = ev => { list.forEach(i => ev.target.checked ? selected.add(i.id) : selected.delete(i.id)); renderInv(); };
   selBar();
@@ -2528,13 +2926,12 @@ function focusItem(id){
   if (!it || it.outDate){ openWeek(); return; }
   const d = it.bestBefore ? daysUntil(it.bestBefore) : null;
   invMode = d != null && d <= 7 ? "week" : "all";
-  $("invOut").checked = false;
   const reset = [];
   if (curAppl !== "all" && curAppl !== it.applianceId){ curAppl = "all"; reset.push("Gerät"); }
   if ($("invCat").value && $("invCat").value !== it.cat){ $("invCat").value = ""; reset.push("Kategorie"); }
   const q = $("invSearch").value.trim().toLowerCase();
-  if (q && ![it.name, it.code, it.note, it.comp].some(x => x && String(x).toLowerCase().includes(q))){ $("invSearch").value = ""; reset.push("Suche"); }
-  route("kalt");
+  if (q && ![it.name, it.code, it.short, it.note, it.comp].some(x => x && String(x).toLowerCase().includes(q))){ $("invSearch").value = ""; reset.push("Suche"); }
+  navigate("kalt", {focus:false});
   const row = document.querySelector('#invList .row[data-id="' + id + '"]');
   if (row){
     row.classList.add("hl");
@@ -2547,15 +2944,16 @@ function focusItem(id){
 // Wochenansicht öffnen; aktive Geräte- und Suchfilter bleiben bestehen
 function openWeek(){
   invMode = "week";
-  route("kalt");
+  navigate("kalt", {focus:false});
   const f = [curAppl !== "all" ? "Gerät „" + appl(curAppl)?.name + "“" : "", $("invSearch").value.trim() ? "Suche „" + $("invSearch").value.trim() + "“" : "", $("invCat").value ? "Kategorie" : ""].filter(Boolean);
   if (f.length) toast("Die Liste ist weiter gefiltert nach " + f.join(", ") + ".");
-  $("invMode").scrollIntoView({block:"start"});
+  $("invTabs").scrollIntoView({block:"start"});
+  $("invTabWeek").focus({preventScroll:true});
 }
 function selBar(){
   $("selBar").hidden = !selected.size;
   $("selText").textContent = selected.size + (selected.size === 1 ? " Artikel" : " Artikel") + " ausgewählt";
-  $("btnSelTake").hidden = invShowOut;
+  $("btnSelTake").hidden = invMode === "out";
 }
 
 /* ---------- Geräte ---------- */
@@ -2627,7 +3025,9 @@ function openItemForm(it, preset = {}){
   $("itBB").value = it ? it.bestBefore || "" : "";
   suggestBB();
   $("itNote").value = it ? it.note || "" : "";
-  $("itCode").textContent = it ? it.code : preset.code ? preset.code + " (vorhandenes Etikett)" : peekCodes(1).codes[0] + " (wird beim Speichern vergeben)";
+  const nextFree = codeMode() === "digits" ? allocShorts(1, false)?.[0] : peekCodes(1).codes[0];
+  $("itCode").textContent = it ? itemCode(it) + (codeMode() === "digits" && it.short && it.short !== it.code ? " (QR-Etikett: " + it.code + ")" : "")
+    : preset.code ? preset.code + " (vorhandenes Etikett)" : nextFree ? nextFree + " (wird beim Speichern vergeben)" : "kein freier Code mehr – entnommenen Code neu belegen";
   $("itPrint").checked = !it && !preset.code;
   $("itDelete").hidden = !it;
   $("dlgItem").showModal();
@@ -2643,16 +3043,22 @@ function saveItem(){
   let it = itEditing;
   if (it) Object.assign(it, rec);
   else {
-    const code = itPreset.code || takeCodes(1)[0];
-    if (stock().some(i => i.code === code)){ toast("Der Code " + code + " gehört schon zu einem Artikel im Bestand."); return; }
-    it = {id:uid(), code, outDate:null, taken:[], ...rec};
+    let code = itPreset.code;
+    if (!code){
+      if (codeMode() === "digits"){ const c = allocShorts(1, true); if (!c){ toast(EXHAUSTED); return; } code = c[0]; }
+      else code = takeCodes(1)[0];
+    }
+    const short = SHORT_RE.test(code) ? code : null;
+    if (stock().some(i => i.code === code || (short && i.short === short))){ toast("Der Code " + code + " gehört schon zu einem Artikel im Bestand."); return; }
+    it = {id:uid(), code, ...(short ? {short} : {}), outDate:null, taken:[], ...rec};
     state.items.push(it);
+    if (short) state.settings.reservedShorts = (state.settings.reservedShorts || []).filter(c => c !== short);
   }
   state.settings.lastAppl = rec.applianceId;
   const print = $("itPrint").checked;
   $("dlgItem").close();
   commit();
-  toast(name + (itEditing ? " gespeichert." : " eingelagert – Code " + it.code + "."));
+  toast(name + (itEditing ? " gespeichert." : " eingelagert – Code " + itemCode(it) + "."));
   if (print) openPrint({mode:"items", items:[it]});
 }
 async function deleteItem(){
@@ -2709,17 +3115,26 @@ function handleScan(raw){
   const code = String(raw || "").trim();
   if (!code) return;
   if (!state.appliances.length){ toast("Bitte zuerst ein Gerät anlegen."); return; }
+  const digits = codeMode() === "digits", inp = $("scanInput");
+  if (digits && !SHORT_RE.test(code)){
+    inp.value = code; inp.setAttribute("aria-invalid", "true"); inp.focus();
+    toast("Bitte genau 5 Ziffern eingeben, z. B. 00042.");
+    return;
+  }
+  inp.removeAttribute("aria-invalid");
+  scanSession = true;
   const norm = code.toUpperCase();
-  const byCode = state.items.filter(i => i.code && i.code.toUpperCase() === norm);
+  const byCode = state.items.filter(i => (i.code && i.code.toUpperCase() === norm) || i.short === norm);
   const live = byCode.find(i => !i.outDate);
   if (live) return showScan({title:"Gefunden", items:[live]});
   if (byCode.length){
     const last = byCode.sort((a, b) => (a.outDate || "").localeCompare(b.outDate || "")).pop();
-    return showScan({title:"Etikett " + last.code,
-      text:"Dieses Etikett gehörte zu <b>" + h(last.name) + "</b>, entnommen am " + dDay(last.outDate) + ". Neu belegen, z. B. für eine wiederverwendete Dose?",
-      actions:[["Neu belegen", () => openItemForm(null, {code:last.code}), "btn-solid"]]});
+    return showScan({title:"Etikett " + (digits ? norm : last.code),
+      text:"Dieses Etikett gehörte zu <b>" + h(last.name) + "</b>, entnommen am " + dDay(last.outDate) + ". Neu belegen, z. B. für eine wiederverwendete Dose? Der Verlauf bleibt erhalten.",
+      actions:[["Neu belegen", () => openItemForm(null, {code: digits ? norm : last.code}), "btn-solid"]]});
   }
-  toast("Neues Etikett " + norm + " – jetzt den Inhalt erfassen.");
+  const reserved = (state.settings.reservedShorts || []).includes(norm);
+  toast((reserved ? "Vorgedrucktes Etikett " : "Neuer Code ") + norm + " – jetzt den Inhalt erfassen.");
   openItemForm(null, {code:norm});
 }
 function showScan({title, text = "", items = [], actions = []}){
@@ -2733,7 +3148,7 @@ function showScan({title, text = "", items = [], actions = []}){
     const s = itemStatus(it);
     const div = document.createElement("div");
     div.className = "scanitem";
-    div.innerHTML = '<div class="nm">' + h(it.name) + '</div><div class="sub">' + h(qtyText(it)) + " · " + h(whereText(it)) + ' · <span class="code">' + h(it.code) + "</span></div>" +
+    div.innerHTML = '<div class="nm">' + h(it.name) + '</div><div class="sub">' + h(qtyText(it)) + " · " + h(whereText(it)) + ' · <span class="code">' + h(itemCode(it)) + "</span></div>" +
       '<div class="sub">' + (isFrozen(it) ? "Eingefroren " : "Eingelagert ") + dDay(it.inDate) + ' · <span class="exp ' + s.cls + '">' + s.txt + "</span></div>" +
       (it.note ? '<div class="sub">' + h(it.note) + "</div>" : "") + '<div class="acts"></div>';
     const acts = div.querySelector(".acts");
@@ -2977,17 +3392,20 @@ function labelHTML(L, x, roll){
   const style = 'style="--w:' + L.w + "mm;--h:" + L.h + 'mm"';
   const cls = "label" + (roll ? " roll" : "");
   if (!x) return '<div class="' + cls + '" ' + style + "></div>";
-  const qr = '<div class="lb-qr">' + qrSvg(x.code) + "</div>";
+  // Code-Modus: kein QR, sondern der 5-stellige Code groß und gut lesbar
+  const digits = codeMode() === "digits", shown = x.blank ? x.code : itemCode(x);
+  const qr = digits ? '<div class="lb-num">' + h(shown) + "</div>" : '<div class="lb-qr">' + qrSvg(x.code) + "</div>";
+  const codeLine = digits ? "" : '<div class="lb-code">' + h(x.code) + "</div>";
   if (x.blank){
     return '<div class="' + cls + '" ' + style + ">" + qr + '<div class="lb-text"><div class="lb-line">Inhalt</div><div class="lb-line"></div>' +
-      '<div class="lb-line">Datum</div><div class="lb-code">' + h(x.code) + "</div></div></div>";
+      '<div class="lb-line">Datum</div>' + codeLine + "</div></div>";
   }
   const it = x, frozen = isFrozen(it);
   const meta = [(frozen ? "Eingefroren " : "Eingelagert ") + dateShort(it.inDate)];
   if (it.bestBefore) meta.push("Haltbar bis " + dateShort(it.bestBefore));
   meta.push(qtyText(it) + " · " + whereText(it));
   return '<div class="' + cls + '" ' + style + ">" + qr + '<div class="lb-text"><div class="lb-name">' + h(it.name) + "</div>" +
-    meta.map(t => '<div class="lb-meta">' + h(t) + "</div>").join("") + '<div class="lb-code">' + h(it.code) + "</div></div></div>";
+    meta.map(t => '<div class="lb-meta">' + h(t) + "</div>").join("") + codeLine + "</div></div>";
 }
 
 function openPrint(job){
@@ -3002,7 +3420,8 @@ function openPrint(job){
 function printList(){
   if (printJob.mode === "blank"){
     const n = Math.min(Math.max(parseInt($("prCount").value, 10) || 0, 0), 500);
-    return peekCodes(n).codes.map(code => ({blank:true, code}));
+    const codes = codeMode() === "digits" ? allocShorts(n, false) : peekCodes(n).codes;
+    return codes ? codes.map(code => ({blank:true, code})) : [];
   }
   const copies = Math.min(Math.max(parseInt($("prCopies").value, 10) || 1, 1), 20);
   return printJob.items.flatMap(it => Array(copies).fill(it));
@@ -3018,6 +3437,7 @@ function renderPrintPreview(){
   if (sheet){ const per = L.cols * L.rows; info += " auf " + Math.ceil((list.length + skip) / per) + " Bogen (" + per + " pro Bogen)."; }
   else info += ". Im Druckdialog den Etikettendrucker wählen und als Papiergröße " + L.w + " × " + L.h + " mm einstellen, Ränder „Keine“, Skalierung 100 %.";
   if (printJob.mode === "blank" && list.length) info += " Codes " + list[0].code + " bis " + list[list.length - 1].code + " werden reserviert.";
+  if (printJob.mode === "blank" && !list.length && codeMode() === "digits" && (parseInt($("prCount").value, 10) || 0) > 0) info = EXHAUSTED;
   $("prInfo").textContent = info;
   $("prPreview").innerHTML = list.slice(0, 4).map(x => labelHTML(L, x)).join("") +
     (list.length > 4 ? '<span class="empty" style="padding:8px">… und ' + (list.length - 4) + " weitere</span>" : "");
@@ -3027,7 +3447,14 @@ function doPrint(){
   const key = $("prFormat").value, L = LABELS[key];
   let list = printList();
   if (!list.length) return;
-  if (printJob.mode === "blank"){ takeCodes(list.length); }
+  if (printJob.mode === "blank"){
+    if (codeMode() === "digits"){
+      const codes = allocShorts(list.length, true);
+      if (!codes){ toast(EXHAUSTED); return; }
+      state.settings.reservedShorts = [...(state.settings.reservedShorts || []), ...codes];
+      list = codes.map(code => ({blank:true, code}));
+    } else takeCodes(list.length);
+  }
   state.settings.labelFormat = key;
   let html, page;
   if (L.cols){
@@ -3106,6 +3533,7 @@ function finPeriod(P, limitDays){
   return {inc, out, saldo: inc - out, list, from: first > a ? first : null};
 }
 
+let selFinTab = null;
 function renderFin(){
   if (bookRecurring()){ commit(); return; }
   const bar = $("finBar");
@@ -3132,8 +3560,9 @@ function renderFin(){
       (hasPrev ? " · Vorperiode " + fmtSaldo(prev.saldo) : "") : "", "var(--ink)") +
     card("Sparquote", rate != null ? fmtN(rate, 0) : "–", rate != null ? "%" : "", rate != null ? "Anteil der Einnahmen, der übrig bleibt" : has ? "Keine Einnahmen im Zeitraum" : "", "var(--home)");
 
+  selFinTab(viewTab.fin);
   renderFinCats(has ? cur.list : []);
-  renderFinChart(month);
+  if (viewTab.fin === "eval") renderFinChart(month);
   renderFinRecurring();
   renderFinList(has ? cur.list : [], P);
   $("finVehToggle").checked = state.settings.finIncludeVeh !== false;
@@ -3156,7 +3585,7 @@ function renderFinCats(list){
       b.setAttribute("aria-label", cat + ": " + fmtEur(v) + ", " + fmtN(v / total * 100, 0) + " Prozent – Buchungen anzeigen");
       b.innerHTML = '<span class="cn">' + h(cat) + '</span><span class="cv">' + fmtEur(v) + '</span><span class="cp">' + fmtN(v / total * 100, 0) + " %</span>" +
         '<span class="cb"><i style="width:' + (v / rows[0][1] * 100).toFixed(1) + "%;background:" + (t === "out" ? "var(--ch-b)" : "var(--ch-a)") + '"></i></span>';
-      b.addEventListener("click", () => { finFilter = t; finCatFilter = cat; finListAll = false; renderFin(); $("finList").scrollIntoView({block:"start"}); });
+      b.addEventListener("click", () => { finFilter = t; finCatFilter = cat; finListAll = false; viewTab.fin = "list"; renderFin(); $("finTabList").focus(); });
       box.appendChild(b);
     });
   });
@@ -3178,7 +3607,7 @@ function renderFinChart(month){
 
 function renderFinRecurring(){
   const box = $("finRec");
-  box.innerHTML = state.recurring.length ? "" : '<p class="empty" style="padding:10px 0">Noch keine Daueraufträge. Wähle beim Erfassen „Wiederholt sich“, z. B. für Gehalt, Miete oder Versicherungen.</p>';
+  box.innerHTML = state.recurring.length ? "" : '<p class="empty" style="padding:10px 0">Noch keine wiederkehrenden Buchungen. Lege eine an oder wähle beim Erfassen „Wiederholt sich“, z. B. für Gehalt, Miete oder Versicherungen.</p>';
   [...state.recurring].sort((a, b) => (recNext(a) || "9999").localeCompare(recNext(b) || "9999")).forEach(r => {
     const next = recNext(r);
     const row = document.createElement("div");
@@ -3217,11 +3646,11 @@ function renderFinList(list, P){
     row.className = "tx";
     row.innerHTML = '<span class="tdate">' + dDay(e.date) + "</span>" +
       '<span class="ttext"><span class="badge" style="--c:' + (e.type === "in" ? "var(--ch-a)" : "var(--ch-b)") + '">' + h(e.cat) + "</span> " + h(e.note || "") +
-      (e.auto ? ' <span class="tag">aus Fahrzeuge</span>' : e.recurId ? ' <span class="tag">Dauerauftrag</span>' : "") + "</span>" +
+      (e.auto ? ' <span class="tag">aus Fahrzeuge</span>' : e.recurId ? ' <span class="tag">wiederkehrend</span>' : "") + "</span>" +
       '<span class="tamt ' + (e.type === "in" ? "pos" : "") + '">' + (e.type === "in" ? "+" : "−") + fmtEur(e.amount) + "</span>" +
       '<span class="tools"></span>';
     const tools = row.querySelector(".tools");
-    if (e.auto) toolBtn(tools, "Im Fahrzeug öffnen", () => { curVeh = e.vid; state.settings.lastVeh = e.vid; route("kfz"); });
+    if (e.auto) toolBtn(tools, "Im Fahrzeug öffnen", () => { curVeh = e.vid; state.settings.lastVeh = e.vid; navigate("kfz"); });
     else { toolBtn(tools, "Bearbeiten", () => finStartEdit(e)); toolBtn(tools, "Löschen", () => finRemove(e), "btn-quiet btn-danger"); }
     box.appendChild(row);
   });
@@ -3238,6 +3667,7 @@ function finFormLabels(){
   $("finInterval").querySelector('option[value="once"]').disabled = !!finEditingRec;
   $("finInterval").disabled = !!finEditing;
   $("finDate").disabled = !!finEditingRec;
+  if (!finEditing && !finEditingRec) $("finTitle").textContent = $("finInterval").value === "once" ? "Neue Buchung" : "Neue wiederkehrende Buchung";
 }
 function finSetType(t){ finType = t; finFormLabels(); }
 function finClear(){
@@ -3245,35 +3675,55 @@ function finClear(){
   $("finDate").value = isoDay();
   $("finInterval").value = "once";
 }
-function finCancel(){
+// Ein angefangener neuer Eintrag wird beim Bearbeiten beiseitegelegt und danach zurückgeholt
+let finStash = null;
+function finCancel(restore = true){
   finEditing = finEditingRec = null;
   $("finEditingBar").classList.remove("on");
   $("finTitle").textContent = "Neue Buchung";
   $("btnFinSave").textContent = "Buchung speichern";
-  finClear(); finFormLabels();
+  finClear();
+  if (restore && finStash){
+    const st = finStash; finStash = null;
+    finType = st.type; ["finDate", "finAmount", "finNote", "finEnd", "finInterval"].forEach(id => $(id).value = st[id]);
+    finFormLabels(); $("finCat").value = st.finCat;
+  }
+  finFormLabels();
+}
+function finStashDraft(){
+  if (finEditing || finEditingRec || finStash || !($("finAmount").value.trim() || $("finNote").value.trim())) return;
+  finStash = {type: finType, finCat: $("finCat").value};
+  ["finDate", "finAmount", "finNote", "finEnd", "finInterval"].forEach(id => finStash[id] = $(id).value);
+}
+function openFinForm(opts = {}){
+  if (opts.interval && !finEditing && !finEditingRec){ $("finInterval").value = opts.interval; }
+  if (!$("finDate").value) $("finDate").value = isoDay();
+  finFormLabels();
+  openSheet("finSheet", "btnFinOpen", $("finAmount"));
 }
 function finStartEdit(e){
-  finCancel();
+  finStashDraft();
+  finCancel(false);
   finEditing = e; finType = e.type; finFormLabels();
   $("finDate").value = e.date; $("finAmount").value = inNum(e.amount); $("finCat").value = e.cat; $("finNote").value = e.note || "";
-  $("finEditingText").textContent = (e.type === "in" ? "Einnahme" : "Ausgabe") + " vom " + dDay(e.date) + " wird bearbeitet." + (e.recurId ? " Der Dauerauftrag selbst bleibt unverändert." : "");
+  $("finEditingText").textContent = (e.type === "in" ? "Einnahme" : "Ausgabe") + " vom " + dDay(e.date) + " wird bearbeitet." + (e.recurId ? " Die wiederkehrende Buchung selbst bleibt unverändert." : "");
   finEditMode();
 }
 function finStartEditRec(r){
-  finCancel();
+  finStashDraft();
+  finCancel(false);
   finEditingRec = r; finType = r.type;
   $("finInterval").value = r.interval;
   finFormLabels();
   $("finDate").value = r.start; $("finAmount").value = inNum(r.amount); $("finCat").value = r.cat; $("finNote").value = r.note || ""; $("finEnd").value = r.end || "";
-  $("finEditingText").textContent = "Dauerauftrag wird bearbeitet. Änderungen gelten für künftige Buchungen; bereits gebuchte bleiben, wie sie sind.";
+  $("finEditingText").textContent = "Wiederkehrende Buchung wird bearbeitet. Änderungen gelten für künftige Buchungen; bereits gebuchte bleiben, wie sie sind.";
   finEditMode();
 }
 function finEditMode(){
   $("finEditingBar").classList.add("on");
-  $("finTitle").textContent = finEditingRec ? "Dauerauftrag bearbeiten" : "Buchung bearbeiten";
+  $("finTitle").textContent = finEditingRec ? "Wiederkehrende Buchung bearbeiten" : "Buchung bearbeiten";
   $("btnFinSave").textContent = "Änderung speichern";
-  $("finSheet").scrollIntoView({behavior:"smooth", block:"start"});
-  $("finAmount").focus({preventScroll:true});
+  openSheet("finSheet", "btnFinOpen", $("finAmount"));
 }
 function finSave(){
   const date = $("finDate").value, raw = $("finAmount").value.trim(), amount = num(raw);
@@ -3292,17 +3742,17 @@ function finSave(){
       msg += " Künftige Importe von „" + finEditing.party + "“ landen in „" + rec.cat + "“.";
     }
   }
-  else if (finEditingRec){ Object.assign(finEditingRec, rec, {interval, end}); msg = "Dauerauftrag gespeichert."; }
+  else if (finEditingRec){ Object.assign(finEditingRec, rec, {interval, end}); msg = "Wiederkehrende Buchung gespeichert."; }
   else if (interval === "once"){ state.finance.push({id:uid(), date, ...rec}); msg = (finType === "in" ? "Einnahme" : "Ausgabe") + " gespeichert."; }
   else {
     state.recurring.push({id:uid(), ...rec, interval, start:date, end, count:0});
     const n = bookRecurring();
-    msg = "Dauerauftrag angelegt" + (n ? " – " + n + (n === 1 ? " Buchung" : " Buchungen") + " bis heute erfasst." : ", erste Buchung am " + dDay(date) + ".");
+    msg = "Wiederkehrende Buchung angelegt" + (n ? " – " + n + (n === 1 ? " Buchung" : " Buchungen") + " bis heute erfasst." : ", erste Buchung am " + dDay(date) + ".");
   }
   finCancel();
   commit();
+  closeSheet("finSheet", "btnFinOpen");
   toast(msg);
-  $("finAmount").focus();
 }
 async function finRemove(e){
   if (!(await ask((e.type === "in" ? "Einnahme" : "Ausgabe") + " vom " + dDay(e.date) + " über " + fmtEur(e.amount) + " löschen?", "Löschen", true))) return;
@@ -3312,17 +3762,17 @@ async function finRemove(e){
   toast("Buchung gelöscht.");
 }
 async function finRemoveRec(r){
-  if (!(await ask("Dauerauftrag „" + (r.note || r.cat) + "“ löschen? Bereits gebuchte Einträge bleiben erhalten.", "Löschen", true))) return;
+  if (!(await ask("Wiederkehrende Buchung „" + (r.note || r.cat) + "“ löschen? Bereits gebuchte Einträge bleiben erhalten.", "Löschen", true))) return;
   state.recurring = state.recurring.filter(x => x !== r);
   state.finance.forEach(e => { if (e.recurId === r.id) delete e.recurId; });
   if (finEditingRec === r) finCancel();
   commit();
-  toast("Dauerauftrag gelöscht.");
+  toast("Wiederkehrende Buchung gelöscht.");
 }
 function finCSV(){
   const head = ["Datum","Art","Kategorie","Betrag_EUR","Notiz","Quelle"];
   const rows = finEntries().sort((a, b) => a.date.localeCompare(b.date)).map(e => [e.date, e.type === "in" ? "Einnahme" : "Ausgabe", e.cat, csvNum(e.amount), e.note || "",
-    e.auto ? "Fahrzeuge" : e.recurId ? "Dauerauftrag" : ""]);
+    e.auto ? "Fahrzeuge" : e.recurId ? "wiederkehrend" : ""]);
   return csvOut(head, rows);
 }
 
@@ -3417,7 +3867,7 @@ function bankRows(){
     let dup = keys.has(bankKey) ? "schon importiert" : "";
     if (!dup && skip){
       const hit = existing.find(e => e.type === type && Math.abs(e.amount - abs) < 0.005 && Math.abs(daysBetween(e.date, date)) <= 3);
-      if (hit) dup = hit.auto ? "aus Fahrzeuge" : hit.recurId ? "Dauerauftrag" : "schon erfasst";
+      if (hit) dup = hit.auto ? "aus Fahrzeuge" : hit.recurId ? "wiederkehrend" : "schon erfasst";
     }
     return {date, type, amount: abs, party, purpose, bankKey, cat: bankCategory(type, party, purpose), dup};
   }).filter(Boolean);
@@ -3849,9 +4299,13 @@ function renderHomeTiles(rows){
 
 let homeRemAll = false;
 function renderHome(){
+  renderCodeModeUI();
   $("homeDate").textContent = new Date().toLocaleDateString("de-DE", {weekday:"long", day:"numeric", month:"long", year:"numeric"});
   const rows = computed();
-  const nCharts = renderHomeCharts(rows), nTiles = renderHomeTiles(rows);
+  const anyData = state.energy.length || finEntries().length || state.recurring.length || state.ventries.length || state.appliances.length;
+  const nTiles = renderHomeTiles(rows), nCharts = anyData ? 1 : 0;
+  $("homeEval").hidden = !anyData;
+  if ($("homeEval").open) renderHomeEval(rows);
   // Erster Start: Einstieg in die Bereiche statt leerer Kacheln
   $("homeStart").innerHTML = nCharts || nTiles ? "" : '<div class="emptybox"><p>Willkommen bei HomeStats. Sobald du Daten erfasst, erscheinen hier Diagramme, Kennzahlen und Hinweise.</p><div class="startbox">' +
     [["#zaehler", "Zählerstand eintragen"], ["#kfz", "Fahrzeug anlegen"], ["#kalt", "Kühl- oder Gefriergerät anlegen"], ["#fin", "Einnahmen und Ausgaben erfassen"]]
@@ -3879,8 +4333,26 @@ function renderHome(){
     }, "btn-line");
     box.appendChild(bar);
   }
+}
+// Auswertungen werden erst beim Aufklappen gezeichnet (geschlossen haben die Diagramme keine Breite)
+function renderHomeEval(rows){
+  renderHomeCharts(rows || computed());
   renderCompare($("homeCmp"), {energy:true, vehicles:state.vehicles, finance:true});
 }
+
+/* ---------- Schnellaktionen (Übersicht) ---------- */
+function quickRead(){ navigate("zaehler", {focus:false}); openEnergyForm(); }
+function quickScan(){
+  navigate("kalt", {focus:false});
+  if (!state.appliances.length){ $("btnApplFirst").focus(); toast("Lege zuerst ein Kühl- oder Gefriergerät an – danach kannst du scannen."); return; }
+  startScan();
+}
+function quickFuel(){
+  navigate("kfz", {focus:false});
+  if (!state.vehicles.length){ openVehForm(null); toast("Lege zuerst ein Fahrzeug an – danach kannst du Tanken/Laden eintragen."); return; }
+  openVehEntry("fuel");
+}
+function quickFin(){ navigate("fin", {focus:false}); openFinForm(); }
 
 /* =====================================================================
    DATEN
@@ -3932,14 +4404,16 @@ function renderUpd(){
 
 function renderData(){
   fileStatus();
+  renderCodeModeUI();
   renderUpd();
   const s = state.settings;
   $("setStrom").value = inNum(s.priceStrom);
   $("setWasser").value = inNum(s.priceWasser);
   $("setPrefix").value = s.codePrefix || "HS";
-  $("setNext").textContent = peekCodes(1).codes[0];
+  $("setNext").textContent = codeMode() === "digits" ? (allocShorts(1, false)?.[0] || "kein freier Code") + " (5-stellig)" : peekCodes(1).codes[0];
+  $("appSectionLink").hidden = !native;
   $("dataSummary").textContent = state.energy.length + " Ablesungen · " + state.vehicles.length + " Fahrzeuge mit " + state.ventries.length + " Einträgen · " +
-    state.appliances.length + " Kühl-/Gefriergeräte · " + stock().length + " Artikel im Bestand" + " · " + state.finance.length + " Buchungen, " + state.recurring.length + " Daueraufträge" +
+    state.appliances.length + " Kühl-/Gefriergeräte · " + stock().length + " Artikel im Bestand" + " · " + state.finance.length + " Buchungen, " + state.recurring.length + " wiederkehrende" +
     (state.updated ? " · zuletzt geändert " + dateLong(state.updated) : "");
 }
 function saveSettings(){
@@ -3964,17 +4438,21 @@ function vehCSV(){
   return csvOut(head, rows);
 }
 function itemsCSV(){
-  const head = ["Code","Name","Kategorie","Menge","Einheit","Geraet","Fach","Eingelagert","Haltbar_bis","Entnommen","Notiz"];
-  return csvOut(head, state.items.map(i => [i.code, i.name, catOf(i.cat).label, csvNum(i.qty), i.unit, appl(i.applianceId)?.name || "", i.comp || "",
+  const head = ["Code","Kurzcode","Name","Kategorie","Menge","Einheit","Geraet","Fach","Eingelagert","Haltbar_bis","Entnommen","Notiz"];
+  return csvOut(head, state.items.map(i => [i.code, i.short || "", i.name, catOf(i.cat).label, csvNum(i.qty), i.unit, appl(i.applianceId)?.name || "", i.comp || "",
     i.inDate || "", i.bestBefore || "", i.outDate || "", i.note || ""]));
 }
 
 /* ============ Bedienung ============ */
 function wire(){
-  window.addEventListener("hashchange", route);
+  window.addEventListener("popstate", syncFromLocation);
+  window.addEventListener("hashchange", syncFromLocation);
   $("navToggle").addEventListener("click", () => $("nav").classList.contains("open") ? closeNav(true) : openNav());
+  $("navClose").addEventListener("click", () => closeNav(true));
   $("navScrim").addEventListener("click", () => closeNav(true));
-  document.addEventListener("keydown", ev => { if (ev.key === "Escape" && $("nav").classList.contains("open")) closeNav(true); });
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape" && $("nav").classList.contains("open")){ ev.preventDefault(); closeNav(true); } });
+  document.addEventListener("keydown", trapNavFocus);
+  narrow.addEventListener("change", ev => { if (!ev.matches) closeNav(false); });
   // Diagramme sind in Pixelbreite gezeichnet: nach einer Größenänderung neu zeichnen
   let chartWidth = innerWidth, chartTimer = null;
   window.addEventListener("resize", () => {
@@ -3982,19 +4460,36 @@ function wire(){
     chartTimer = setTimeout(() => {
       if (Math.abs(innerWidth - chartWidth) < 8) return;
       chartWidth = innerWidth;
-      if (current === "home") renderHomeCharts(computed());
-      if (current === "zaehler") renderEnergyChart(computed());
-      if (current === "kfz" && veh(curVeh)){ const v = veh(curVeh); renderVehChart(v, vehStats(v)); }
-      if (current === "fin") renderFinChart(cmpMode === "month");
+      if (current === "home" && $("homeEval").open) renderHomeCharts(computed());
+      if (current === "zaehler" && viewTab.zaehler === "verlauf") renderEnergyChart(computed());
+      if (current === "kfz" && viewTab.kfz === "eval" && veh(curVeh)){ const v = veh(curVeh); renderVehChart(v, vehStats(v)); }
+      if (current === "fin" && viewTab.fin === "eval") renderFinChart(cmpMode === "month");
     }, 150);
   });
   document.addEventListener("click", ev => {
     const c = ev.target.closest("[data-close]");
     if (c){ c.closest("dialog").close(); return; }
     const a = ev.target.closest('a[href^="#"]');
-    if (a && VIEWS.includes(a.getAttribute("href").slice(1))){ ev.preventDefault(); route(a.getAttribute("href").slice(1)); }
+    if (a && VIEWS.includes(a.getAttribute("href").slice(1))){ ev.preventDefault(); navigate(a.getAttribute("href").slice(1)); }
   });
   document.addEventListener("keydown", globalScanKeys);
+  // Escape schließt ein offenes Eingabeformular (Eingaben bleiben erhalten)
+  document.addEventListener("keydown", ev => {
+    if (ev.key !== "Escape" || document.querySelector("dialog[open]") || $("nav").classList.contains("open")) return;
+    for (const [sh, btn] of [["sheet", "btnEnOpen"], ["vehSheet", "btnVeOpen"], ["finSheet", "btnFinOpen"]])
+      if (!$(sh).hidden && $(sh).contains(document.activeElement)){ ev.preventDefault(); closeSheet(sh, btn); return; }
+  });
+  window.addEventListener("beforeunload", ev => { if (formsDirty()){ ev.preventDefault(); ev.returnValue = ""; } });
+
+  // Übersicht
+  $("qaRead").addEventListener("click", quickRead);
+  $("qaScan").addEventListener("click", quickScan);
+  $("qaFuel").addEventListener("click", quickFuel);
+  $("qaFin").addEventListener("click", quickFin);
+  $("homeEval").addEventListener("toggle", () => {
+    try { localStorage.setItem("homestats_eval_open", $("homeEval").open ? "1" : "0"); } catch(e){}
+    if ($("homeEval").open) renderHomeEval();
+  });
 
   // Zähler
   const order = [...KEYS.map(k => inputs[k]), $("note")];
@@ -4012,6 +4507,12 @@ function wire(){
   $("btnSave").addEventListener("click", saveEntry);
   $("btnNow").addEventListener("click", () => { $("date").value = localNow(); preview(); });
   $("btnCancelEdit").addEventListener("click", cancelEdit);
+  $("btnEnOpen").addEventListener("click", openEnergyForm);
+  $("btnEnClose").addEventListener("click", () => closeSheet("sheet", "btnEnOpen"));
+  selEnTab = setupTabs("enTabs", v => {
+    viewTab.zaehler = v;
+    if (v === "verlauf"){ renderEnergyChart(computed()); renderCompare($("enCmp"), {energy:true, vehicles:null}); }
+  });
   const box = $("chartTabs");
   MEDIA.forEach(m => {
     const b = document.createElement("button");
@@ -4046,7 +4547,20 @@ function wire(){
     vePreview();
   });
   $("btnVeSave").addEventListener("click", veSave);
-  $("btnVeCancel").addEventListener("click", () => { veCancel(); vePreview(); });
+  $("btnVeCancel").addEventListener("click", () => { veCancel(); vePreview(); closeSheet("vehSheet", "btnVeOpen"); });
+  $("btnVeOpen").addEventListener("click", () => openVehEntry());
+  $("btnVeClose").addEventListener("click", () => closeSheet("vehSheet", "btnVeOpen"));
+  $("veVeh").addEventListener("change", ev => selectVeh(ev.target.value));
+  $("btnVehDues").addEventListener("click", () => {
+    const open = $("vehDuesWrap").hidden;
+    $("vehDuesWrap").hidden = !open;
+    $("btnVehDues").setAttribute("aria-expanded", open);
+    renderKfz();
+  });
+  selVehTab = setupTabs("vehTabs", v => {
+    viewTab.kfz = v;
+    if (v === "eval" && veh(curVeh)){ const x = veh(curVeh); renderVehChart(x, vehStats(x)); renderCompare($("vehCmp"), {energy:false, vehicles:[x]}); }
+  });
   $("btnVehNew").addEventListener("click", () => openVehForm(null));
   $("btnVehFirst").addEventListener("click", () => openVehForm(null));
   $("dvSave").addEventListener("click", saveVeh);
@@ -4077,11 +4591,41 @@ function wire(){
   $("dlgItem").addEventListener("keydown", ev => { if (ev.key === "Enter" && ev.target.tagName === "INPUT" && ev.target.type !== "checkbox"){ ev.preventDefault(); saveItem(); } });
   ["dlgVeh", "dlgAppl"].forEach(id => $(id).addEventListener("keydown", ev => { if (ev.key === "Enter" && ev.target.tagName === "INPUT"){ ev.preventDefault(); (id === "dlgVeh" ? saveVeh : saveAppl)(); } }));
   $("scanInput").addEventListener("keydown", ev => { if (ev.key === "Enter"){ ev.preventDefault(); const v = ev.target.value; ev.target.value = ""; handleScan(v); } });
-  $("btnCam").addEventListener("click", openCam);
+  $("btnScanMain").addEventListener("click", startScan);
+  $("btnModeChip").addEventListener("click", () => setCodeMode(codeMode() === "digits" ? "qr" : "digits"));
+  $("setCodeMode").addEventListener("change", ev => setCodeMode(ev.target.checked ? "digits" : "qr"));
+  // „Verwalten“: Etiketten und Geräte; schließt bei Klick daneben oder Escape
+  const menu = $("kaltMenu"), menuBtn = $("kaltMenuBtn");
+  const closeMenu = focus => { if (menu.hidden) return; menu.hidden = true; menuBtn.setAttribute("aria-expanded", "false"); if (focus) menuBtn.focus(); };
+  menuBtn.addEventListener("click", () => {
+    if (!menu.hidden){ closeMenu(false); return; }
+    const n = printTargets().length;
+    $("btnSelPrintAll").textContent = selected.size ? "Etiketten für Auswahl drucken (" + selected.size + ")" : "Etiketten für angezeigte Artikel drucken (" + n + ")";
+    $("btnSelPrintAll").disabled = !n;
+    menu.hidden = false; menuBtn.setAttribute("aria-expanded", "true");
+    menu.querySelector(".menu-item:not([hidden]):not([disabled])")?.focus();
+  });
+  menu.addEventListener("click", ev => { if (ev.target.closest(".menu-item")) closeMenu(false); });
+  menu.addEventListener("keydown", ev => {
+    const items = [...menu.querySelectorAll(".menu-item")].filter(b => !b.hidden && !b.disabled);
+    const i = items.indexOf(document.activeElement);
+    if (ev.key === "Escape"){ ev.preventDefault(); ev.stopPropagation(); closeMenu(true); }
+    else if (ev.key === "ArrowDown" || ev.key === "ArrowUp"){ ev.preventDefault(); items[(i + (ev.key === "ArrowDown" ? 1 : -1) + items.length) % items.length]?.focus(); }
+    else if (ev.key === "Tab") closeMenu(false);
+  });
+  document.addEventListener("click", ev => { if (!ev.target.closest(".menu-wrap")) closeMenu(false); });
+  $("btnSelPrintAll").addEventListener("click", () => openPrint({mode:"items", items: printTargets()}));
+  $("btnCodeMode").addEventListener("click", () => setCodeMode(codeMode() === "digits" ? "qr" : "digits"));
+  $("btnInvFilter").addEventListener("click", () => {
+    const open = $("invFilterBox").hidden;
+    $("invFilterBox").hidden = !open;
+    $("btnInvFilter").setAttribute("aria-expanded", open);
+    if (open) $("invCat").focus();
+  });
+  selInvTab = setupTabs("invTabs", v => { invMode = v; selected.clear(); renderInv(); });
   $("dlgCam").addEventListener("close", stopCam);
   $("btnBlank").addEventListener("click", () => openPrint({mode:"blank"}));
-  ["invSearch", "invCat", "invSort", "invOut"].forEach(id => $(id).addEventListener("input", renderInv));
-  $("invMode").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b){ invMode = b.dataset.v; selected.clear(); renderInv(); } });
+  ["invSearch", "invCat", "invSort"].forEach(id => $(id).addEventListener("input", renderInv));
   $("btnSelPrint").addEventListener("click", () => openPrint({mode:"items", items:[...selected].map(itemById).filter(Boolean)}));
   $("btnSelTake").addEventListener("click", () => openTake([...selected].map(itemById).filter(Boolean)));
   $("btnSelClear").addEventListener("click", () => { selected.clear(); renderInv(); });
@@ -4093,7 +4637,7 @@ function wire(){
   $("prGo").addEventListener("click", doPrint);
   // Nach dem Schließen eines Dialogs wieder bereit zum Scannen
   document.querySelectorAll("dialog").forEach(d => d.addEventListener("close", () => {
-    if (current === "kalt" && !document.querySelector("dialog[open]") && state.appliances.length) setTimeout(() => $("scanInput").focus({preventScroll:true}), 0);
+    if (current === "kalt" && scanSession && !document.querySelector("dialog[open]") && state.appliances.length) setTimeout(() => $("scanInput").focus({preventScroll:true}), 0);
   }));
   window.addEventListener("afterprint", () => { $("printArea").innerHTML = ""; });
 
@@ -4102,7 +4646,11 @@ function wire(){
   $("finSeg").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b) finSetType(b.dataset.t); });
   $("finInterval").addEventListener("change", finFormLabels);
   $("btnFinSave").addEventListener("click", finSave);
-  $("btnFinCancel").addEventListener("click", finCancel);
+  $("btnFinCancel").addEventListener("click", () => { finCancel(); closeSheet("finSheet", "btnFinOpen"); });
+  $("btnFinOpen").addEventListener("click", () => openFinForm());
+  $("btnFinClose").addEventListener("click", () => closeSheet("finSheet", "btnFinOpen"));
+  $("btnRecNew").addEventListener("click", () => openFinForm({interval:"m1"}));
+  selFinTab = setupTabs("finTabs", v => { viewTab.fin = v; if (v === "eval") renderFinChart(cmpMode === "month"); });
   ["finAmount", "finNote"].forEach(id => $(id).addEventListener("keydown", ev => { if (ev.key === "Enter"){ ev.preventDefault(); finSave(); } }));
   $("finVehToggle").addEventListener("change", ev => { state.settings.finIncludeVeh = ev.target.checked; commit(); });
   $("btnCsvFin").addEventListener("click", () => download("finanzen.csv", finCSV(), "text/csv;charset=utf-8"));
@@ -4158,6 +4706,7 @@ function wire(){
 async function init(){
   $("date").value = localNow();
   wire();
+  try { if (localStorage.getItem("homestats_eval_open") === "1") $("homeEval").open = true; } catch(e){}
   if (native){
     // Desktop-App: Daten liegen in homestats.json im App-Datenordner
     try {
