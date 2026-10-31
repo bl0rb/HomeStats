@@ -1,0 +1,3272 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HomeStats</title>
+<style id="pageStyle"></style>
+<style>
+:root{
+  --paper:#e9edf1; --sheet:#ffffff; --ink:#16202b; --muted:#5d6b7a;
+  --line:#d3dbe3; --line-soft:#e6ebf0; --soft:#f8fafc; --chip:#e3e9ef;
+  --flag-bg:#fdf4f1; --note-bg:#fff6e6; --on-ink:#ffffff; --ink-hover:#243244;
+  --strom:#c07c05; --wasser:#0f7d8e; --lng:#a4543a; --home:#4a7c2f; --eet:#5f52a0;
+  --kfz:#3b5ba5; --kalt:#2a86b0;
+  --ok:#2f7d4f; --warn:#a4543a; --bad:#b3261e;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#0f141a; --sheet:#171e26; --ink:#e4e9ee; --muted:#93a1b0;
+    --line:#2b3540; --line-soft:#222b35; --soft:#1b232c; --chip:#25303b;
+    --flag-bg:#3a221b; --note-bg:#3a3018; --on-ink:#0f141a; --ink-hover:#c9d2db;
+    --strom:#e0a13a; --wasser:#3bb3c4; --lng:#d9826a; --home:#84b860; --eet:#9a8fe0;
+    --kfz:#7f9ef0; --kalt:#5cbde6;
+    --ok:#5cbf83; --warn:#e08a6e; --bad:#ff7b72;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:16px; line-height:1.5;
+}
+[hidden]{display:none !important}
+.num{font-variant-numeric:tabular-nums lining-nums; font-feature-settings:"tnum" 1}
+.wrap{max-width:1080px; margin:0 auto; padding:24px 20px 72px}
+input,select,textarea{font:inherit; color:inherit}
+
+/* ---------- Kopf & Navigation ---------- */
+.top{position:sticky; top:0; z-index:20; background:var(--paper); border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px; margin:0 auto; padding:12px 20px 0; display:flex; flex-wrap:wrap; align-items:center; gap:4px 18px}
+.brand{display:flex; align-items:center; gap:14px; flex:1 1 auto; min-width:0}
+h1{font-size:21px; line-height:1.15; letter-spacing:-.02em; margin:0; font-weight:700}
+.savestate{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--muted); text-decoration:none; min-width:0}
+.savestate span:last-child{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.savestate:hover{color:var(--ink)}
+.nav{display:flex; gap:2px; width:100%; overflow-x:auto; scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{padding:8px 12px 10px; color:var(--muted); text-decoration:none; font-size:14.5px; border-bottom:2px solid transparent; white-space:nowrap}
+.nav a:hover{color:var(--ink)}
+.nav a[aria-current=page]{color:var(--ink); border-color:var(--ink); font-weight:600}
+
+.viewhead{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin-bottom:18px}
+.viewhead h2{font-size:26px; line-height:1.15; letter-spacing:-.02em; margin:0; font-weight:700}
+.viewhead p{margin:0; color:var(--muted); font-size:15px; flex:1 1 220px}
+.viewhead .grow{flex:1 1 auto}
+
+/* ---------- Dateileiste ---------- */
+.filebar{
+  display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px;
+  padding:12px 16px; background:var(--sheet); border:1px solid var(--line); border-radius:10px;
+}
+.filebar .status{display:flex; align-items:center; gap:9px; flex:1 1 260px; min-width:0; font-size:14px}
+.dot{width:9px; height:9px; border-radius:50%; background:var(--muted); flex:none}
+.dot.on{background:var(--ok)}
+.dot.wait{background:var(--warn)}
+#fileText b{font-weight:600}
+#fileActions{display:flex; flex-wrap:wrap; gap:8px}
+
+/* ---------- Buttons ---------- */
+button{font:inherit; cursor:pointer; border-radius:8px; border:1px solid transparent; padding:8px 14px; background:none; color:var(--ink)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+.btn-solid{background:var(--ink); color:var(--on-ink); font-weight:600}
+.btn-solid:hover{background:var(--ink-hover)}
+.btn-line{border-color:var(--line); background:var(--sheet)}
+.btn-line:hover{border-color:var(--muted)}
+.btn-quiet{color:var(--muted); padding:6px 8px}
+.btn-quiet:hover{color:var(--ink)}
+.btn-danger{color:var(--bad)}
+.btn-danger-solid{background:var(--bad); color:#fff; font-weight:600}
+.btn-danger-solid:hover{filter:brightness(1.08)}
+.btn-sm{padding:5px 10px; font-size:13px}
+button[disabled]{opacity:.45; cursor:not-allowed}
+
+/* ---------- Erfassungsbogen ---------- */
+.sheet{background:var(--sheet); border:1px solid var(--line); border-radius:12px; overflow:hidden}
+.sheet-head{display:flex; flex-wrap:wrap; align-items:center; gap:12px 14px; padding:16px 20px; border-bottom:1px solid var(--line)}
+.sheet-head h2{margin:0; font-size:17px; font-weight:600; flex:1 1 auto}
+.field-date{display:flex; align-items:center; gap:8px}
+.field-date label{font-size:13px; color:var(--muted)}
+input[type=datetime-local],input[type=date],input[type=month]{padding:7px 10px; border:1px solid var(--line); border-radius:8px; background:var(--sheet)}
+
+.meter{display:grid; grid-template-columns:170px 210px 1fr; align-items:center; gap:4px 18px;
+  padding:14px 20px; border-bottom:1px solid var(--line-soft); border-left:3px solid var(--c)}
+.meter[data-m=strom]{--c:var(--strom)} .meter[data-m=wasser]{--c:var(--wasser)}
+.meter[data-m=lng]{--c:var(--lng)} .meter[data-m=home]{--c:var(--home)} .meter[data-m=eet]{--c:var(--eet)}
+.meter .name{font-weight:600; font-size:15px}
+.meter .name small{display:block; font-weight:400; font-size:12.5px; color:var(--muted)}
+.entry{display:flex; align-items:center; gap:8px}
+.entry input[type=text]{
+  width:100%; font-size:19px; font-variant-numeric:tabular-nums;
+  padding:9px 11px; border:1px solid var(--line); border-radius:8px; background:var(--sheet); text-align:right;
+}
+input.flag{border-color:var(--warn) !important; background:var(--flag-bg) !important}
+.entry .unit{font-size:14px; color:var(--muted); min-width:34px}
+.entry select{font-size:14px; padding:8px 6px; border:1px solid var(--line); border-radius:8px; background:var(--sheet)}
+.readout{font-size:13.5px; color:var(--muted); display:flex; flex-wrap:wrap; gap:4px 16px; align-items:baseline}
+.readout .big{font-size:19px; color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
+.hint{color:var(--warn)}
+.refill{grid-column:2 / -1; display:flex; align-items:center; gap:7px; font-size:13px; color:var(--muted)}
+.refill input{accent-color:var(--lng); width:15px; height:15px}
+
+.sheet-foot{display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:16px 20px; background:var(--soft); border-top:1px solid var(--line)}
+.sheet-foot input[type=text]{flex:1 1 240px; padding:9px 11px; border:1px solid var(--line); border-radius:8px; background:var(--sheet)}
+.kbd-hint{font-size:12.5px; color:var(--muted)}
+.editing-bar{display:none; flex-wrap:wrap; gap:10px; align-items:center; padding:10px 20px; background:var(--note-bg); border-top:1px solid var(--line); font-size:14px}
+.editing-bar.on{display:flex}
+
+/* ---------- Formulare ---------- */
+.formgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px 16px; padding:18px 20px}
+.fld{display:flex; flex-direction:column; gap:5px; min-width:0}
+.fld > span{font-size:13px; color:var(--muted)}
+.fld input:not([type=checkbox]),.fld select,.fld textarea{padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--sheet); width:100%; min-width:0}
+.fld input.numin{text-align:right; font-variant-numeric:tabular-nums}
+.fld textarea{resize:vertical; min-height:70px}
+.fld.wide{grid-column:1 / -1}
+.fld small{font-size:12px; color:var(--muted)}
+.check{display:flex; gap:8px; align-items:center; font-size:14px}
+.check input{width:16px; height:16px; accent-color:var(--ink)}
+.preview{padding:0 20px 16px; font-size:13.5px; color:var(--muted); display:flex; flex-wrap:wrap; gap:4px 18px; align-items:baseline}
+.preview .big{font-size:18px; color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:9px; padding:2px; gap:2px; background:var(--soft)}
+.seg button{padding:5px 12px; font-size:14px; border-radius:7px; color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--sheet); color:var(--ink); font-weight:600; box-shadow:0 0 0 1px var(--line)}
+
+/* ---------- Kennzahlen ---------- */
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1px; margin:0 0 22px;
+  background:var(--line); border:1px solid var(--line); border-radius:12px; overflow:hidden}
+.stat{background:var(--sheet); padding:15px 18px; border-left:3px solid var(--c,transparent); min-width:0}
+.stat .label{font-size:13px; color:var(--muted)}
+.stat .value{font-size:24px; font-weight:600; letter-spacing:-.01em; font-variant-numeric:tabular-nums; margin-top:2px; overflow-wrap:anywhere}
+.stat .value span{font-size:14px; font-weight:400; color:var(--muted)}
+.stat .sub{font-size:12.5px; color:var(--muted); margin-top:2px}
+
+/* ---------- Panels & Diagramme ---------- */
+h3.title{font-size:17px; font-weight:600; margin:30px 0 12px; display:flex; align-items:center; gap:10px}
+h3.title a{font-size:13px; font-weight:400; color:var(--muted)}
+.panel{background:var(--sheet); border:1px solid var(--line); border-radius:12px; padding:16px 18px}
+.pills{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.tab{font-size:13.5px; padding:5px 11px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:var(--sheet)}
+.tab[aria-pressed=true]{background:var(--ink); border-color:var(--ink); color:var(--on-ink)}
+.tab .cnt{opacity:.7; margin-left:4px; font-variant-numeric:tabular-nums}
+svg.chart{width:100%; height:auto; display:block; margin-top:8px}
+.legend{display:flex; gap:14px; font-size:12.5px; color:var(--muted); margin-top:4px}
+.legend i{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px}
+.empty{color:var(--muted); font-size:14px; padding:22px 0; text-align:center}
+.emptybox{background:var(--sheet); border:1px dashed var(--line); border-radius:12px; padding:34px 24px; text-align:center; color:var(--muted)}
+.emptybox p{margin:0 auto 16px; max-width:520px}
+
+/* ---------- Verlaufslisten ---------- */
+.log{display:flex; flex-direction:column; gap:10px}
+.item{background:var(--sheet); border:1px solid var(--line); border-radius:12px; padding:12px 14px}
+.item .top2{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px; margin-bottom:10px}
+.item .when{font-weight:600; font-size:15px; font-variant-numeric:tabular-nums}
+.item .memo{font-size:13px; color:var(--muted); flex:1 1 140px; min-width:0; overflow-wrap:anywhere}
+.item .tools{margin-left:auto; display:flex; gap:2px; flex:none}
+.badge{font-size:12px; color:var(--c,var(--lng)); border:1px solid currentColor; border-radius:999px; padding:1px 8px; white-space:nowrap}
+.cells{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:9px 10px}
+.cell{border-left:3px solid var(--c); padding:1px 0 1px 9px; min-width:0}
+.cell[data-m=strom]{--c:var(--strom)} .cell[data-m=wasser]{--c:var(--wasser)}
+.cell[data-m=lng]{--c:var(--lng)} .cell[data-m=home]{--c:var(--home)} .cell[data-m=eet]{--c:var(--eet)}
+.cell .k{font-size:12px; color:var(--muted)}
+.cell .v{font-size:16.5px; font-variant-numeric:tabular-nums; line-height:1.3; overflow-wrap:anywhere}
+.cell .d{font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums}
+.cell.off .v{color:var(--muted)}
+.morebar{display:flex; justify-content:center; margin-top:4px}
+.footnote{font-size:12.5px; color:var(--muted); margin-top:12px}
+.footnote code{background:var(--chip); padding:1px 5px; border-radius:4px; font-size:12px}
+
+/* ---------- Erinnerungen ---------- */
+.remind{display:flex; flex-direction:column}
+.remind a{display:grid; grid-template-columns:170px 1fr auto; gap:4px 14px; align-items:baseline; padding:10px 2px; border-bottom:1px solid var(--line-soft); color:inherit; text-decoration:none}
+.remind a:last-child{border-bottom:0}
+.remind a:hover .rt{text-decoration:underline}
+.remind .rw{font-size:13px; font-variant-numeric:tabular-nums; color:var(--muted)}
+.remind .rw.soon{color:var(--warn)} .remind .rw.bad{color:var(--bad); font-weight:600}
+.remind .rs{font-size:12.5px; color:var(--muted); text-align:right}
+.mod{font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--c); margin-right:6px; font-weight:600}
+
+/* ---------- Zeitvergleich ---------- */
+.cmpbar{display:flex; flex-wrap:wrap; gap:8px 10px; align-items:center; margin-bottom:6px}
+.cmpbar select{padding:6px 8px; border:1px solid var(--line); border-radius:8px; background:var(--sheet); font-size:14px; max-width:100%}
+.cmpbar .btn-step{padding:4px 11px; font-size:16px; line-height:1.2}
+.cmpstate{font-size:13px; color:var(--muted); flex:1 1 220px}
+.cmp-head,.cmp-row{display:grid; grid-template-columns:minmax(120px,.9fr) minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) 132px; gap:4px 16px; align-items:center}
+.cmp.y .cmp-head,.cmp.y .cmp-row{grid-template-columns:minmax(120px,.9fr) minmax(0,1.3fr) minmax(0,1fr) 132px}
+.cmp-head{font-size:12px; color:var(--muted); padding:10px 0 6px; border-bottom:1px solid var(--line)}
+.cmp-row{padding:11px 0; border-bottom:1px solid var(--line-soft)}
+.cmp-row:last-child{border-bottom:0}
+.cmp-group{font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:16px 0 2px}
+.cm-name{font-weight:600; font-size:14.5px; border-left:3px solid var(--c); padding-left:9px}
+.cm-name small{display:block; font-weight:400; font-size:12px; color:var(--muted)}
+.cm-val b,.cm-d b{font-size:17px; font-variant-numeric:tabular-nums; font-weight:600}
+.cm-val span,.cm-d span{display:block; font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums}
+.cm-d .k{display:none}
+.cm-d .na{font-size:13.5px; font-weight:400; color:var(--muted)}
+.cm-val .tag,.tag{display:inline-block; font-size:11.5px; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:0 7px; margin:2px 4px 0 0; white-space:nowrap}
+.tag.est{border-style:dashed}
+.spark{width:132px; height:34px; display:block}
+
+/* ---------- Fahrzeuge ---------- */
+.vehcard{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; padding:16px 18px; margin-bottom:14px;
+  background:var(--sheet); border:1px solid var(--line); border-left:3px solid var(--kfz); border-radius:12px}
+.vehcard .vn{font-size:19px; font-weight:700; display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px}
+.vehcard .vs{font-size:13.5px; color:var(--muted)}
+.vehcard > div:first-child{flex:1 1 260px; min-width:0}
+.plate{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:13.5px; font-weight:600; letter-spacing:.06em;
+  border:1.5px solid var(--ink); border-left:7px solid #2b4ea2; border-radius:4px; padding:0 7px; white-space:nowrap}
+.dues{display:flex; flex-direction:column}
+#vehStats{grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr))}
+.due{display:grid; grid-template-columns:1fr auto; gap:0 16px; padding:8px 0; border-bottom:1px solid var(--line-soft); font-size:14px; align-items:baseline}
+.due:last-child{border-bottom:0}
+.due .dd{grid-column:1 / -1; font-variant-numeric:tabular-nums; color:var(--muted); font-size:13px}
+.due .dd.soon{color:var(--warn)} .due .dd.bad{color:var(--bad); font-weight:600}
+.due .da{font-variant-numeric:tabular-nums; font-size:13px; color:var(--muted); text-align:right}
+.two{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:14px; margin-top:22px}
+.vehrow{display:grid; grid-template-columns:minmax(0,1.3fr) repeat(4,minmax(0,1fr)); gap:4px 16px; align-items:baseline; padding:12px 16px;
+  background:var(--sheet); border:1px solid var(--line); border-left:3px solid var(--kfz); border-radius:12px; margin-bottom:8px; color:inherit; text-decoration:none}
+.vehrow:hover{border-color:var(--muted); border-left-color:var(--kfz)}
+.vehrow .k{font-size:12px; color:var(--muted)}
+.vehrow .v{font-variant-numeric:tabular-nums; font-weight:600}
+
+/* ---------- Kühlen & Gefrieren ---------- */
+.scanbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:14px 16px; margin-bottom:16px;
+  background:var(--sheet); border:1px solid var(--line); border-left:3px solid var(--kalt); border-radius:12px}
+.scanbar label{font-weight:600; font-size:14px}
+.scanbar input{flex:1 1 240px; min-width:0; font-size:17px; padding:9px 12px; border:1px solid var(--line); border-radius:8px; background:var(--sheet);
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.applbar{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; margin-bottom:16px}
+.filters{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:6px}
+.filters input[type=search]{flex:1 1 200px; min-width:0; padding:7px 10px; border:1px solid var(--line); border-radius:8px; background:var(--sheet)}
+.filters select:disabled{opacity:.5; cursor:not-allowed}
+.filters select{padding:7px 8px; border:1px solid var(--line); border-radius:8px; background:var(--sheet); font-size:14px; max-width:100%}
+.inv-head,.row{display:grid; grid-template-columns:22px minmax(0,1fr) 180px 110px 140px auto; gap:4px 14px; align-items:center}
+.inv-head{font-size:12px; color:var(--muted); padding:10px 4px 6px; border-bottom:1px solid var(--line)}
+.row{padding:11px 4px; border-bottom:1px solid var(--line-soft)}
+.row:last-child{border-bottom:0}
+.row input[type=checkbox],.inv-head input{width:16px; height:16px; accent-color:var(--ink)}
+.row .nm{font-weight:600; overflow-wrap:anywhere}
+.row .sub,.row .where{font-size:12.5px; color:var(--muted)}
+.row .qty{font-variant-numeric:tabular-nums; font-size:14px}
+.row .acts{display:flex; gap:2px; justify-content:flex-end; flex-wrap:wrap}
+.row.out .nm,.row.out .qty{color:var(--muted)}
+.exp{font-size:13.5px; font-variant-numeric:tabular-nums}
+.exp .sub{font-size:12px}
+.exp.soon{color:var(--warn)} .exp.bad{color:var(--bad); font-weight:600}
+.grp{font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:16px 4px 4px; border-bottom:1px solid var(--line)}
+.grp.bad{color:var(--bad)}
+.row.hl{background:var(--note-bg); border-radius:8px}
+.seg .cnt{margin-left:6px; font-variant-numeric:tabular-nums; opacity:.75}
+.code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:12px; letter-spacing:.03em}
+.selbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:10px 14px; margin-top:10px; border-radius:10px; background:var(--note-bg); font-size:14px}
+.selbar span{flex:1 1 auto}
+.scanitem{border:1px solid var(--line); border-left:3px solid var(--kalt); border-radius:10px; padding:12px 14px; margin-bottom:10px}
+.scanitem .nm{font-weight:700; font-size:17px}
+.scanitem .sub{font-size:13.5px; color:var(--muted)}
+.scanitem .acts{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+#camVideo{width:100%; max-height:60vh; border-radius:10px; background:#000; display:block}
+
+/* ---------- Dialoge ---------- */
+dialog{border:1px solid var(--line); border-radius:14px; padding:0; background:var(--sheet); color:var(--ink);
+  width:min(680px, calc(100vw - 24px)); max-height:calc(100dvh - 24px)}
+dialog[open]{display:flex; flex-direction:column}
+dialog::backdrop{background:rgba(8,12,16,.5)}
+.dlg-head{display:flex; align-items:center; gap:10px; padding:14px 20px; border-bottom:1px solid var(--line)}
+.dlg-head h2{margin:0; font-size:17px; flex:1; font-weight:600}
+.dlg-body{padding:0; overflow:auto; flex:1 1 auto}
+.dlg-body.pad{padding:18px 20px}
+.dlg-foot{display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; align-items:center; padding:12px 20px; border-top:1px solid var(--line); background:var(--soft)}
+.dlg-foot .left{margin-right:auto}
+.note{font-size:13px; color:var(--muted); margin:0 20px 16px; padding:10px 12px; background:var(--soft); border-radius:8px}
+.prev{display:flex; flex-wrap:wrap; gap:10px; padding:4px 20px 18px}
+.prev .label{box-shadow:0 0 0 1px var(--line); border-radius:3px}
+
+/* ---------- Etiketten ---------- */
+/* --s ist die Bezugsgröße für Schrift; der QR-Code nimmt höchstens 40 % der Breite ein */
+.label{--s:min(var(--h), 27mm); width:var(--w); height:var(--h); padding:1.5mm 2mm; display:flex; gap:1.6mm; align-items:center; overflow:hidden;
+  background:#fff; color:#000; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; flex:none}
+.label .lb-qr{width:min(calc(var(--h) - 3mm), calc(var(--w) * .4)); aspect-ratio:1; flex:none}
+.label .lb-text{align-self:stretch}
+.label .lb-qr svg{width:100%; height:100%; display:block}
+.label .lb-text{flex:1 1 auto; min-width:0; display:flex; flex-direction:column}
+.label .lb-name{font-weight:700; font-size:calc(var(--s) * .14); line-height:1.1; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; flex:none; margin-bottom:.5mm; overflow-wrap:anywhere}
+.label .lb-meta{font-size:calc(var(--s) * .088); line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:none}
+.label .lb-code{margin-top:auto; font-size:calc(var(--s) * .088); line-height:1.15; letter-spacing:.08em; font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; flex:none}
+.label .lb-line{border-bottom:.25mm solid #000; font-size:calc(var(--s) * .08); line-height:1; padding-top:calc(var(--s) * .14); color:#444; flex:none}
+.lbl-page{width:210mm; height:297mm; display:grid; align-content:start; overflow:hidden; background:#fff}
+#printArea{display:none}
+
+/* ---------- Update-Hinweis (Desktop-App) ---------- */
+.updbar{display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; padding:10px 14px; margin-bottom:18px;
+  background:var(--note-bg); border:1px solid var(--line); border-radius:10px; font-size:14px}
+.updbar span{flex:1 1 220px}
+
+/* ---------- Toast ---------- */
+#toast{position:fixed; left:50%; bottom:24px; transform:translate(-50%,14px); opacity:0; pointer-events:none;
+  background:var(--ink); color:var(--on-ink); padding:11px 18px; border-radius:9px; font-size:14.5px; max-width:90vw;
+  transition:opacity .18s ease, transform .18s ease; z-index:100}
+#toast.on{opacity:1; transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+
+@media(max-width:760px){
+  .wrap{padding:18px 16px 60px}
+  .top-in{padding:10px 16px 0}
+  .viewhead h2{font-size:22px}
+  .meter{grid-template-columns:1fr 1fr; gap:8px 12px; padding:14px 16px}
+  .meter .name,.entry,.readout,.refill{grid-column:1 / -1}
+  .stats,#vehStats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stat{padding:12px 14px}
+  .stat .value{font-size:20px}
+  .two{grid-template-columns:1fr}
+  .cmp-head{display:none}
+  .cmp-row,.cmp.y .cmp-row{grid-template-columns:1fr 1fr; gap:8px 14px}
+  .cm-name,.cm-val{grid-column:1 / -1}
+  .cm-d .k{display:block}
+  .cmp.y .cm-d{grid-column:1 / -1}
+  .spark{grid-column:1 / -1; width:100%}
+  .vehrow{grid-template-columns:1fr 1fr}
+  .vehrow > :first-child{grid-column:1 / -1}
+  .inv-head{display:none}
+  .row{grid-template-columns:22px minmax(0,1fr) auto; align-items:start}
+  .row .where,.row .qty,.row .exp{grid-column:2 / -1}
+  .row .acts{grid-column:1 / -1; justify-content:flex-start}
+  .remind a{grid-template-columns:1fr; gap:2px}
+  .remind .rs{text-align:left}
+  .formgrid,.sheet-head,.sheet-foot{padding-left:16px; padding-right:16px}
+}
+
+@media print{
+  body{background:#fff}
+  body > :not(#printArea){display:none !important}
+  #printArea{display:block}
+  #printArea .label{box-shadow:none}
+  #printArea .roll:not(:last-child),#printArea .lbl-page:not(:last-child){break-after:page}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <h1>HomeStats</h1>
+      <a class="savestate" id="saveState" href="#daten"><span class="dot" id="saveDot"></span><span id="saveText">…</span></a>
+    </div>
+    <nav class="nav" id="nav" aria-label="Bereiche">
+      <a href="#home">Übersicht</a>
+      <a href="#zaehler">Zähler</a>
+      <a href="#kfz">Fahrzeuge</a>
+      <a href="#kalt">Kühlen &amp; Gefrieren</a>
+      <a href="#daten">Daten &amp; Einstellungen</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="updbar" id="updBar" hidden role="status">
+    <span id="updBarText"></span>
+    <button class="btn-solid btn-sm" id="updBarInstall">Jetzt installieren</button>
+    <button class="btn-quiet btn-sm" id="updBarLater">Später</button>
+  </div>
+
+  <!-- ================= Übersicht ================= -->
+  <section class="view" id="view-home" hidden>
+    <div class="viewhead"><h2>Übersicht</h2><p id="homeDate"></p></div>
+    <div class="panel" id="homeRemindPanel">
+      <div class="remind" id="homeRemind"></div>
+    </div>
+    <h3 class="title">Zeitvergleich</h3>
+    <div class="panel" id="homeCmp"></div>
+    <h3 class="title">Zähler <a href="#zaehler">Ablesung eintragen</a></h3>
+    <div class="stats" id="homeEnergy"></div>
+    <h3 class="title">Fahrzeuge <a href="#kfz">Alle Fahrzeuge</a></h3>
+    <div id="homeKfz"></div>
+    <h3 class="title">Kühlen &amp; Gefrieren <a href="#kalt">Zum Bestand</a> <a href="#kalt" id="homeWeek">Diese Woche verbrauchen</a></h3>
+    <div class="stats" id="homeKalt"></div>
+  </section>
+
+  <!-- ================= Zähler ================= -->
+  <section class="view" id="view-zaehler" hidden>
+    <div class="viewhead"><h2>Zähler</h2><p>Strom, Wasser, Gastank und beide Solaranlagen.</p></div>
+
+    <div class="stats" id="stats"></div>
+
+    <section class="sheet" id="sheet">
+      <div class="sheet-head">
+        <h2 id="sheetTitle">Neue Ablesung</h2>
+        <div class="field-date">
+          <label for="date">Abgelesen am</label>
+          <input id="date" type="datetime-local">
+          <button class="btn-quiet btn-sm" id="btnNow">Jetzt</button>
+        </div>
+      </div>
+
+      <div class="meter" data-m="strom">
+        <div class="name">Strom<small>Zählerstand in kWh</small></div>
+        <div class="entry"><input type="text" id="in-strom" inputmode="decimal" autocomplete="off" placeholder="0,000"><span class="unit">kWh</span></div>
+        <div class="readout" id="out-strom"></div>
+      </div>
+      <div class="meter" data-m="wasser">
+        <div class="name">Wasser<small>Zählerstand in m³</small></div>
+        <div class="entry"><input type="text" id="in-wasser" inputmode="decimal" autocomplete="off" placeholder="0,000"><span class="unit">m³</span></div>
+        <div class="readout" id="out-wasser"></div>
+      </div>
+      <div class="meter" data-m="lng">
+        <div class="name">Gastank<small>Restmenge im Tank</small></div>
+        <div class="entry">
+          <input type="text" id="in-lng" inputmode="decimal" autocomplete="off" placeholder="0,00">
+          <select id="lngUnit" aria-label="Einheit Gastank"><option>%</option><option>kg</option><option>Liter</option><option>m³</option></select>
+        </div>
+        <div class="readout" id="out-lng"></div>
+        <label class="refill"><input type="checkbox" id="lngRefill"> Tank wurde seit der letzten Ablesung befüllt</label>
+      </div>
+      <div class="meter" data-m="home">
+        <div class="name">Solar Heimpower<small>Ertrag seit der letzten Ablesung, kWh</small></div>
+        <div class="entry"><input type="text" id="in-home" inputmode="decimal" autocomplete="off" placeholder="0,000"><span class="unit">kWh</span></div>
+        <div class="readout" id="out-home"></div>
+      </div>
+      <div class="meter" data-m="eet">
+        <div class="name">Solar EET<small>Ertrag seit der letzten Ablesung, kWh</small></div>
+        <div class="entry"><input type="text" id="in-eet" inputmode="decimal" autocomplete="off" placeholder="0,000"><span class="unit">kWh</span></div>
+        <div class="readout" id="out-eet"></div>
+      </div>
+
+      <div class="editing-bar" id="editingBar">
+        <span id="editingText">Ablesung wird bearbeitet.</span>
+        <button class="btn-line btn-sm" id="btnCancelEdit">Bearbeitung abbrechen</button>
+      </div>
+      <div class="sheet-foot">
+        <input type="text" id="note" placeholder="Notiz, z. B. Gastank gefüllt oder Zähler gewechselt" autocomplete="off">
+        <button class="btn-solid" id="btnSave">Ablesung speichern</button>
+        <span class="kbd-hint">Enter springt zum nächsten Feld, Strg + Enter speichert.</span>
+      </div>
+    </section>
+
+    <h3 class="title">Verlauf</h3>
+    <div class="panel">
+      <div class="pills" id="chartTabs"></div>
+      <svg class="chart" id="chart" viewBox="0 0 760 240" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Verlauf des Tagesverbrauchs"></svg>
+      <div class="empty" id="chartEmpty" hidden>Ab der zweiten Ablesung wird hier der Tagesverbrauch gezeichnet.</div>
+    </div>
+
+    <h3 class="title">Monats- und Jahresvergleich</h3>
+    <div class="panel" id="enCmp"></div>
+
+    <h3 class="title">Messhistorie</h3>
+    <div class="log" id="log"></div>
+    <p class="footnote">Bei Strom, Wasser und Gastank steht oben der abgelesene Stand und darunter der Verbrauch seit der Ablesung davor. Bei den Solaranlagen ist der eingetragene Wert schon der Ertrag des Zeitraums. Preise für die Kostenschätzung von Strom und Wasser stellst du unter <a href="#daten">Daten &amp; Einstellungen</a> ein. Für den Solarertrag gibt es bewusst keine Geldschätzung: Ohne erfasste Einspeisemenge ist unbekannt, wie viel Strom eingespeist und wie viel selbst verbraucht wurde.</p>
+  </section>
+
+  <!-- ================= Fahrzeuge ================= -->
+  <section class="view" id="view-kfz" hidden>
+    <div class="viewhead">
+      <h2>Fahrzeuge</h2>
+      <div class="pills grow" id="vehPills"></div>
+      <button class="btn-line btn-sm" id="btnVehNew">Fahrzeug anlegen</button>
+    </div>
+
+    <div class="emptybox" id="vehEmpty" hidden>
+      <p>Lege dein erstes Fahrzeug an. Danach trägst du Tankstopps, Kilometerstände und Kosten wie Versicherung, Steuer oder Werkstatt ein – Verbrauch, Kosten pro Kilometer und Fälligkeiten rechnet HomeStats aus.</p>
+      <button class="btn-solid" id="btnVehFirst">Fahrzeug anlegen</button>
+    </div>
+
+    <div id="vehBody" hidden>
+      <div class="vehcard" id="vehCard"></div>
+      <div class="stats" id="vehStats"></div>
+
+      <section class="sheet" id="vehSheet">
+        <div class="sheet-head">
+          <h2 id="veTitle">Neuer Eintrag</h2>
+          <div class="seg" id="veSeg" role="group" aria-label="Art des Eintrags">
+            <button data-t="fuel" aria-pressed="true">Tanken</button>
+            <button data-t="cost" aria-pressed="false">Kosten</button>
+            <button data-t="km" aria-pressed="false">Kilometerstand</button>
+          </div>
+          <div class="field-date"><label for="veDate">Datum</label><input id="veDate" type="date"></div>
+        </div>
+        <div class="formgrid">
+          <label class="fld" data-for="fuel cost km"><span id="veKmLabel">Kilometerstand</span><input id="veKm" class="numin" inputmode="decimal" autocomplete="off" placeholder="0"></label>
+          <label class="fld" data-for="fuel"><span id="veAmountLabel">Getankt (L)</span><input id="veAmount" class="numin" inputmode="decimal" autocomplete="off" placeholder="0,00"></label>
+          <label class="fld" data-for="fuel"><span id="vePpuLabel">Preis pro Liter (€)</span><input id="vePpu" class="numin" inputmode="decimal" autocomplete="off" placeholder="0,000"></label>
+          <label class="fld" data-for="fuel"><span>Betrag (€)</span><input id="veTotal" class="numin" inputmode="decimal" autocomplete="off" placeholder="0,00"></label>
+          <label class="fld" data-for="fuel"><span>Tankstelle / Ladepunkt</span><input id="veStation" autocomplete="off" list="stationList"></label>
+          <label class="check" data-for="fuel"><input type="checkbox" id="veFull" checked> <span id="veFullLabel">Vollgetankt</span></label>
+          <label class="fld" data-for="cost"><span>Kategorie</span><select id="veCat"></select></label>
+          <label class="fld" data-for="cost"><span>Betrag (€)</span><input id="veCost" class="numin" inputmode="decimal" autocomplete="off" placeholder="0,00"></label>
+          <label class="fld" data-for="cost"><span>Wiederholt sich</span><select id="veInterval"></select></label>
+        </div>
+        <div class="preview" id="vePreview"></div>
+        <div class="editing-bar" id="veEditingBar">
+          <span id="veEditingText">Eintrag wird bearbeitet.</span>
+          <button class="btn-line btn-sm" id="btnVeCancel">Bearbeitung abbrechen</button>
+        </div>
+        <div class="sheet-foot">
+          <input type="text" id="veNote" placeholder="Notiz, z. B. Winterreifen montiert oder HUK Haftpflicht + Teilkasko" autocomplete="off">
+          <button class="btn-solid" id="btnVeSave">Eintrag speichern</button>
+        </div>
+      </section>
+
+      <div class="two">
+        <div class="panel">
+          <div class="pills" id="vehChartTabs"></div>
+          <svg class="chart" id="vehChart" viewBox="0 0 760 240" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Fahrzeugdiagramm"></svg>
+          <div class="legend" id="vehLegend"></div>
+          <div class="empty" id="vehChartEmpty" hidden></div>
+        </div>
+        <div class="panel">
+          <div style="font-weight:600; margin-bottom:6px">Fälligkeiten</div>
+          <div class="dues" id="vehDues"></div>
+        </div>
+      </div>
+
+      <h3 class="title">Kosten im Zeitvergleich</h3>
+      <div class="panel" id="vehCmp"></div>
+
+      <h3 class="title">Fahrtenbuch &amp; Kosten</h3>
+      <div class="pills" id="vehLogTabs" style="margin-bottom:10px"></div>
+      <div class="log" id="vehLog"></div>
+      <p class="footnote">Der Verbrauch wird von Volltankung zu Volltankung gerechnet. Teilbetankungen dazwischen werden mitgezählt. Wiederkehrende Kosten (z. B. Versicherung jährlich) ergeben die Fixkosten pro Monat und die nächste Fälligkeit – trage jede Zahlung als eigenen Eintrag ein.</p>
+    </div>
+  </section>
+
+  <!-- ================= Kühlen & Gefrieren ================= -->
+  <section class="view" id="view-kalt" hidden>
+    <div class="viewhead">
+      <h2>Kühlen &amp; Gefrieren</h2>
+      <p>Einlagern, Etikett drucken, aufkleben – beim Entnehmen scannen.</p>
+      <button class="btn-line btn-sm" id="btnApplNew">Gerät anlegen</button>
+    </div>
+
+    <div class="emptybox" id="kaltEmpty" hidden>
+      <p>Lege zuerst einen Kühlschrank, Gefrierschrank oder eine Truhe an – gern mit Schubladen oder Fächern. Eine Kühl-Gefrier-Kombi legst du am besten als zwei Geräte an.</p>
+      <button class="btn-solid" id="btnApplFirst">Gerät anlegen</button>
+    </div>
+
+    <div id="kaltBody" hidden>
+      <div class="scanbar">
+        <label for="scanInput">Scannen</label>
+        <input id="scanInput" autocomplete="off" spellcheck="false" placeholder="QR-Code scannen oder Code eintippen, dann Enter">
+        <button class="btn-line" id="btnCam">Kamera</button>
+        <button class="btn-solid" id="btnItemNew">Einlagern</button>
+        <button class="btn-line" id="btnBlank">Leere Etiketten drucken</button>
+      </div>
+
+      <div class="applbar">
+        <div class="pills" id="applPills"></div>
+        <button class="btn-quiet btn-sm" id="btnApplEdit" hidden>Gerät bearbeiten</button>
+      </div>
+
+      <div class="stats" id="kaltStats"></div>
+
+      <div class="panel">
+        <div class="seg" id="invMode" role="group" aria-label="Ansicht" style="margin-bottom:12px">
+          <button data-v="all" aria-pressed="true">Bestand</button>
+          <button data-v="week" aria-pressed="false">Diese Woche verbrauchen<span class="cnt" id="weekCnt"></span></button>
+        </div>
+        <div class="filters">
+          <input type="search" id="invSearch" placeholder="Suchen: Name, Code, Notiz" autocomplete="off">
+          <select id="invCat" aria-label="Kategorie"></select>
+          <select id="invSort" aria-label="Sortierung">
+            <option value="bb">Haltbarkeit zuerst</option>
+            <option value="in">Am längsten drin</option>
+            <option value="name">Name</option>
+            <option value="where">Gerät &amp; Fach</option>
+          </select>
+          <label class="check"><input type="checkbox" id="invOut"> Entnommene zeigen</label>
+        </div>
+        <div class="inv-head" id="invHead">
+          <input type="checkbox" id="invAll" aria-label="Alle auswählen">
+          <span>Artikel</span><span>Ort</span><span>Menge</span><span>Haltbar</span><span></span>
+        </div>
+        <div id="invList"></div>
+        <p class="footnote" id="weekNote" hidden>Haltbarkeitsdaten sind Richtwerte oder eigene Angaben – keine Garantie dafür, dass ein Lebensmittel sicher ist oder verdorben. Im Zweifel genau ansehen und lieber entsorgen.</p>
+        <div class="selbar" id="selBar" hidden>
+          <span id="selText"></span>
+          <button class="btn-solid btn-sm" id="btnSelPrint">Etiketten drucken</button>
+          <button class="btn-line btn-sm" id="btnSelTake">Entnehmen</button>
+          <button class="btn-quiet btn-sm" id="btnSelClear">Auswahl aufheben</button>
+        </div>
+      </div>
+      <p class="footnote">So funktioniert’s: Beim Einlagern bekommt jeder Artikel einen eigenen Code (z. B. <code>HS00042</code>), der als QR-Code auf das Etikett gedruckt wird. Beim Entnehmen den QR-Code scannen – mit der Kamera (Chrome/Edge), einem QR-fähigen USB-/Bluetooth-Handscanner (2D-Scanner) oder den Code per Hand eintippen. Du kannst auch vorab leere Etiketten drucken, auf Dosen oder Beutel kleben und erst beim Scannen den Inhalt erfassen. Wiederverwendbare Dosen behalten ihr Etikett: einfach erneut scannen und neu belegen. Für Gefriergut tiefkühlgeeignete Etiketten verwenden.</p>
+    </div>
+  </section>
+
+  <!-- ================= Daten ================= -->
+  <section class="view" id="view-daten" hidden>
+    <div class="viewhead"><h2>Daten &amp; Einstellungen</h2></div>
+
+    <div class="filebar">
+      <div class="status"><span class="dot" id="fileDot"></span><span id="fileText">Speicher wird geprüft …</span></div>
+      <div id="fileActions"></div>
+    </div>
+
+    <h3 class="title">Sicherung</h3>
+    <div class="panel">
+      <p style="margin:0 0 12px; font-size:14px; color:var(--muted)" id="dataSummary"></p>
+      <div class="pills">
+        <button class="btn-line btn-sm" id="btnBackup">Sicherung herunterladen (JSON)</button>
+        <button class="btn-line btn-sm" id="btnRestore">Sicherung einspielen</button>
+        <input id="restoreInput" type="file" accept=".json,application/json" hidden>
+      </div>
+    </div>
+
+    <h3 class="title">Export &amp; Import (CSV)</h3>
+    <div class="panel">
+      <div class="pills">
+        <button class="btn-line btn-sm" id="btnCsvEnergy">Zählerstände (CSV)</button>
+        <button class="btn-line btn-sm" id="btnCsvKfz">Fahrzeuge (CSV)</button>
+        <button class="btn-line btn-sm" id="btnCsvKalt">Gefriergut &amp; Kühlware (CSV)</button>
+        <button class="btn-quiet btn-sm" id="btnImport">Zähler-CSV einlesen</button>
+        <input id="fileInput" type="file" accept=".csv,text/csv" hidden>
+      </div>
+      <p class="footnote">Die Zähler-CSV hat dasselbe Format wie die alte <code>energie_verbrauch.csv</code> – du kannst die bisherige Datei hier einlesen. Die CSV-Dateien sind für Excel/Numbers gedacht (Semikolon, deutsches Zahlenformat).</p>
+    </div>
+
+    <section id="appSection" hidden>
+      <h3 class="title">App &amp; Updates</h3>
+      <div class="panel">
+        <p id="appVersion" style="margin:0 0 12px; font-size:14px"></p>
+        <div class="pills" style="margin-bottom:12px">
+          <button class="btn-line btn-sm" id="btnUpdCheck">Nach Updates suchen</button>
+          <button class="btn-solid btn-sm" id="btnUpdInstall" hidden></button>
+          <button class="btn-quiet btn-sm" id="btnUpdPage" hidden>Was ist neu?</button>
+        </div>
+        <label class="check"><input type="checkbox" id="setAutoUpd"> Beim Start automatisch nach Updates suchen</label>
+        <label class="check" style="margin-top:6px"><input type="checkbox" id="setBetaUpd"> Auch Beta-Versionen anbieten</label>
+        <p class="footnote" id="updStatus" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <h3 class="title">Einstellungen</h3>
+    <div class="sheet">
+      <div class="formgrid">
+        <label class="fld"><span>Strompreis (€/kWh)</span><input id="setStrom" class="numin" inputmode="decimal" placeholder="z. B. 0,32"></label>
+        <label class="fld"><span>Wasser + Abwasser (€/m³)</span><input id="setWasser" class="numin" inputmode="decimal" placeholder="z. B. 4,80"></label>
+        <label class="fld"><span>Präfix für Etikett-Codes</span><input id="setPrefix" autocomplete="off" maxlength="4" placeholder="HS"><small>Nächster Code: <span id="setNext" class="code"></span></small></label>
+      </div>
+      <div class="sheet-foot"><button class="btn-solid" id="btnSettings">Einstellungen speichern</button></div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= Dialoge ================= -->
+<dialog id="dlgVeh" aria-labelledby="dvTitle">
+  <div class="dlg-head"><h2 id="dvTitle">Fahrzeug anlegen</h2><button class="btn-quiet" data-close aria-label="Schließen">✕</button></div>
+  <div class="dlg-body">
+    <div class="formgrid">
+      <label class="fld"><span>Name *</span><input id="dvName" autocomplete="off" placeholder="z. B. Familienauto"></label>
+      <label class="fld"><span>Kennzeichen</span><input id="dvPlate" autocomplete="off" placeholder="M-AB 1234"></label>
+      <label class="fld"><span>Hersteller</span><input id="dvMake" autocomplete="off"></label>
+      <label class="fld"><span>Modell</span><input id="dvModel" autocomplete="off"></label>
+      <label class="fld"><span>Baujahr</span><input id="dvYear" class="numin" inputmode="numeric" autocomplete="off"></label>
+      <label class="fld"><span>Antrieb</span><select id="dvFuel"></select></label>
+      <label class="fld"><span id="dvTankLabel">Tankgröße (L)</span><input id="dvTank" class="numin" inputmode="decimal" autocomplete="off"></label>
+      <label class="fld"><span>Kilometerstand bei Start</span><input id="dvStartKm" class="numin" inputmode="decimal" autocomplete="off"></label>
+      <label class="fld"><span>Erfasst seit / gekauft am</span><input id="dvStartDate" type="date"></label>
+      <label class="fld"><span>Kaufpreis (€)</span><input id="dvPrice" class="numin" inputmode="decimal" autocomplete="off"></label>
+      <label class="fld"><span>Nächste HU fällig</span><input id="dvHu" type="month"></label>
+      <label class="fld"><span>Nächste Inspektion am</span><input id="dvSvcDate" type="date"></label>
+      <label class="fld"><span>… oder bei km</span><input id="dvSvcKm" class="numin" inputmode="decimal" autocomplete="off"></label>
+      <label class="fld"><span>Fahrgestellnummer (FIN)</span><input id="dvVin" autocomplete="off"></label>
+      <label class="fld wide"><span>Notizen</span><textarea id="dvNotes" placeholder="Reifengrößen, Ölsorte, Versicherungsnummer …"></textarea></label>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn-quiet btn-danger left" id="dvDelete">Fahrzeug löschen</button>
+    <button class="btn-line" data-close>Abbrechen</button>
+    <button class="btn-solid" id="dvSave">Speichern</button>
+  </div>
+</dialog>
+
+<dialog id="dlgAppl" aria-labelledby="daTitle">
+  <div class="dlg-head"><h2 id="daTitle">Gerät anlegen</h2><button class="btn-quiet" data-close aria-label="Schließen">✕</button></div>
+  <div class="dlg-body">
+    <div class="formgrid">
+      <label class="fld"><span>Name *</span><input id="daName" autocomplete="off" placeholder="z. B. Truhe Keller"></label>
+      <label class="fld"><span>Art</span><select id="daType"></select></label>
+      <label class="fld"><span>Standort</span><input id="daLoc" autocomplete="off" placeholder="Keller, Küche …"></label>
+      <label class="fld wide"><span>Fächer / Schubladen (eine pro Zeile)</span><textarea id="daComps" placeholder="Schublade 1&#10;Schublade 2&#10;Schublade 3"></textarea></label>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn-quiet btn-danger left" id="daDelete">Gerät löschen</button>
+    <button class="btn-line" data-close>Abbrechen</button>
+    <button class="btn-solid" id="daSave">Speichern</button>
+  </div>
+</dialog>
+
+<dialog id="dlgItem" aria-labelledby="diTitle">
+  <div class="dlg-head"><h2 id="diTitle">Einlagern</h2><button class="btn-quiet" data-close aria-label="Schließen">✕</button></div>
+  <div class="dlg-body">
+    <div class="formgrid">
+      <label class="fld wide"><span>Was ist es? *</span><input id="itName" autocomplete="off" list="nameList" placeholder="z. B. Bolognese, Erdbeeren, Hähnchenbrust"></label>
+      <label class="fld"><span>Kategorie</span><select id="itCat"></select></label>
+      <label class="fld"><span>Menge</span><input id="itQty" class="numin" inputmode="decimal" autocomplete="off" value="1"></label>
+      <label class="fld"><span>Einheit</span><select id="itUnit"></select></label>
+      <label class="fld"><span>Gerät</span><select id="itAppl"></select></label>
+      <label class="fld"><span>Fach</span><select id="itComp"></select></label>
+      <label class="fld"><span id="itInLabel">Eingefroren am</span><input id="itIn" type="date"></label>
+      <label class="fld"><span>Haltbar bis</span><input id="itBB" type="date"><small id="itBBHint"></small></label>
+      <label class="fld wide"><span>Notiz</span><input id="itNote" autocomplete="off" placeholder="z. B. für 4 Personen, ungewürzt"></label>
+      <div class="fld wide"><span>Etikett-Code (steht im QR-Code)</span><div><span class="code" id="itCode"></span></div></div>
+      <label class="check wide" style="grid-column:1/-1"><input type="checkbox" id="itPrint"> Nach dem Speichern Etikett drucken</label>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn-quiet btn-danger left" id="itDelete">Löschen</button>
+    <button class="btn-line" data-close>Abbrechen</button>
+    <button class="btn-solid" id="itSave">Speichern</button>
+  </div>
+</dialog>
+
+<dialog id="dlgTake" aria-labelledby="dtTitle">
+  <div class="dlg-head"><h2 id="dtTitle">Entnehmen</h2><button class="btn-quiet" data-close aria-label="Schließen">✕</button></div>
+  <div class="dlg-body pad">
+    <p style="margin:0 0 14px" id="tkText"></p>
+    <label class="fld" style="max-width:260px"><span>Wie viel nimmst du heraus? (<span id="tkUnit"></span>)</span><input id="tkQty" class="numin" inputmode="decimal" autocomplete="off"></label>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn-line" data-close>Abbrechen</button>
+    <button class="btn-line" id="tkPart">Diese Menge entnehmen</button>
+    <button class="btn-solid" id="tkAll">Alles entnehmen</button>
+  </div>
+</dialog>
+
+<dialog id="dlgScan" aria-labelledby="dsTitle">
+  <div class="dlg-head"><h2 id="dsTitle">Gescannt</h2><button class="btn-quiet" data-close aria-label="Schließen">✕</button></div>
+  <div class="dlg-body pad"><p id="dsText" style="margin:0 0 12px"></p><div id="dsList"></div></div>
+  <div class="dlg-foot" id="dsFoot"></div>
+</dialog>
+
+<dialog id="dlgCam" aria-labelledby="dcTitle">
+  <div class="dlg-head"><h2 id="dcTitle">Mit der Kamera scannen</h2><button class="btn-quiet" data-close aria-label="Schließen">✕</button></div>
+  <div class="dlg-body pad"><video id="camVideo" playsinline muted></video><p class="footnote" id="camHint">QR-Code mittig ins Bild halten.</p></div>
+</dialog>
+
+<dialog id="dlgPrint" aria-labelledby="dpTitle">
+  <div class="dlg-head"><h2 id="dpTitle">Etiketten drucken</h2><button class="btn-quiet" data-close aria-label="Schließen">✕</button></div>
+  <div class="dlg-body">
+    <div class="formgrid">
+      <label class="fld wide"><span>Etikettenformat</span><select id="prFormat"></select></label>
+      <label class="fld" id="prCountWrap"><span>Wie viele leere Etiketten?</span><input id="prCount" class="numin" inputmode="numeric" value="12"></label>
+      <label class="fld" id="prCopiesWrap"><span>Exemplare je Artikel</span><input id="prCopies" class="numin" inputmode="numeric" value="1"></label>
+      <label class="fld" id="prSkipWrap"><span>Bereits benutzte Etiketten auf dem Bogen überspringen</span><input id="prSkip" class="numin" inputmode="numeric" value="0"></label>
+    </div>
+    <p class="note" id="prInfo"></p>
+    <div class="prev" id="prPreview"></div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn-line" data-close>Abbrechen</button>
+    <button class="btn-solid" id="prGo">Drucken</button>
+  </div>
+</dialog>
+
+<dialog id="dlgAsk" aria-labelledby="askText" style="width:min(460px, calc(100vw - 24px))">
+  <div class="dlg-body pad"><p id="askText" style="margin:0"></p></div>
+  <div class="dlg-foot"><button class="btn-line" id="askNo">Abbrechen</button><button class="btn-solid" id="askYes">OK</button></div>
+</dialog>
+
+<datalist id="nameList"></datalist>
+<datalist id="stationList"></datalist>
+<div id="printArea" aria-hidden="true"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* ============ Grundlagen ============ */
+const $ = id => document.getElementById(id);
+const h = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const sum = a => a.reduce((s, x) => s + (x || 0), 0);
+const round = (v, d = 3) => Math.round(v * 10 ** d) / 10 ** d;
+
+// Nimmt "12.345,678", "12345.678" und "12345,678" entgegen.
+function num(v){
+  if (v === null || v === undefined) return null;
+  let s = String(v).trim().replace(/\s|'/g, "");
+  if (!s) return null;
+  if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+  const x = Number(s);
+  return Number.isFinite(x) ? x : null;
+}
+const fmt = (v, d = 3) => v == null || !Number.isFinite(v)
+  ? "–" : v.toLocaleString("de-DE", {maximumFractionDigits: d});
+const fmtEur = (v, d = 2) => v == null || !Number.isFinite(v)
+  ? "–" : v.toLocaleString("de-DE", {style:"currency", currency:"EUR", minimumFractionDigits:d, maximumFractionDigits:d});
+const csvNum = v => v == null ? "" : String(v).replace(".", ",");
+const inNum = v => v == null ? "" : String(v).replace(".", ",");
+
+function localNow(){
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 16);
+}
+function isoDay(d = new Date()){
+  const x = new Date(d);
+  x.setMinutes(x.getMinutes() - x.getTimezoneOffset());
+  return x.toISOString().slice(0, 10);
+}
+function addMonths(s, n){
+  const d = new Date(s + "T12:00"), day = d.getDate();
+  d.setMonth(d.getMonth() + n);
+  if (d.getDate() !== day) d.setDate(0);
+  return isoDay(d);
+}
+function addDays(s, n){ const d = new Date(s + "T12:00"); d.setDate(d.getDate() + n); return isoDay(d); }
+const endOfMonth = ym => { const [y, m] = ym.split("-").map(Number); return isoDay(new Date(y, m, 0)); };
+const daysUntil = s => Math.round((new Date(s + "T12:00") - new Date(isoDay() + "T12:00")) / 86400000);
+const dateLong = s => new Date(s).toLocaleString("de-DE",
+  {day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit"});
+const dateShort = s => new Date(s.length === 10 ? s + "T12:00" : s).toLocaleDateString("de-DE", {day:"2-digit", month:"2-digit", year:"2-digit"});
+const dDay = s => s ? new Date(s + "T12:00").toLocaleDateString("de-DE", {day:"2-digit", month:"2-digit", year:"numeric"}) : "–";
+
+// Text für "in X Tagen" mit Farbklasse
+function dueText(days, soon = 30){
+  const cls = days < 0 ? "bad" : days <= soon ? "soon" : "";
+  const txt = days < -1 ? "seit " + (-days) + " Tagen fällig" : days === -1 ? "seit gestern fällig"
+    : days === 0 ? "heute" : days === 1 ? "morgen" : "in " + days + " Tagen";
+  return {cls, txt};
+}
+
+function toast(msg){
+  const t = $("toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove("on"), 3000);
+}
+// Rückfrage als eigener Dialog statt confirm(): die Mac-WebView der Desktop-App zeigt kein confirm() an.
+function ask(text, yes = "OK", danger = false){
+  return new Promise(resolve => {
+    const d = $("dlgAsk");
+    let result = false;
+    $("askText").textContent = text;
+    $("askYes").textContent = yes;
+    $("askYes").className = danger ? "btn-solid btn-danger-solid" : "btn-solid";
+    $("askYes").onclick = () => { result = true; d.close(); };
+    $("askNo").onclick = () => d.close();
+    d.addEventListener("close", () => resolve(result), {once:true});
+    d.showModal();
+    $("askNo").focus();
+  });
+}
+const card = (label, value, unit, sub, color) =>
+  '<div class="stat" style="--c:' + color + '"><div class="label">' + label + '</div>' +
+  '<div class="value">' + value + (unit ? ' <span>' + unit + '</span>' : "") + "</div>" +
+  '<div class="sub">' + sub + "</div></div>";
+
+/* ============ Zustand & Speicher ============ */
+const LS_STATE = "homestats_v3";
+const LS_OLD = "energie_monitor_v2";      // Daten der alten Zähler-Seite
+const LS_DRAFT = "energie_monitor_draft";
+const FILE_NAME = "homestats.json";
+
+function blankState(){
+  return {
+    version:3, updated:null,
+    energy:[], vehicles:[], ventries:[], appliances:[], items:[],
+    settings:{priceStrom:null, priceWasser:null, codePrefix:"HS", nextCode:1, labelFormat:"62x29", lastAppl:null, lastVeh:null}
+  };
+}
+function normalize(s){
+  const b = blankState();
+  const out = {...b, ...s, settings:{...b.settings, ...(s && s.settings || {})}};
+  ["energy","vehicles","ventries","appliances","items"].forEach(k => { if (!Array.isArray(out[k])) out[k] = []; });
+  out.energy.sort((a, b) => new Date(a.date) - new Date(b.date));
+  return out;
+}
+const hasData = s => s.energy.length + s.vehicles.length + s.appliances.length + s.items.length > 0;
+
+let state = blankState();
+let fileHandle = null;
+let fileOk = false;       // Datei ist verknüpft und beschreibbar
+// Desktop-App (Tauri): Speichern, Dateidialoge und Updates laufen über die nativen Befehle der App.
+const native = window.__TAURI__?.core || null;
+const canFile = !native && "showSaveFilePicker" in window;
+let nativeInfo = null;    // {version, dataPath, os}
+let nativeErr = null;     // letzte Fehlermeldung beim Speichern
+let nativeBlocked = false; // Laden fehlgeschlagen: nicht speichern, sonst würde die Datei überschrieben
+let saveChain = Promise.resolve();
+
+function saveLocal(){
+  if (native) return;
+  try { localStorage.setItem(LS_STATE, JSON.stringify(state)); }
+  catch(e){
+    if (!saveLocal.warned) toast("Der Browser-Speicher ist voll oder gesperrt – bitte eine Datei verknüpfen oder eine Sicherung herunterladen.");
+    saveLocal.warned = true;
+  }
+}
+// Nach jeder Änderung: lokal sichern, Datei schreiben, aktuelle Ansicht neu zeichnen.
+function commit(){
+  state.energy.sort((a, b) => new Date(a.date) - new Date(b.date));
+  state.updated = new Date().toISOString();
+  saveLocal();
+  clearTimeout(commit._t);
+  // In der App sofort und der Reihe nach schreiben, damit beim Schließen nichts verloren geht.
+  if (native) saveChain = saveChain.then(writeFile);
+  else commit._t = setTimeout(writeFile, 300);
+  renderView();
+}
+
+async function download(name, text, type){
+  if (native){
+    try { const path = await native.invoke("save_text_file", {name, contents: text}); if (path) toast("Gespeichert: " + path); }
+    catch(e){ toast("Die Datei konnte nicht gespeichert werden: " + e); }
+    return;
+  }
+  const blob = new Blob([text], {type});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ============ Datei-Verknüpfung ============ */
+// Der Dateizugriff braucht Chrome oder Edge und eine einmalige Freigabe pro Sitzung.
+const idb = {
+  open(){ return new Promise((res, rej) => {
+    const r = indexedDB.open("homestats", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("kv");
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });},
+  async run(mode, fn){ const db = await this.open(); return new Promise((res, rej) => {
+    const st = db.transaction("kv", mode).objectStore("kv"); const rq = fn(st);
+    rq.onsuccess = () => res(rq.result); rq.onerror = () => rej(rq.error);
+  });},
+  get(k){ return this.run("readonly", st => st.get(k)); },
+  set(k, v){ return this.run("readwrite", st => st.put(v, k)); },
+  del(k){ return this.run("readwrite", st => st.delete(k)); }
+};
+
+async function writeFile(){
+  if (native){
+    if (nativeBlocked) return;
+    try {
+      await native.invoke("save_state", {json: JSON.stringify(state, null, 1)});
+      if (nativeErr){ nativeErr = null; fileStatus(); }
+    } catch(err){
+      const first = !nativeErr;
+      nativeErr = String(err); fileStatus();
+      if (first) toast("Speichern fehlgeschlagen: " + nativeErr);
+    }
+    return;
+  }
+  if (!fileOk || !fileHandle) return;
+  try {
+    const w = await fileHandle.createWritable();
+    await w.write(JSON.stringify(state, null, 1));
+    await w.close();
+  } catch(err){
+    fileOk = false; fileStatus();
+    toast("Die Datei konnte nicht geschrieben werden. Die Daten bleiben im Browser gespeichert.");
+  }
+}
+
+// mode "auto": neuerer Stand gewinnt, "replace": Datei ersetzt den Browser-Stand
+async function readFile(mode = "auto"){
+  if (!fileHandle) return;
+  let text;
+  try { text = await (await fileHandle.getFile()).text(); }
+  catch(e){ toast("Die Datei konnte nicht gelesen werden."); return; }
+  if (!text.trim()){ await writeFile(); return; }
+  let incoming;
+  try {
+    const raw = JSON.parse(text);
+    if (!raw || typeof raw !== "object" || !("version" in raw)) throw new Error("kein HomeStats");
+    incoming = normalize(raw);
+  } catch(e){
+    fileHandle = null; fileOk = false;
+    await idb.del("handle").catch(() => {});
+    fileStatus();
+    toast("Das ist keine HomeStats-Datei. Die Verknüpfung wurde nicht übernommen.");
+    return;
+  }
+  const fileNewer = !state.updated || (incoming.updated && incoming.updated > state.updated);
+  if (mode === "replace" || !hasData(state) || (fileNewer && hasData(incoming))){
+    state = incoming; saveLocal(); renderView();
+    if (mode === "replace") toast("Stand aus " + fileHandle.name + " geladen.");
+  } else {
+    await writeFile();
+  }
+}
+
+async function linkNew(){
+  try {
+    fileHandle = await window.showSaveFilePicker({
+      suggestedName: FILE_NAME,
+      types: [{description:"HomeStats-Datei", accept:{"application/json":[".json"]}}]
+    });
+    await idb.set("handle", fileHandle);
+    fileOk = true; fileStatus();
+    await writeFile();
+    toast("Ab jetzt wird jede Änderung automatisch in " + fileHandle.name + " geschrieben.");
+  } catch(e){ if (e && e.name !== "AbortError") toast("Die Datei konnte nicht angelegt werden."); }
+}
+async function linkExisting(){
+  try {
+    const [hd] = await window.showOpenFilePicker({types:[{description:"HomeStats-Datei", accept:{"application/json":[".json"]}}]});
+    if (await hd.requestPermission({mode:"readwrite"}) !== "granted"){ toast("Ohne Schreibrecht kann nicht automatisch gespeichert werden."); return; }
+    fileHandle = hd;
+    await idb.set("handle", hd);
+    fileOk = true;
+    await readFile("auto");
+    fileStatus();
+  } catch(e){ if (e && e.name !== "AbortError") toast("Die Datei konnte nicht geöffnet werden."); }
+}
+async function grantAgain(){
+  if (!fileHandle) return;
+  const p = await fileHandle.requestPermission({mode:"readwrite"});
+  if (p === "granted"){ fileOk = true; fileStatus(); await readFile("auto"); }
+  else toast("Der Zugriff wurde nicht freigegeben.");
+}
+async function unlink(){
+  fileHandle = null; fileOk = false;
+  await idb.del("handle").catch(() => {});
+  fileStatus();
+  toast("Die Verknüpfung ist gelöst. Die Daten bleiben im Browser.");
+}
+
+function fileStatus(){
+  const dot = $("fileDot"), txt = $("fileText"), act = $("fileActions");
+  act.innerHTML = "";
+  const btn = (label, fn, cls) => {
+    const b = document.createElement("button");
+    b.className = (cls || "btn-line") + " btn-sm"; b.textContent = label;
+    b.addEventListener("click", fn); act.appendChild(b);
+  };
+  let headDot = "dot", headTxt = "Nur im Browser gespeichert";
+  if (native){
+    const where = nativeInfo ? h(nativeInfo.dataPath) : "homestats.json";
+    if (nativeBlocked){
+      dot.className = headDot = "dot wait"; headTxt = "Daten nicht geladen";
+      txt.innerHTML = "Die Datendatei <b>" + where + "</b> konnte nicht gelesen werden. Damit sie nicht überschrieben wird, speichert HomeStats vorerst nichts. Datei prüfen oder eine Sicherung einspielen.";
+    } else if (nativeErr){
+      dot.className = headDot = "dot wait"; headTxt = "Speichern fehlgeschlagen";
+      txt.innerHTML = "Die letzte Änderung konnte nicht in <b>" + where + "</b> gespeichert werden: " + h(nativeErr);
+    } else {
+      dot.className = headDot = "dot on"; headTxt = "Automatisch gespeichert";
+      txt.innerHTML = "Jede Änderung wird sofort in <b>" + where + "</b> gespeichert. Der vorherige Stand bleibt als <code>homestats.json.bak</code> erhalten, dazu eine Tagessicherung im Ordner <code>Sicherungen</code> (30 Tage).";
+    }
+    btn(nativeInfo?.os === "windows" ? "Im Explorer zeigen" : "Im Finder zeigen", () => native.invoke("reveal_data").catch(e => toast(String(e))));
+  } else if (!canFile){
+    dot.className = "dot";
+    txt.innerHTML = "Dieser Browser kann keine Datei direkt beschreiben. Die Daten liegen im Browser – lade regelmäßig eine <b>Sicherung</b> herunter. Automatisches Speichern in eine Datei gibt es in Chrome oder Edge.";
+  } else if (fileHandle && fileOk){
+    dot.className = "dot on"; headDot = "dot on"; headTxt = "Gespeichert in " + fileHandle.name;
+    txt.innerHTML = "Jede Änderung wird automatisch in <b>" + h(fileHandle.name) + "</b> geschrieben.";
+    btn("Aus Datei neu laden", async () => { if (await ask("Den Stand aus der Datei laden? Änderungen im Browser, die nicht in der Datei stehen, gehen verloren.", "Laden")) readFile("replace"); });
+    btn("Andere Datei", linkNew);
+    btn("Verknüpfung lösen", unlink, "btn-quiet");
+  } else if (fileHandle){
+    dot.className = "dot wait"; headDot = "dot wait"; headTxt = "Datei-Freigabe nötig";
+    txt.innerHTML = "<b>" + h(fileHandle.name) + "</b> ist verknüpft. Der Browser fragt nach jedem Öffnen einmal nach der Freigabe.";
+    btn("Datei freigeben", grantAgain, "btn-solid");
+    btn("Verknüpfung lösen", unlink, "btn-quiet");
+  } else {
+    dot.className = "dot";
+    txt.textContent = "Noch keine Datei verknüpft. Die Daten liegen bisher nur in diesem Browser.";
+    btn("Datei anlegen", linkNew, "btn-solid");
+    btn("Vorhandene Datei wählen", linkExisting);
+  }
+  $("saveDot").className = headDot;
+  $("saveText").textContent = headTxt;
+}
+
+/* ============ Navigation ============ */
+const VIEWS = ["home", "zaehler", "kfz", "kalt", "daten"];
+let current = "home";
+
+function route(target){
+  let v = typeof target === "string" ? target : location.hash.slice(1);
+  if (!VIEWS.includes(v)) v = "home";
+  if (location.hash.slice(1) !== v){ try { history.replaceState(null, "", "#" + v); } catch(e){} }
+  current = v;
+  VIEWS.forEach(x => $("view-" + x).hidden = x !== v);
+  document.querySelectorAll("#nav a").forEach(a => {
+    if (a.getAttribute("href") === "#" + v) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
+  });
+  renderView();
+  window.scrollTo(0, 0);
+  if (v === "zaehler") inputs.strom.focus({preventScroll:true});
+  if (v === "kalt" && state.appliances.length) $("scanInput").focus({preventScroll:true});
+}
+function renderView(){
+  ({home:renderHome, zaehler:renderEnergy, kfz:renderKfz, kalt:renderKalt, daten:renderData})[current]();
+}
+
+/* =====================================================================
+   ZÄHLER
+   ===================================================================== */
+// kind: "counter" = aufsteigender Zählerstand, "tank" = Restmenge, "period" = Ertrag des Zeitraums
+const MEDIA = [
+  {k:"strom",  label:"Strom",           unit:"kWh", kind:"counter"},
+  {k:"wasser", label:"Wasser",          unit:"m³",  kind:"counter"},
+  {k:"lng",    label:"Gastank",         unit:"%",   kind:"tank"   },
+  {k:"home",   label:"Solar Heimpower", unit:"kWh", kind:"period" },
+  {k:"eet",    label:"Solar EET",       unit:"kWh", kind:"period" }
+];
+const kindOf = k => MEDIA.find(m => m.k === k).kind;
+const KEYS = MEDIA.map(m => m.k);
+
+let editing = null;       // Ablesung, die gerade bearbeitet wird
+let chartKey = "strom";
+const inputs = {}; KEYS.forEach(k => inputs[k] = $("in-" + k));
+
+// Zeitraumwerte stehen für sich. Beim Tank gilt vorher minus jetzt, nach dem Befüllen ist der Verbrauch unbekannt.
+function delta(rec, prev, k){
+  if (rec[k] == null) return null;
+  if (kindOf(k) === "period") return rec[k];
+  if (!prev || prev[k] == null) return null;
+  if (k === "lng"){
+    if (rec.lngRefill) return null;
+    if ((rec.lngUnit || "%") !== (prev.lngUnit || "%")) return null;
+    return prev[k] - rec[k];
+  }
+  return rec[k] - prev[k];
+}
+
+// Vergleicht mit der letzten Ablesung, die für das jeweilige Medium einen Wert hat.
+function computed(){
+  const lastBy = {};
+  return state.energy.map(r => {
+    const row = {...r};
+    KEYS.forEach(k => {
+      const p = lastBy[k];
+      const d = delta(r, p, k);
+      const days = p ? (new Date(r.date) - new Date(p.date)) / 86400000
+        : (kindOf(k) === "period" ? periodDays(r) : null);
+      row["d" + k] = d;
+      row["t" + k] = days;
+      row["r" + k] = (d != null && days > 0) ? d / days : null;
+      if (r[k] != null) lastBy[k] = r;
+    });
+    return row;
+  });
+}
+// Zeitraum für Solarwerte ohne Vorgänger-Wert: Abstand zur vorherigen Ablesung überhaupt
+function periodDays(r){
+  const i = state.energy.indexOf(r);
+  return i > 0 ? (new Date(r.date) - new Date(state.energy[i - 1].date)) / 86400000 : null;
+}
+
+// Durchschnitt pro Tag über die letzten `days` Tage, sonst über alles.
+function perDay(rows, k, days){
+  const limit = days ? Date.now() - days * 86400000 : null;
+  let s = 0, span = 0;
+  rows.forEach(r => {
+    if (r["d" + k] == null || !(r["t" + k] > 0)) return;
+    if (limit && new Date(r.date).getTime() < limit) return;
+    s += r["d" + k]; span += r["t" + k];
+  });
+  return span ? s / span : null;
+}
+
+function lastWith(k, exclude){
+  for (let i = state.energy.length - 1; i >= 0; i--){
+    if (state.energy[i] !== exclude && state.energy[i][k] != null) return state.energy[i];
+  }
+  return null;
+}
+
+function preview(){
+  const unit = $("lngUnit").value;
+  const when = new Date($("date").value || localNow());
+  MEDIA.forEach(m => {
+    const box = $("out-" + m.k);
+    const raw = inputs[m.k].value.trim();
+    const cur = num(raw);
+    const ref = lastWith(m.k, editing);
+    const u = m.kind === "tank" ? unit : m.unit;
+    const days = ref ? (when - new Date(ref.date)) / 86400000 : null;
+    inputs[m.k].classList.remove("flag");
+
+    if (raw && cur == null){ box.innerHTML = '<span class="hint">Das ist keine gültige Zahl.</span>'; return; }
+    const parts = [];
+
+    if (m.kind === "period"){
+      parts.push(ref
+        ? "<span>Zuletzt " + fmt(ref[m.k]) + " " + m.unit + " für den Zeitraum bis " + dateShort(ref.date) + "</span>"
+        : "<span>Trage den Ertrag ein, den die Anlage seit der letzten Ablesung erzeugt hat.</span>");
+      if (cur != null){
+        parts.push('<span class="big">' + fmt(cur) + " " + u + "</span>");
+        if (days > 0) parts.push("<span>" + fmt(cur / days, 2) + " " + u + " pro Tag über " + fmt(days, 1) + " Tage</span>");
+        if (cur < 0){ inputs[m.k].classList.add("flag"); parts.push('<span class="hint">Ein Ertrag kann nicht negativ sein.</span>'); }
+      }
+      box.innerHTML = parts.join(""); return;
+    }
+
+    if (!ref){
+      box.innerHTML = "<span>Erste Ablesung – der Verbrauch erscheint ab der nächsten.</span>";
+      return;
+    }
+    parts.push("<span>Zuletzt " + fmt(ref[m.k]) + " " + (m.kind === "tank" ? (ref.lngUnit || "%") : m.unit) +
+               " am " + dateShort(ref.date) + "</span>");
+
+    if (cur != null){
+      let d = null, note = "";
+      if (m.kind === "tank"){
+        if ($("lngRefill").checked) note = "Nach dem Befüllen wird kein Verbrauch berechnet.";
+        else if (unit !== (ref.lngUnit || "%")) note = "Andere Einheit als zuletzt – kein Vergleich möglich.";
+        else { d = ref[m.k] - cur; if (d < 0){ note = "Der Tank ist voller als zuletzt. Befüllung ankreuzen?"; inputs[m.k].classList.add("flag"); } }
+      } else {
+        d = cur - ref[m.k];
+        if (d < 0){ note = "Kleiner als der letzte Stand – bitte prüfen."; inputs[m.k].classList.add("flag"); }
+      }
+      if (d != null){
+        parts.push('<span class="big">' + fmt(d) + " " + u + "</span>");
+        if (days > 0) parts.push("<span>" + fmt(d / days, 2) + " " + u + " pro Tag</span>");
+      }
+      if (note) parts.push('<span class="hint">' + note + "</span>");
+    }
+    box.innerHTML = parts.join("");
+  });
+  saveDraft();
+}
+
+function saveDraft(){
+  if (editing) return;
+  const d = {date: $("date").value, note: $("note").value, lngUnit: $("lngUnit").value, lngRefill: $("lngRefill").checked};
+  KEYS.forEach(k => d[k] = inputs[k].value);
+  try { localStorage.setItem(LS_DRAFT, JSON.stringify(d)); } catch(e){}
+}
+function loadDraft(){
+  try {
+    const d = JSON.parse(localStorage.getItem(LS_DRAFT) || "null");
+    if (!d) return;
+    KEYS.forEach(k => { if (d[k]) inputs[k].value = d[k]; });
+    if (d.note) $("note").value = d.note;
+    if (d.lngUnit) $("lngUnit").value = d.lngUnit;
+    $("lngRefill").checked = !!d.lngRefill;
+  } catch(e){}
+}
+const clearDraft = () => { try { localStorage.removeItem(LS_DRAFT); } catch(e){} };
+
+function clearForm(){
+  KEYS.forEach(k => inputs[k].value = "");
+  $("note").value = "";
+  $("lngRefill").checked = false;
+  $("date").value = localNow();
+  clearDraft();
+}
+
+async function saveEntry(){
+  const date = $("date").value;
+  if (!date){ toast("Bitte ein Ablesedatum eintragen."); $("date").focus(); return; }
+
+  const rec = {date, lngUnit: $("lngUnit").value, lngRefill: $("lngRefill").checked, note: $("note").value.trim()};
+  let bad = null;
+  KEYS.forEach(k => {
+    const raw = inputs[k].value.trim();
+    rec[k] = num(raw);
+    if (raw && rec[k] == null) bad = k;
+  });
+  if (bad){ toast("Der Wert bei " + MEDIA.find(m => m.k === bad).label + " ist keine gültige Zahl."); inputs[bad].focus(); return; }
+  if (KEYS.every(k => rec[k] == null)){ toast("Bitte mindestens einen Zählerstand eintragen."); inputs.strom.focus(); return; }
+
+  if (editing){
+    Object.assign(editing, rec);
+    endEdit();
+  } else {
+    const clash = state.energy.find(r => r.date === rec.date);
+    if (clash && !(await ask("Für den " + dateLong(rec.date) + " gibt es schon eine Ablesung. Überschreiben?", "Überschreiben"))) return;
+    if (clash) Object.assign(clash, rec); else state.energy.push(rec);
+  }
+
+  clearForm();
+  commit();
+  inputs.strom.focus();
+  toast(fileOk ? "Gespeichert und in " + fileHandle.name + " geschrieben." : "Ablesung gespeichert.");
+}
+
+function startEdit(rec){
+  editing = rec;
+  $("date").value = rec.date;
+  KEYS.forEach(k => inputs[k].value = inNum(rec[k]));
+  $("lngUnit").value = rec.lngUnit || "%";
+  $("lngRefill").checked = !!rec.lngRefill;
+  $("note").value = rec.note || "";
+  $("editingText").textContent = "Ablesung vom " + dateLong(rec.date) + " wird bearbeitet.";
+  $("editingBar").classList.add("on");
+  $("sheetTitle").textContent = "Ablesung bearbeiten";
+  $("btnSave").textContent = "Änderung speichern";
+  $("sheet").scrollIntoView({behavior:"smooth", block:"start"});
+  preview();
+}
+function endEdit(){
+  editing = null;
+  $("editingBar").classList.remove("on");
+  $("sheetTitle").textContent = "Neue Ablesung";
+  $("btnSave").textContent = "Ablesung speichern";
+}
+function cancelEdit(){ endEdit(); clearForm(); renderEnergy(); }
+async function removeEntry(rec){
+  if (!(await ask("Ablesung vom " + dateLong(rec.date) + " löschen?", "Löschen", true))) return;
+  state.energy = state.energy.filter(r => r !== rec);
+  if (editing === rec){ endEdit(); clearForm(); }
+  commit();
+  toast("Ablesung gelöscht.");
+}
+
+/* ---------- Zähler-CSV ---------- */
+const HEAD = ["Datum","Strom_kWh","Wasser_m3","LNG_Rest","LNG_Einheit","LNG_Nachgefuellt","Solar_Heimpower_kWh","Solar_EET_kWh","Notiz"];
+const esc = v => { const s = v == null ? "" : String(v); return /[;"\n\r]/.test(s) ? '"' + s.replaceAll('"', '""') + '"' : s; };
+const csvOut = (head, rows) => "﻿" + [head, ...rows].map(r => r.map(esc).join(";")).join("\r\n") + "\r\n";
+
+function energyCSV(){
+  return csvOut(HEAD, state.energy.map(r => [
+    r.date, csvNum(r.strom), csvNum(r.wasser), csvNum(r.lng), r.lngUnit || "%",
+    r.lngRefill ? "ja" : "", csvNum(r.home), csvNum(r.eet), r.note || ""
+  ]));
+}
+
+function splitLine(line, sep){
+  const out = []; let s = "", q = false;
+  for (let i = 0; i < line.length; i++){
+    const c = line[i];
+    if (c === '"'){ if (q && line[i+1] === '"'){ s += '"'; i++; } else q = !q; }
+    else if (c === sep && !q){ out.push(s); s = ""; }
+    else s += c;
+  }
+  out.push(s); return out;
+}
+
+function energyFromCSV(text){
+  const t = text.replace(/^﻿/, "");
+  const lines = t.split(/\r?\n/).filter(l => l.trim() !== "");
+  if (lines.length < 2) return [];
+  const sep = (lines[0].split(";").length >= lines[0].split(",").length) ? ";" : ",";
+  const head = splitLine(lines[0], sep).map(x => x.trim());
+  const at = (cells, name) => { const i = head.indexOf(name); return i > -1 ? cells[i] : undefined; };
+  return lines.slice(1).map(line => {
+    const c = splitLine(line, sep);
+    const rec = {
+      date: (at(c, "Datum") || "").trim(),
+      strom: num(at(c, "Strom_kWh")),
+      wasser: num(at(c, "Wasser_m3")),
+      lng: num(at(c, "LNG_Rest")),
+      lngUnit: (at(c, "LNG_Einheit") || "%").trim() || "%",
+      lngRefill: /^(ja|1|true|x)$/i.test((at(c, "LNG_Nachgefuellt") || "").trim()),
+      home: num(at(c, "Solar_Heimpower_kWh")),
+      eet: num(at(c, "Solar_EET_kWh")),
+      note: (at(c, "Notiz") || "").trim()
+    };
+    if (rec.date && rec.date.length === 10) rec.date += "T00:00";
+    return rec;
+  }).filter(r => r.date && !isNaN(new Date(r.date)));
+}
+
+function mergeEnergy(list){
+  const byDate = new Map(state.energy.map(r => [r.date, r]));
+  list.forEach(r => byDate.set(r.date, r));   // Datei gewinnt bei gleichem Zeitstempel
+  state.energy = [...byDate.values()];
+}
+
+/* ---------- Zähler-Ausgabe ---------- */
+function energyCards(rows){
+  const s30 = perDay(rows, "strom", 30), sAll = perDay(rows, "strom");
+  const w30 = perDay(rows, "wasser", 30), wAll = perDay(rows, "wasser");
+  const h30 = perDay(rows, "home", 30), e30 = perDay(rows, "eet", 30);
+  const solar = (h30 == null && e30 == null) ? null : (h30 || 0) + (e30 || 0);
+  const P = state.settings;
+  const month = (rate, price) => rate != null && price != null ? " · ≈ " + fmtEur(rate * 30.44 * price, 0) + " im Monat" : "";
+  const g = gasCard(gasEstimate(rows));
+
+  // Solar: nur Ertrag. Ohne erfasste Einspeisemenge gibt es keinen Erlös und keinen Eigenverbrauch.
+  return card("Strom", fmt(s30, 2), "kWh/Tag", (sAll == null ? "Letzte 30 Tage" : "Letzte 30 Tage, insgesamt " + fmt(sAll, 2)) + month(s30, P.priceStrom), "var(--strom)") +
+    card("Wasser", fmt(w30, 3), "m³/Tag", (wAll == null ? "Letzte 30 Tage" : "Letzte 30 Tage, insgesamt " + fmt(wAll, 3)) + month(w30, P.priceWasser), "var(--wasser)") +
+    card("Solarertrag", fmt(solar, 2), "kWh/Tag", "Letzte 30 Tage: Heimpower " + fmt(h30, 2) + " + EET " + fmt(e30, 2) + " kWh/Tag", "var(--home)") +
+    card("Gastank-Reichweite", g.value, g.unit, g.sub, "var(--lng)");
+}
+
+/* ---------- Gastank-Reichweite ---------- */
+// Eine Schätzung für Kennzahl und Hinweis. Die Verbrauchsrate stammt nur aus Intervallen mit derselben
+// Einheit wie die letzte Ablesung, ohne Befüllung dazwischen; ein höherer Stand ohne Befüllungs-Haken
+// (negative Differenz) zählt nicht. Bevorzugt die 90 Tage vor der letzten Ablesung, sonst alle Intervalle.
+const DAY = 86400000;
+function gasEstimate(rows){
+  const last = lastWith("lng", null);
+  if (!last) return {status:"none"};
+  const unit = last.lngUnit || "%", lastT = new Date(last.date).getTime();
+  const usable = rows.filter(r => r.dlng != null && r.dlng >= 0 && r.tlng > 0 && (r.lngUnit || "%") === unit && new Date(r.date).getTime() <= lastT);
+  const basisOf = list => { const span = sum(list.map(r => r.tlng)); return span > 0 ? {rate: sum(list.map(r => r.dlng)) / span, days: span, n: list.length} : null; };
+  const recent = usable.filter(r => new Date(r.date).getTime() > lastT - 90 * DAY);
+  const basis = basisOf(recent) || basisOf(usable);
+  const out = {last, unit, level: last.lng, basis, elapsed: (Date.now() - lastT) / DAY};
+  if (!(last.lng > 0)) return {...out, status:"empty"};
+  if (!basis) return {...out, status:"norate"};
+  if (!(basis.rate > 0)) return {...out, status:"zero"};
+  const emptyT = lastT + last.lng / basis.rate * DAY;    // fest ab der Ablesung, unabhängig von heute
+  const daysLeft = (emptyT - Date.now()) / DAY;
+  return {...out, status: daysLeft < 0.5 ? "stale" : "ok", rate: basis.rate, emptyDate: new Date(emptyT), daysLeft};
+}
+function gasCard(g){
+  if (g.status === "none") return {value:"–", unit:"", sub:"Noch keine Ablesung des Gastanks."};
+  const stand = "Ablesung vom " + dDay(g.last.date.slice(0, 10)) + ": " + fmt(g.level, 2) + " " + g.unit;
+  if (g.status === "empty") return {value:"leer", unit:"", sub: stand + " · bitte nach dem Befüllen neu ablesen."};
+  if (g.status === "norate") return {value:"–", unit:"", sub: stand + " · für eine Schätzung fehlen zwei vergleichbare Ablesungen (gleiche Einheit, keine Befüllung dazwischen)."};
+  if (g.status === "zero") return {value:"–", unit:"", sub: stand + " · zwischen den Ablesungen kein Verbrauch messbar, daher keine Reichweite."};
+  if (g.status === "stale") return {value:"Neue Ablesung nötig", unit:"", sub:"Rechnerisch seit etwa " + fmt(Math.max(1, Math.round(-g.daysLeft)), 0) + " Tagen aufgebraucht (geschätzt am " + dDay(isoDay(g.emptyDate)) + ") · " + stand};
+  return {value:"≈ " + fmt(Math.round(g.daysLeft), 0), unit:"Tage",
+    sub:"Schätzung: leer etwa am " + dDay(isoDay(g.emptyDate)) + " · Ø " + fmt(g.rate, 2) + " " + g.unit + "/Tag · " + stand +
+      (g.elapsed > 30 ? " (" + fmt(Math.floor(g.elapsed), 0) + " Tage alt)" : "")};
+}
+
+function renderEnergy(){
+  const rows = computed();
+  $("stats").innerHTML = energyCards(rows);
+  renderCompare($("enCmp"), {energy:true, vehicles:null});
+  renderEnergyLog(rows);
+  renderEnergyChart(rows);
+  preview();
+}
+
+let logAll = false;
+const LOG_STEP = 8;
+
+function renderEnergyLog(rows){
+  const box = $("log");
+  box.innerHTML = "";
+  if (!rows.length){
+    box.innerHTML = '<p class="empty">Noch keine Ablesung gespeichert. Trage oben die aktuellen Werte ein.</p>';
+    return;
+  }
+  const list = [...rows].reverse();
+  const shown = logAll ? list.length : Math.min(list.length, LOG_STEP);
+
+  list.slice(0, shown).forEach(r => {
+    const rec = state.energy.find(x => x.date === r.date);
+    const item = document.createElement("article");
+    item.className = "item";
+
+    let cells = "";
+    MEDIA.forEach(m => {
+      const val = r[m.k], d = r["d" + m.k], days = r["t" + m.k];
+      const u = m.kind === "tank" ? (r.lngUnit || "%") : m.unit;
+      let main = "–", sub = "";
+      if (val != null){
+        main = fmt(val) + " " + u;
+        if (m.kind === "period"){
+          sub = days > 0 ? fmt(val / days, 2) + " " + u + " pro Tag" : "Zeitraum unbekannt";
+        } else {
+          sub = d == null
+            ? (m.kind === "tank" && r.lngRefill ? "nach dem Befüllen" : "kein Vergleichswert")
+            : fmt(d, 2) + " " + u + (days > 0 ? " · " + fmt(d / days, 2) + "/Tag" : "");
+        }
+      }
+      cells += '<div class="cell' + (val == null ? " off" : "") + '" data-m="' + m.k + '">' +
+               '<div class="k">' + m.label + "</div>" +
+               '<div class="v">' + main + "</div>" +
+               '<div class="d">' + sub + "</div></div>";
+    });
+
+    item.innerHTML = '<div class="top2"><span class="when">' + dateLong(r.date) + "</span>" +
+      (r.lngRefill ? '<span class="badge">Tank befüllt</span>' : "") +
+      (r.note ? '<span class="memo">' + h(r.note) + "</span>" : "") +
+      '<span class="tools"></span></div><div class="cells">' + cells + "</div>";
+
+    const tools = item.querySelector(".tools");
+    toolBtn(tools, "Bearbeiten", () => startEdit(rec));
+    toolBtn(tools, "Löschen", () => removeEntry(rec));
+    box.appendChild(item);
+  });
+
+  moreBar(box, list.length, shown, LOG_STEP, logAll, "Ablesungen", () => { logAll = !logAll; renderEnergyLog(rows); });
+}
+function toolBtn(parent, label, fn, cls){
+  const b = document.createElement("button");
+  b.className = (cls || "btn-quiet") + " btn-sm"; b.textContent = label;
+  b.addEventListener("click", fn); parent.appendChild(b); return b;
+}
+function moreBar(box, total, shown, step, all, noun, fn){
+  if (total <= step) return;
+  const bar = document.createElement("div");
+  bar.className = "morebar";
+  toolBtn(bar, all ? "Nur die letzten " + step + " zeigen" : "Ältere " + noun + " zeigen (" + (total - shown) + ")", fn, "btn-line");
+  box.appendChild(bar);
+}
+
+function renderEnergyChart(rows){
+  const m = MEDIA.find(x => x.k === chartKey);
+  const pts = rows.filter(r => r["r" + chartKey] != null)
+                  .map(r => ({t: new Date(r.date).getTime(), v: r["r" + chartKey], d: r.date}));
+  const unit = m.kind === "tank" ? (lastWith("lng", null)?.lngUnit || "%") : m.unit;
+  const ok = lineChart($("chart"), pts, {color:"var(--" + chartKey + ")", unit: unit + " pro Tag", digits:2});
+  $("chartEmpty").hidden = ok;
+}
+
+/* ============ Diagramme ============ */
+const AX = 'style="fill:var(--muted)" font-size="11"';
+function lineChart(svg, pts, o){
+  if (!pts.length){ svg.innerHTML = ""; svg.hidden = true; return false; }
+  svg.hidden = false;
+  const W = 760, H = 240, L = 58, R = 14, T = 18, B = 30;
+  const vals = pts.map(p => p.v);
+  // zero:false zoomt auf den Wertebereich, sinnvoll bei Verbrauch und Preisen
+  const maxV = Math.max(...vals, ...(o.zero === false ? [] : [0]));
+  const minV = Math.min(...vals, ...(o.zero === false ? [] : [0]));
+  const pad = maxV === minV ? Math.abs(maxV) * .1 || 1 : (maxV - minV) * .15;
+  const top = maxV + pad;
+  const bot = o.zero === false ? minV - pad : Math.min(0, minV);
+  const t0 = pts[0].t, t1 = pts[pts.length - 1].t;
+  const x = t => pts.length === 1 || t1 === t0 ? (L + (W - L - R) / 2) : L + (t - t0) / (t1 - t0) * (W - L - R);
+  const y = v => H - B - (v - bot) / (top - bot) * (H - T - B);
+  const dg = o.digits ?? 2;
+
+  let g = "";
+  for (let i = 0; i <= 3; i++){
+    const v = bot + (top - bot) * i / 3, yy = y(v);
+    g += '<line x1="' + L + '" y1="' + yy + '" x2="' + (W - R) + '" y2="' + yy + '" style="stroke:var(--line-soft)" stroke-width="1"/>';
+    g += '<text x="' + (L - 8) + '" y="' + (yy + 4) + '" text-anchor="end" ' + AX + '>' + fmt(v, dg) + "</text>";
+  }
+  if (pts.length > 1){
+    const line = pts.map(p => x(p.t) + "," + y(p.v)).join(" ");
+    g += '<polygon points="' + x(t0) + "," + y(bot) + " " + line + " " + x(t1) + "," + y(bot) + '" style="fill:' + o.color + '" opacity=".10"/>';
+    g += '<polyline points="' + line + '" fill="none" style="stroke:' + o.color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  }
+  if (o.avg != null){
+    const ya = y(o.avg);
+    g += '<line x1="' + L + '" y1="' + ya + '" x2="' + (W - R) + '" y2="' + ya + '" style="stroke:' + o.color + '" stroke-dasharray="4 4" opacity=".6"/>';
+    g += '<text x="' + (W - R) + '" y="' + (ya - 5) + '" text-anchor="end" ' + AX + '>Ø ' + fmt(o.avg, dg) + "</text>";
+  }
+  pts.forEach(p => { g += '<circle cx="' + x(p.t) + '" cy="' + y(p.v) + '" r="3.5" style="fill:' + o.color + '"><title>' + dateShort(p.d) + ": " + fmt(p.v, dg) + " " + h(o.unit) + "</title></circle>"; });
+  g += '<text x="' + L + '" y="' + (H - 8) + '" ' + AX + '>' + dateShort(pts[0].d) + "</text>";
+  if (pts.length > 1) g += '<text x="' + (W - R) + '" y="' + (H - 8) + '" text-anchor="end" ' + AX + '>' + dateShort(pts[pts.length - 1].d) + "</text>";
+  g += '<text x="' + L + '" y="' + (T - 4) + '" ' + AX + '>' + h(o.unit) + "</text>";
+  svg.innerHTML = g;
+  return true;
+}
+
+// bars: [{label, parts:[{v, color, name}]}] – gestapelt
+function barChart(svg, bars, o){
+  const totals = bars.map(b => sum(b.parts.map(p => p.v)));
+  if (!totals.some(t => t > 0)){ svg.innerHTML = ""; svg.hidden = true; return false; }
+  svg.hidden = false;
+  const W = 760, H = 240, L = 58, R = 14, T = 18, B = 30;
+  const top = Math.max(...totals) * 1.12;
+  const y = v => H - B - v / top * (H - T - B);
+  const slot = (W - L - R) / bars.length, bw = slot * .62;
+  let g = "";
+  for (let i = 0; i <= 3; i++){
+    const v = top * i / 3, yy = y(v);
+    g += '<line x1="' + L + '" y1="' + yy + '" x2="' + (W - R) + '" y2="' + yy + '" style="stroke:var(--line-soft)" stroke-width="1"/>';
+    g += '<text x="' + (L - 8) + '" y="' + (yy + 4) + '" text-anchor="end" ' + AX + '>' + fmt(v, 0) + "</text>";
+  }
+  bars.forEach((b, i) => {
+    const x0 = L + i * slot + (slot - bw) / 2;
+    let acc = 0;
+    const tip = b.label + ": " + b.parts.map(p => p.name + " " + fmtEur(p.v)).join(", ");
+    b.parts.forEach(p => {
+      if (!(p.v > 0)) return;
+      const y1 = y(acc + p.v), y0 = y(acc);
+      g += '<rect x="' + x0 + '" y="' + y1 + '" width="' + bw + '" height="' + Math.max(0, y0 - y1) + '" rx="2" style="fill:' + p.color + '"><title>' + h(tip) + "</title></rect>";
+      acc += p.v;
+    });
+    g += '<text x="' + (x0 + bw / 2) + '" y="' + (H - 10) + '" text-anchor="middle" ' + AX + '>' + h(b.label) + "</text>";
+  });
+  g += '<text x="' + L + '" y="' + (T - 4) + '" ' + AX + '>' + h(o.unit) + "</text>";
+  svg.innerHTML = g;
+  return true;
+}
+
+/* =====================================================================
+   FAHRZEUGE
+   ===================================================================== */
+const FUELS = {
+  benzin:{label:"Benzin", unit:"L"}, diesel:{label:"Diesel", unit:"L"},
+  elektro:{label:"Elektro", unit:"kWh"}, hybrid:{label:"Hybrid (Benzin)", unit:"L"},
+  lpg:{label:"Autogas (LPG)", unit:"L"}, cng:{label:"Erdgas (CNG)", unit:"kg"}
+};
+const COSTCATS = ["Versicherung","Kfz-Steuer","Inspektion/Wartung","Reparatur","Reifen","HU/AU","Leasing/Finanzierung",
+  "Stellplatz/Garage","Parken/Maut","Pflege/Wäsche","Zubehör","Sonstiges"];
+const INTERVALS = {once:{label:"einmalig", m:0}, m1:{label:"monatlich", m:1}, m3:{label:"vierteljährlich", m:3},
+  m6:{label:"halbjährlich", m:6}, m12:{label:"jährlich", m:12}};
+const TYPE_LABEL = {fuel:"Tanken", cost:"Kosten", km:"Kilometerstand"};
+
+let curVeh = null, veType = "fuel", veEditing = null, vehChart = "cons", vehLogFilter = "all", vehLogAll = false, dvEditing = null;
+const veh = id => state.vehicles.find(v => v.id === id);
+const fuelUnit = v => (FUELS[v.fuel] || FUELS.benzin).unit;
+const vEntries = vid => state.ventries.filter(e => e.vid === vid)
+  .sort((a, b) => a.date.localeCompare(b.date) || ((a.km ?? 0) - (b.km ?? 0)));
+
+// Verbrauch von Volltankung zu Volltankung; Einträge ohne km oder Menge unterbrechen die Kette.
+function consumption(fuels){
+  const pts = []; let lastFull = null, acc = 0, sumA = 0, sumD = 0;
+  fuels.forEach(f => {
+    if (f.km == null || f.amount == null){ lastFull = null; acc = 0; return; }
+    if (lastFull == null){ if (f.full) lastFull = f.km; return; }
+    acc += f.amount;
+    if (!f.full) return;
+    const dist = f.km - lastFull;
+    if (dist > 0){ pts.push({id:f.id, date:f.date, km:f.km, dist, v:acc / dist * 100}); sumA += acc; sumD += dist; }
+    lastFull = f.km; acc = 0;
+  });
+  return {pts, avg: sumD ? sumA / sumD * 100 : null};
+}
+
+function vehStats(v){
+  const es = vEntries(v.id);
+  const kmPts = es.filter(e => e.km != null).map(e => ({date:e.date, km:e.km}));
+  if (v.startKm != null) kmPts.unshift({date: v.startDate || es[0]?.date || isoDay(), km: v.startKm});
+  const kms = kmPts.map(p => p.km);
+  const kmNow = kms.length ? Math.max(...kms) : null;
+  const driven = kms.length ? kmNow - Math.min(...kms) : null;
+  const dates = kmPts.map(p => p.date).sort();
+  const span = dates.length > 1 ? (new Date(dates[dates.length - 1]) - new Date(dates[0])) / 86400000 : 0;
+  const kmYear = span >= 30 && driven > 0 ? driven / span * 365 : null;
+
+  const fuels = es.filter(e => e.type === "fuel");
+  const cons = consumption(fuels);
+  const fuelCost = sum(fuels.map(f => f.total));
+  const priced = fuels.filter(f => f.total != null && f.amount > 0);
+  const ppu = priced.length ? sum(priced.map(f => f.total)) / sum(priced.map(f => f.amount)) : null;
+  const costs = es.filter(e => e.type === "cost");
+  const otherCost = sum(costs.map(c => c.total));
+  const total = fuelCost + otherCost;
+  const perKm = driven > 0 && total > 0 ? total / driven : null;
+
+  const since = addMonths(isoDay(), -12);
+  const last12 = es.filter(e => e.date > since);
+  const fuel12 = sum(last12.filter(e => e.type === "fuel").map(e => e.total));
+  const other12 = sum(last12.filter(e => e.type === "cost").map(e => e.total));
+
+  // Wiederkehrende Kosten: je Kategorie zählt die jüngste Zahlung
+  const latest = {};
+  costs.forEach(c => { if (INTERVALS[c.interval]?.m && (!latest[c.cat] || latest[c.cat].date <= c.date)) latest[c.cat] = c; });
+  const rec = Object.values(latest);
+  const fixed = rec.length ? sum(rec.map(c => c.total / INTERVALS[c.interval].m)) : null;
+  const dues = rec.map(c => ({label: c.cat + (c.note ? " · " + c.note : ""), date: addMonths(c.date, INTERVALS[c.interval].m), amount: c.total}));
+  if (v.huDue) dues.push({label:"Hauptuntersuchung (HU/AU)", date: endOfMonth(v.huDue)});
+  if (v.serviceDate) dues.push({label:"Inspektion", date: v.serviceDate});
+  dues.sort((a, b) => a.date.localeCompare(b.date));
+  const serviceKmLeft = v.serviceKm != null && kmNow != null ? v.serviceKm - kmNow : null;
+
+  return {es, kmNow, driven, kmYear, fuels, cons, fuelCost, ppu, costs, otherCost, total, perKm, fuel12, other12, rec, fixed, dues, serviceKmLeft};
+}
+
+function renderKfz(){
+  const vs = state.vehicles;
+  if (!veh(curVeh)) curVeh = veh(state.settings.lastVeh) ? state.settings.lastVeh : vs[0]?.id || null;
+  const pills = $("vehPills");
+  pills.innerHTML = "";
+  if (vs.length > 1) vs.forEach(v => {
+    const b = document.createElement("button");
+    b.className = "tab"; b.textContent = v.name;
+    b.setAttribute("aria-pressed", v.id === curVeh);
+    b.addEventListener("click", () => { curVeh = v.id; state.settings.lastVeh = v.id; saveLocal(); veCancel(); renderKfz(); });
+    pills.appendChild(b);
+  });
+  $("vehEmpty").hidden = !!vs.length;
+  $("vehBody").hidden = !vs.length;
+  if (!curVeh) return;
+
+  const v = veh(curVeh), S = vehStats(v), u = fuelUnit(v);
+  const sub = [v.make, v.model].filter(Boolean).join(" ");
+  $("vehCard").innerHTML = '<div><div class="vn">' + h(v.name) + (v.plate ? ' <span class="plate">' + h(v.plate) + "</span>" : "") + "</div>" +
+    '<div class="vs">' + [sub, v.year, (FUELS[v.fuel] || FUELS.benzin).label, v.startDate ? "erfasst seit " + dDay(v.startDate) : ""].filter(Boolean).map(h).join(" · ") + "</div></div>";
+  toolBtn($("vehCard"), "Fahrzeug bearbeiten", () => openVehForm(v), "btn-line");
+
+  const lastCons = S.cons.pts[S.cons.pts.length - 1];
+  const nextDue = S.dues.find(d => daysUntil(d.date) >= -60);
+  const fixedTxt = S.rec.length ? S.rec.map(c => c.cat).join(", ") : "Keine wiederkehrenden Kosten";
+  $("vehStats").innerHTML =
+    card("Kilometerstand", fmt(S.kmNow, 0), "km", S.kmYear ? "≈ " + fmt(S.kmYear, 0) + " km pro Jahr" : (S.driven ? fmt(S.driven, 0) + " km erfasst" : "Noch kein Kilometerstand"), "var(--kfz)") +
+    card("Ø Verbrauch", fmt(S.cons.avg, 1), u + "/100 km", lastCons ? "Zuletzt " + fmt(lastCons.v, 1) + " über " + fmt(lastCons.dist, 0) + " km" : "Ab zwei Volltankungen", "var(--kfz)") +
+    card("Kosten pro km", S.perKm != null ? fmtEur(S.perKm, 2) : "–", "", S.total ? fmtEur(S.total, 0) + " insgesamt, " + (S.ppu ? "Ø " + fmtEur(S.ppu, 3) + "/" + u : "") : "Noch keine Kosten", "var(--kfz)") +
+    card("Fixkosten", S.fixed != null ? fmtEur(S.fixed, 0) : "–", S.fixed != null ? "pro Monat" : "", h(fixedTxt), "var(--kfz)") +
+    card("Letzte 12 Monate", fmtEur(S.fuel12 + S.other12, 0), "", "Tanken " + fmtEur(S.fuel12, 0) + " · Sonstiges " + fmtEur(S.other12, 0), "var(--kfz)") +
+    card("Nächster Termin", nextDue ? h(dueText(daysUntil(nextDue.date)).txt) : "–", "", nextDue ? h(nextDue.label) + " · " + dDay(nextDue.date) : "Keine Termine eingetragen", "var(--kfz)");
+
+  // Formular-Beschriftungen passend zum Antrieb
+  const elec = u === "kWh";
+  $("veAmountLabel").textContent = (elec ? "Geladen" : "Getankt") + " (" + u + ")";
+  $("vePpuLabel").textContent = "Preis pro " + (u === "L" ? "Liter" : u) + " (€)";
+  $("veFullLabel").textContent = elec ? "Voll geladen (100 %)" : "Vollgetankt";
+  $("veSeg").querySelector('[data-t="fuel"]').textContent = elec ? "Laden" : "Tanken";
+  if (!$("veDate").value) $("veDate").value = isoDay();
+  $("stationList").innerHTML = [...new Set(state.ventries.map(e => e.station).filter(Boolean))].map(s => "<option value=\"" + h(s) + "\">").join("");
+  setVeType(veType, true);
+  vePreview();
+
+  renderVehChart(v, S);
+  renderDues(S);
+  renderCompare($("vehCmp"), {energy:false, vehicles:[v]});
+  renderVehLog(v, S);
+}
+
+function renderDues(S){
+  const box = $("vehDues");
+  const rows = S.dues.map(d => {
+    const t = dueText(daysUntil(d.date), 30);
+    return '<div class="due"><span>' + h(d.label) + '</span><span class="da">' + (d.amount != null ? fmtEur(d.amount) : "") + '</span><span class="dd ' + t.cls + '">' + dDay(d.date) + " · " + t.txt + "</span></div>";
+  });
+  if (S.serviceKmLeft != null){
+    const cls = S.serviceKmLeft < 0 ? "bad" : S.serviceKmLeft < 1500 ? "soon" : "";
+    rows.push('<div class="due"><span>Inspektion nach Kilometern</span><span class="da"></span><span class="dd ' + cls + '">' +
+      (S.serviceKmLeft < 0 ? fmt(-S.serviceKmLeft, 0) + " km überzogen" : "noch " + fmt(S.serviceKmLeft, 0) + " km") + "</span></div>");
+  }
+  box.innerHTML = rows.length ? rows.join("") : '<p class="empty" style="padding:10px 0">HU, Inspektion und wiederkehrende Kosten erscheinen hier mit ihrem nächsten Termin.</p>';
+}
+
+function renderVehChart(v, S){
+  const u = fuelUnit(v);
+  const tabs = [["cons", "Verbrauch"], ["costs", "Kosten pro Monat"], ["ppu", "Preis pro " + (u === "L" ? "Liter" : u)]];
+  const box = $("vehChartTabs");
+  box.innerHTML = "";
+  tabs.forEach(([k, label]) => {
+    const b = document.createElement("button");
+    b.className = "tab"; b.textContent = label; b.setAttribute("aria-pressed", k === vehChart);
+    b.addEventListener("click", () => { vehChart = k; renderVehChart(v, S); });
+    box.appendChild(b);
+  });
+  const svg = $("vehChart"), empty = $("vehChartEmpty"), legend = $("vehLegend");
+  legend.innerHTML = "";
+  let ok = false;
+  if (vehChart === "cons"){
+    ok = lineChart(svg, S.cons.pts.map(p => ({t: new Date(p.date).getTime(), v: p.v, d: p.date})),
+      {color:"var(--kfz)", unit: u + "/100 km", digits:1, zero:false, avg: S.cons.pts.length > 1 ? S.cons.avg : null});
+    empty.textContent = "Der Verbrauch erscheint ab der zweiten Volltankung mit Kilometerstand.";
+  } else if (vehChart === "ppu"){
+    const pts = S.fuels.filter(f => f.total != null && f.amount > 0).map(f => ({t: new Date(f.date).getTime(), v: f.total / f.amount, d: f.date}));
+    ok = lineChart(svg, pts, {color:"var(--kfz)", unit: "€ pro " + u, digits:3, zero:false});
+    empty.textContent = "Noch keine Tankstopps mit Menge und Betrag.";
+  } else {
+    const now = new Date(), buckets = [];
+    for (let i = 11; i >= 0; i--){
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      buckets.push({key: d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"), label: d.toLocaleDateString("de-DE", {month:"short"}).replace(".", ""), fuel:0, other:0});
+    }
+    S.es.forEach(e => { const b = buckets.find(x => x.key === e.date.slice(0, 7)); if (b && e.type !== "km") b[e.type === "fuel" ? "fuel" : "other"] += e.total || 0; });
+    ok = barChart(svg, buckets.map(b => ({label: b.label, parts: [
+      {v: b.fuel, color: "var(--kfz)", name: u === "kWh" ? "Laden" : "Tanken"},
+      {v: b.other, color: "var(--lng)", name: "Sonstiges"}]})), {unit: "€ pro Monat"});
+    if (ok) legend.innerHTML = '<span><i style="background:var(--kfz)"></i>' + (u === "kWh" ? "Laden" : "Tanken") + '</span><span><i style="background:var(--lng)"></i>Sonstige Kosten</span>';
+    empty.textContent = "In den letzten 12 Monaten gibt es noch keine Kosten.";
+  }
+  empty.hidden = ok;
+}
+
+function renderVehLog(v, S){
+  const tabsBox = $("vehLogTabs");
+  tabsBox.innerHTML = "";
+  [["all", "Alle"], ["fuel", fuelUnit(v) === "kWh" ? "Laden" : "Tanken"], ["cost", "Kosten"], ["km", "Kilometerstand"]].forEach(([k, label]) => {
+    const n = k === "all" ? S.es.length : S.es.filter(e => e.type === k).length;
+    const b = document.createElement("button");
+    b.className = "tab"; b.innerHTML = h(label) + '<span class="cnt">' + n + "</span>";
+    b.setAttribute("aria-pressed", k === vehLogFilter);
+    b.addEventListener("click", () => { vehLogFilter = k; renderVehLog(v, S); });
+    tabsBox.appendChild(b);
+  });
+
+  const box = $("vehLog");
+  box.innerHTML = "";
+  const list = S.es.filter(e => vehLogFilter === "all" || e.type === vehLogFilter).reverse();
+  if (!list.length){ box.innerHTML = '<p class="empty">Noch keine Einträge.</p>'; return; }
+  const u = fuelUnit(v);
+  const consById = new Map(S.cons.pts.map(p => [p.id, p]));
+  const shown = vehLogAll ? list.length : Math.min(list.length, LOG_STEP);
+
+  list.slice(0, shown).forEach(e => {
+    const item = document.createElement("article");
+    item.className = "item";
+    const c = (k, val, sub) => '<div class="cell" style="--c:var(--kfz)"><div class="k">' + k + '</div><div class="v">' + val + '</div><div class="d">' + (sub || "") + "</div></div>";
+    let cells = "";
+    if (e.type === "fuel"){
+      const cp = consById.get(e.id);
+      cells += c(u === "kWh" ? "Geladen" : "Getankt", fmt(e.amount, 2) + " " + u, e.full ? (u === "kWh" ? "voll geladen" : "vollgetankt") : "Teilbetankung");
+      cells += c("Betrag", fmtEur(e.total), e.total != null && e.amount ? fmtEur(e.total / e.amount, 3) + " pro " + u : "");
+      cells += c("Verbrauch", cp ? fmt(cp.v, 1) + " " + u + "/100 km" : "–", cp ? "über " + fmt(cp.dist, 0) + " km" : (e.full ? "erste Volltankung" : ""));
+      cells += c("Kilometerstand", e.km != null ? fmt(e.km, 0) + " km" : "–", e.station ? h(e.station) : "");
+    } else if (e.type === "cost"){
+      const iv = INTERVALS[e.interval] || INTERVALS.once;
+      cells += c("Kategorie", h(e.cat), iv.label);
+      cells += c("Betrag", fmtEur(e.total), iv.m ? "≈ " + fmtEur(e.total / iv.m) + " pro Monat" : "");
+      if (e.km != null) cells += c("Kilometerstand", fmt(e.km, 0) + " km", "");
+    } else {
+      cells += c("Kilometerstand", fmt(e.km, 0) + " km", "");
+    }
+    item.innerHTML = '<div class="top2"><span class="when">' + dDay(e.date) + '</span><span class="badge" style="--c:var(--kfz)">' + TYPE_LABEL[e.type] + "</span>" +
+      (e.note ? '<span class="memo">' + h(e.note) + "</span>" : "") + '<span class="tools"></span></div><div class="cells">' + cells + "</div>";
+    const tools = item.querySelector(".tools");
+    toolBtn(tools, "Bearbeiten", () => veStartEdit(e));
+    toolBtn(tools, "Löschen", () => veRemove(e));
+    box.appendChild(item);
+  });
+  moreBar(box, list.length, shown, LOG_STEP, vehLogAll, "Einträge", () => { vehLogAll = !vehLogAll; renderVehLog(v, S); });
+}
+
+/* ---------- Fahrzeug-Einträge ---------- */
+function setVeType(t, quiet){
+  veType = t;
+  $("veSeg").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.t === t));
+  document.querySelectorAll("#vehSheet [data-for]").forEach(el => el.hidden = !el.dataset.for.split(" ").includes(t));
+  $("veKmLabel").textContent = t === "cost" ? "Kilometerstand (optional)" : "Kilometerstand";
+  if (!quiet) vePreview();
+}
+const veFields = ["veKm", "veAmount", "vePpu", "veTotal", "veCost", "veStation", "veNote"];
+function veClear(){
+  veFields.forEach(id => $(id).value = "");
+  $("veFull").checked = true;
+  $("veDate").value = isoDay();
+  $("veInterval").value = "once";
+}
+function veCancel(){
+  veEditing = null;
+  $("veEditingBar").classList.remove("on");
+  $("veTitle").textContent = "Neuer Eintrag";
+  $("btnVeSave").textContent = "Eintrag speichern";
+  veClear();
+}
+function veStartEdit(e){
+  veEditing = e;
+  setVeType(e.type, true);
+  $("veDate").value = e.date;
+  $("veKm").value = inNum(e.km);
+  $("veAmount").value = inNum(e.amount);
+  $("vePpu").value = e.type === "fuel" && e.total != null && e.amount ? inNum(round(e.total / e.amount, 3)) : "";
+  $("veTotal").value = e.type === "fuel" ? inNum(e.total) : "";
+  $("veCost").value = e.type === "cost" ? inNum(e.total) : "";
+  $("veFull").checked = e.full !== false;
+  $("veStation").value = e.station || "";
+  if (e.cat) $("veCat").value = e.cat;
+  $("veInterval").value = e.interval || "once";
+  $("veNote").value = e.note || "";
+  $("veEditingText").textContent = TYPE_LABEL[e.type] + " vom " + dDay(e.date) + " wird bearbeitet.";
+  $("veEditingBar").classList.add("on");
+  $("veTitle").textContent = "Eintrag bearbeiten";
+  $("btnVeSave").textContent = "Änderung speichern";
+  $("vehSheet").scrollIntoView({behavior:"smooth", block:"start"});
+  vePreview();
+}
+async function veRemove(e){
+  if (!(await ask(TYPE_LABEL[e.type] + " vom " + dDay(e.date) + " löschen?", "Löschen", true))) return;
+  state.ventries = state.ventries.filter(x => x !== e);
+  if (veEditing === e) veCancel();
+  commit();
+  toast("Eintrag gelöscht.");
+}
+
+// Liest das Formular; gibt {rec} oder {err, field} zurück
+function veRead(){
+  const t = veType, date = $("veDate").value;
+  if (!date) return {err:"Bitte ein Datum eintragen.", field:"veDate"};
+  const read = id => { const raw = $(id).value.trim(); const v = num(raw); return {raw, v, bad: raw && v == null}; };
+  const km = read("veKm");
+  if (km.bad) return {err:"Der Kilometerstand ist keine gültige Zahl.", field:"veKm"};
+  const rec = {vid:curVeh, type:t, date, km:km.v, note:$("veNote").value.trim()};
+  if (t === "fuel"){
+    const a = read("veAmount"), p = read("vePpu"), tot = read("veTotal");
+    for (const [x, id] of [[a, "veAmount"], [p, "vePpu"], [tot, "veTotal"]]) if (x.bad) return {err:"Bitte eine gültige Zahl eintragen.", field:id};
+    let amount = a.v, total = tot.v;
+    if (total == null && amount != null && p.v != null) total = round(amount * p.v, 2);
+    if (amount == null && total != null && p.v) amount = round(total / p.v, 2);
+    if (amount == null) return {err:"Bitte die getankte Menge eintragen.", field:"veAmount"};
+    Object.assign(rec, {amount, total, full:$("veFull").checked, station:$("veStation").value.trim()});
+  } else if (t === "cost"){
+    const c = read("veCost");
+    if (c.v == null) return {err:"Bitte einen Betrag eintragen.", field:"veCost"};
+    Object.assign(rec, {total:c.v, cat:$("veCat").value, interval:$("veInterval").value});
+  } else if (km.v == null) return {err:"Bitte den Kilometerstand eintragen.", field:"veKm"};
+  return {rec};
+}
+
+function vePreview(){
+  const box = $("vePreview"), v = veh(curVeh);
+  if (!v){ box.innerHTML = ""; return; }
+  const u = fuelUnit(v), parts = [];
+  ["veKm", "veAmount", "vePpu", "veTotal", "veCost"].forEach(id => $(id).classList.toggle("flag", !!$(id).value.trim() && num($(id).value) == null));
+  const km = num($("veKm").value), date = $("veDate").value || isoDay();
+  const others = vEntries(v.id).filter(e => e !== veEditing);
+  const prevKm = others.filter(e => e.km != null && e.date <= date).pop();
+  if (km != null && prevKm){
+    const d = km - prevKm.km;
+    if (d < 0){ $("veKm").classList.add("flag"); parts.push('<span class="hint">Kleiner als am ' + dDay(prevKm.date) + " (" + fmt(prevKm.km, 0) + " km) – bitte prüfen.</span>"); }
+    else parts.push("<span>" + fmt(d, 0) + " km seit " + dDay(prevKm.date) + "</span>");
+  } else if (veType !== "cost" && !prevKm && v.startKm == null) parts.push("<span>Erster Kilometerstand für dieses Fahrzeug.</span>");
+
+  if (veType === "fuel"){
+    const a = num($("veAmount").value), p = num($("vePpu").value), t = num($("veTotal").value);
+    const total = t ?? (a != null && p != null ? a * p : null);
+    const amount = a ?? (t != null && p ? t / p : null);
+    if (amount != null && total != null){
+      parts.unshift('<span class="big">' + fmtEur(total) + "</span>");
+      parts.push("<span>" + fmtEur(total / amount, 3) + " pro " + u + (t == null || a == null ? " (berechnet)" : "") + "</span>");
+    }
+    if (amount != null && km != null && $("veFull").checked){
+      const probe = {id:"__probe", date, km, amount, full:true};
+      const fuels = [...others.filter(e => e.type === "fuel"), probe].sort((x, y) => x.date.localeCompare(y.date) || ((x.km ?? 0) - (y.km ?? 0)));
+      const cp = consumption(fuels).pts.find(p2 => p2.id === "__probe");
+      if (cp) parts.push('<span class="big">' + fmt(cp.v, 1) + " " + u + "/100 km</span><span>seit der letzten Volltankung</span>");
+    }
+    if (v.tank && amount > v.tank * 1.05) parts.push('<span class="hint">Mehr als die Tankgröße (' + fmt(v.tank, 0) + " " + u + ").</span>");
+  }
+  if (veType === "cost"){
+    const c = num($("veCost").value), iv = INTERVALS[$("veInterval").value];
+    if (c != null && iv.m) parts.push('<span class="big">' + fmtEur(c / iv.m) + "</span><span>pro Monat · nächste Zahlung am " + dDay(addMonths(date, iv.m)) + "</span>");
+  }
+  box.innerHTML = parts.join("");
+}
+
+function veSave(){
+  const r = veRead();
+  if (r.err){ toast(r.err); $(r.field).focus(); return; }
+  if (veEditing){ Object.assign(veEditing, r.rec); veCancel(); }
+  else { state.ventries.push({id:uid(), ...r.rec}); veClear(); }
+  commit();
+  toast(TYPE_LABEL[r.rec.type] + " gespeichert.");
+  $("veKm").focus();
+}
+
+/* ---------- Fahrzeug anlegen/bearbeiten ---------- */
+const DV = {dvName:"name", dvPlate:"plate", dvMake:"make", dvModel:"model", dvFuel:"fuel", dvStartDate:"startDate", dvHu:"huDue", dvSvcDate:"serviceDate", dvVin:"vin", dvNotes:"notes"};
+const DVN = {dvYear:"year", dvTank:"tank", dvStartKm:"startKm", dvPrice:"price", dvSvcKm:"serviceKm"};
+function openVehForm(v){
+  dvEditing = v || null;
+  $("dvTitle").textContent = v ? "Fahrzeug bearbeiten" : "Fahrzeug anlegen";
+  Object.entries(DV).forEach(([id, k]) => $(id).value = v ? (v[k] ?? "") : "");
+  Object.entries(DVN).forEach(([id, k]) => $(id).value = v ? inNum(v[k]) : "");
+  if (!v){ $("dvFuel").value = "benzin"; $("dvStartDate").value = isoDay(); }
+  $("dvDelete").hidden = !v;
+  dvFuelChanged();
+  $("dlgVeh").showModal();
+  $("dvName").focus();
+}
+function dvFuelChanged(){ $("dvTankLabel").textContent = ($("dvFuel").value === "elektro" ? "Akku nutzbar" : "Tankgröße") + " (" + FUELS[$("dvFuel").value].unit + ")"; }
+function saveVeh(){
+  const name = $("dvName").value.trim();
+  if (!name){ toast("Bitte einen Namen eintragen."); $("dvName").focus(); return; }
+  const rec = {};
+  Object.entries(DV).forEach(([id, k]) => rec[k] = $(id).value.trim() || null);
+  for (const [id, k] of Object.entries(DVN)){
+    const raw = $(id).value.trim(); rec[k] = num(raw);
+    if (raw && rec[k] == null){ toast("Bitte eine gültige Zahl eintragen."); $(id).focus(); return; }
+  }
+  rec.name = name;
+  if (dvEditing) Object.assign(dvEditing, rec);
+  else { const v = {id:uid(), ...rec}; state.vehicles.push(v); curVeh = v.id; state.settings.lastVeh = v.id; }
+  $("dlgVeh").close();
+  commit();
+  toast(name + " gespeichert.");
+}
+async function deleteVeh(){
+  const v = dvEditing; if (!v) return;
+  const n = state.ventries.filter(e => e.vid === v.id).length;
+  if (!(await ask(v.name + " mit " + n + " Einträgen endgültig löschen?", "Endgültig löschen", true))) return;
+  state.vehicles = state.vehicles.filter(x => x !== v);
+  state.ventries = state.ventries.filter(e => e.vid !== v.id);
+  curVeh = null;
+  $("dlgVeh").close();
+  commit();
+  toast("Fahrzeug gelöscht.");
+}
+
+/* =====================================================================
+   KÜHLEN & GEFRIEREN
+   ===================================================================== */
+const APPL_TYPES = {
+  kuehl:{label:"Kühlschrank", frozen:false}, gefrier:{label:"Gefrierschrank", frozen:true},
+  truhe:{label:"Gefriertruhe", frozen:true}, fach:{label:"Gefrierfach", frozen:true}
+};
+// fz = Monate im Gefrierer, kd = Tage im Kühlschrank (Richtwerte)
+const FOODCATS = [
+  {k:"fleisch", label:"Fleisch", fz:6, kd:3}, {k:"hack", label:"Hackfleisch", fz:3, kd:1},
+  {k:"gefluegel", label:"Geflügel", fz:6, kd:2}, {k:"fisch", label:"Fisch & Meeresfrüchte", fz:4, kd:1},
+  {k:"wurst", label:"Wurst & Aufschnitt", fz:2, kd:5}, {k:"gemuese", label:"Gemüse", fz:12, kd:5},
+  {k:"obst", label:"Obst & Beeren", fz:10, kd:5}, {k:"brot", label:"Brot & Backwaren", fz:3, kd:4},
+  {k:"kuchen", label:"Kuchen & Gebäck", fz:3, kd:3}, {k:"gericht", label:"Fertiggericht & Reste", fz:3, kd:3},
+  {k:"suppe", label:"Suppe, Brühe & Soße", fz:4, kd:3}, {k:"milch", label:"Milchprodukte & Käse", fz:3, kd:7},
+  {k:"eis", label:"Eis & Desserts", fz:6, kd:3}, {k:"kraeuter", label:"Kräuter", fz:8, kd:5},
+  {k:"sonst", label:"Sonstiges", fz:6, kd:4}
+];
+const UNITS = ["Stück", "Portion", "Beutel", "Dose", "Packung", "g", "kg", "ml", "l"];
+const catOf = k => FOODCATS.find(c => c.k === k) || FOODCATS[FOODCATS.length - 1];
+
+let curAppl = "all", invShowOut = false, invMode = "all", daEditing = null, itEditing = null, itPreset = {}, bbTouched = false, takeItems = [];
+const selected = new Set();
+const appl = id => state.appliances.find(a => a.id === id);
+const isFrozenAppl = a => a ? !!APPL_TYPES[a.type]?.frozen : true;
+const isFrozen = it => isFrozenAppl(appl(it.applianceId));
+const stock = () => state.items.filter(i => !i.outDate);
+const itemById = id => state.items.find(i => i.id === id);
+const PLURAL = {Portion:"Portionen", Dose:"Dosen", Packung:"Packungen"};
+const qtyText = it => fmt(it.qty, 2) + " " + (it.qty !== 1 && PLURAL[it.unit] || it.unit);
+const whereText = it => { const a = appl(it.applianceId); return a ? a.name + (it.comp ? " · " + it.comp : "") : "Kein Gerät"; };
+
+function itemStatus(it){
+  if (!it.bestBefore) return {cls:"", txt:"ohne Datum", days:null};
+  const d = daysUntil(it.bestBefore);
+  const soon = isFrozen(it) ? 30 : 2;
+  const cls = d < 0 ? "bad" : d <= soon ? "soon" : "";
+  const txt = d < -1 ? "Datum seit " + (-d) + " Tagen überschritten" : d === -1 ? "Datum seit gestern überschritten" : d === 0 ? "Datum ist heute"
+    : d === 1 ? "Datum ist morgen" : d <= 90 ? "noch " + d + " Tage" : "noch " + Math.round(d / 30.4) + " Monate";
+  return {cls, txt, days:d};
+}
+
+// Nächster freier Code, z. B. HS00042
+function codeAt(n){ return (state.settings.codePrefix || "HS") + String(n).padStart(5, "0"); }
+function peekCodes(count){
+  const used = new Set(state.items.map(i => i.code));
+  const out = []; let n = state.settings.nextCode;
+  while (out.length < count){ const c = codeAt(n++); if (!used.has(c)) out.push(c); }
+  return {codes: out, next: n};
+}
+function takeCodes(count){ const r = peekCodes(count); state.settings.nextCode = r.next; return r.codes; }
+
+function renderKalt(){
+  const has = state.appliances.length > 0;
+  $("kaltEmpty").hidden = has;
+  $("kaltBody").hidden = !has;
+  if (!has) return;
+  if (curAppl !== "all" && !appl(curAppl)) curAppl = "all";
+
+  const inStock = stock();
+  const pills = $("applPills");
+  pills.innerHTML = "";
+  [{id:"all", name:"Alle Geräte"}, ...state.appliances].forEach(a => {
+    const n = a.id === "all" ? inStock.length : inStock.filter(i => i.applianceId === a.id).length;
+    const b = document.createElement("button");
+    b.className = "tab"; b.innerHTML = h(a.name) + '<span class="cnt">' + n + "</span>";
+    b.setAttribute("aria-pressed", a.id === curAppl);
+    b.addEventListener("click", () => { curAppl = a.id; selected.clear(); renderKalt(); });
+    pills.appendChild(b);
+  });
+  $("btnApplEdit").hidden = curAppl === "all";
+
+  const scope = inStock.filter(i => curAppl === "all" || i.applianceId === curAppl);
+  const st = scope.map(i => ({i, s: itemStatus(i)}));
+  const soon = st.filter(x => x.s.cls === "soon"), bad = st.filter(x => x.s.cls === "bad");
+  const oldest = [...scope].sort((a, b) => (a.inDate || "").localeCompare(b.inDate || ""))[0];
+  const next = st.filter(x => x.s.days != null && x.s.days >= 0).sort((a, b) => a.s.days - b.s.days)[0];
+  $("kaltStats").innerHTML =
+    card("Im Bestand", scope.length, scope.length === 1 ? "Artikel" : "Artikel", curAppl === "all" ? "in " + state.appliances.length + " Geräten" : h(appl(curAppl).name), "var(--kalt)") +
+    card("Läuft bald ab", soon.length, "", next ? h(next.i.name) + " · " + next.s.txt : "Nichts in Sicht", "var(--warn)") +
+    card("Datum überschritten", bad.length, "", bad.length ? "Bitte prüfen: " + bad.slice(0, 3).map(x => h(x.i.name)).join(", ") + (bad.length > 3 ? " …" : "") : "Keine überschrittenen Daten", "var(--bad)") +
+    card("Am längsten drin", oldest ? -daysUntil(oldest.inDate) : "–", oldest ? "Tage" : "", oldest ? h(oldest.name) + " · seit " + dDay(oldest.inDate) : "", "var(--kalt)");
+
+  renderInv();
+}
+
+// Geräte-, Kategorie- und Suchfilter, wie sie gerade eingestellt sind
+function invFilter(list){
+  const q = $("invSearch").value.trim().toLowerCase(), cat = $("invCat").value;
+  return list.filter(i => (curAppl === "all" || i.applianceId === curAppl) && (!cat || i.cat === cat) &&
+    (!q || [i.name, i.code, i.note, i.comp].some(x => x && String(x).toLowerCase().includes(q))));
+}
+// "Diese Woche verbrauchen": Datum in den nächsten 7 Tagen (heute eingeschlossen) bzw. schon überschritten
+function weekItems(useFilters = true){
+  const st = (useFilters ? invFilter(stock()) : stock()).filter(i => i.bestBefore).map(i => ({i, d: daysUntil(i.bestBefore)}));
+  const by = (a, b) => a.i.bestBefore.localeCompare(b.i.bestBefore) || a.i.name.localeCompare(b.i.name, "de");
+  return {over: st.filter(x => x.d < 0).sort(by).map(x => x.i), week: st.filter(x => x.d >= 0 && x.d <= 7).sort(by).map(x => x.i)};
+}
+function invRow(it){
+  const s = itemStatus(it);
+  const row = document.createElement("div");
+  row.className = "row" + (it.outDate ? " out" : "");
+  row.dataset.id = it.id;
+  row.innerHTML =
+    '<input type="checkbox" aria-label="' + h(it.name) + ' auswählen"' + (selected.has(it.id) ? " checked" : "") + ">" +
+    '<div><div class="nm">' + h(it.name) + '</div><div class="sub">' + h(catOf(it.cat).label) + ' · <span class="code">' + h(it.code) + "</span>" + (it.note ? " · " + h(it.note) : "") + "</div></div>" +
+    '<div class="where">' + h(whereText(it)) + "<br>" + (isFrozen(it) ? "eingefroren " : "eingelagert ") + dDay(it.inDate) + "</div>" +
+    '<div class="qty">' + h(qtyText(it)) + "</div>" +
+    (it.outDate ? '<div class="exp">entnommen<div class="sub">' + dDay(it.outDate) + "</div></div>"
+      : '<div class="exp ' + s.cls + '">' + s.txt + '<div class="sub">' + (it.bestBefore ? "bis " + dDay(it.bestBefore) : "") + "</div></div>") +
+    '<div class="acts"></div>';
+  row.querySelector("input").addEventListener("change", ev => { ev.target.checked ? selected.add(it.id) : selected.delete(it.id); selBar(); });
+  const acts = row.querySelector(".acts");
+  if (it.outDate) toolBtn(acts, "Wieder einlagern", () => { it.outDate = null; commit(); toast(it.name + " ist wieder im Bestand."); });
+  else toolBtn(acts, "Entnehmen", () => openTake([it]));
+  toolBtn(acts, "Etikett", () => openPrint({mode:"items", items:[it]}));
+  toolBtn(acts, "Bearbeiten", () => openItemForm(it));
+  return row;
+}
+
+function renderInv(){
+  const week = invMode === "week";
+  $("invMode").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === invMode));
+  const W = weekItems();
+  $("weekCnt").textContent = W.over.length + W.week.length;
+  $("invOut").disabled = week; $("invSort").disabled = week;
+  $("invOut").closest("label").style.opacity = week ? .5 : "";
+  $("weekNote").hidden = !week;
+  invShowOut = !week && $("invOut").checked;
+  const box = $("invList");
+  box.innerHTML = "";
+
+  if (week){
+    const list = [...W.over, ...W.week];
+    [...selected].forEach(id => { if (!list.some(i => i.id === id)) selected.delete(id); });
+    $("invHead").hidden = !list.length;
+    const filtered = curAppl !== "all" || $("invSearch").value.trim() || $("invCat").value;
+    if (!list.length){
+      const noDate = invFilter(stock()).filter(i => !i.bestBefore).length;
+      box.innerHTML = '<p class="empty">In den nächsten sieben Tagen erreicht kein Artikel sein Haltbarkeitsdatum' + (filtered ? " (mit den aktuellen Filtern)" : "") + "." +
+        (noDate ? "<br>" + noDate + " Artikel ohne Datum werden hier nicht angezeigt." : "") + "</p>";
+    }
+    if (W.over.length){
+      box.insertAdjacentHTML("beforeend", '<div class="grp bad">Bitte prüfen – Datum überschritten (' + W.over.length + ")</div>");
+      W.over.forEach(it => box.appendChild(invRow(it)));
+    }
+    if (W.week.length){
+      box.insertAdjacentHTML("beforeend", '<div class="grp">Bis ' + new Date(addDays(isoDay(), 7) + "T12:00").toLocaleDateString("de-DE", {weekday:"short", day:"numeric", month:"long"}) + " (" + W.week.length + ")</div>");
+      W.week.forEach(it => box.appendChild(invRow(it)));
+    }
+    $("invAll").checked = list.length > 0 && list.every(i => selected.has(i.id));
+    $("invAll").onchange = ev => { list.forEach(i => ev.target.checked ? selected.add(i.id) : selected.delete(i.id)); renderInv(); };
+    selBar();
+    return;
+  }
+
+  const q = $("invSearch").value.trim(), cat = $("invCat").value, sort = $("invSort").value;
+  let list = invFilter(state.items.filter(i => invShowOut ? !!i.outDate : !i.outDate));
+  const cmp = {
+    bb: (a, b) => (a.bestBefore || "9999").localeCompare(b.bestBefore || "9999"),
+    in: (a, b) => (a.inDate || "").localeCompare(b.inDate || ""),
+    name: (a, b) => a.name.localeCompare(b.name, "de"),
+    where: (a, b) => whereText(a).localeCompare(whereText(b), "de") || a.name.localeCompare(b.name, "de")
+  }[sort];
+  list.sort(invShowOut ? (a, b) => b.outDate.localeCompare(a.outDate) : cmp);
+
+  [...selected].forEach(id => { if (!list.some(i => i.id === id)) selected.delete(id); });
+  $("invHead").hidden = !list.length;
+  if (!list.length){
+    box.innerHTML = '<p class="empty">' + (invShowOut ? "Noch nichts entnommen." : q || cat ? "Nichts gefunden." : "Hier ist noch nichts eingelagert. Mit „Einlagern“ legst du den ersten Artikel an.") + "</p>";
+  }
+  list.forEach(it => box.appendChild(invRow(it)));
+  $("invAll").checked = list.length > 0 && list.every(i => selected.has(i.id));
+  $("invAll").onchange = ev => { list.forEach(i => ev.target.checked ? selected.add(i.id) : selected.delete(i.id)); renderInv(); };
+  selBar();
+}
+// Sprung aus einem Hinweis direkt zum Artikel; Filter, die ihn verbergen würden, werden zurückgesetzt.
+function focusItem(id){
+  const it = itemById(id);
+  if (!it || it.outDate){ openWeek(); return; }
+  const d = it.bestBefore ? daysUntil(it.bestBefore) : null;
+  invMode = d != null && d <= 7 ? "week" : "all";
+  $("invOut").checked = false;
+  const reset = [];
+  if (curAppl !== "all" && curAppl !== it.applianceId){ curAppl = "all"; reset.push("Gerät"); }
+  if ($("invCat").value && $("invCat").value !== it.cat){ $("invCat").value = ""; reset.push("Kategorie"); }
+  const q = $("invSearch").value.trim().toLowerCase();
+  if (q && ![it.name, it.code, it.note, it.comp].some(x => x && String(x).toLowerCase().includes(q))){ $("invSearch").value = ""; reset.push("Suche"); }
+  route("kalt");
+  const row = document.querySelector('#invList .row[data-id="' + id + '"]');
+  if (row){
+    row.classList.add("hl");
+    row.scrollIntoView({block:"center"});
+    row.querySelector(".acts button")?.focus({preventScroll:true});
+    setTimeout(() => row.classList.remove("hl"), 2500);
+  }
+  if (reset.length) toast("Filter zurückgesetzt (" + reset.join(", ") + "), damit „" + it.name + "“ sichtbar ist.");
+}
+// Wochenansicht öffnen; aktive Geräte- und Suchfilter bleiben bestehen
+function openWeek(){
+  invMode = "week";
+  route("kalt");
+  const f = [curAppl !== "all" ? "Gerät „" + appl(curAppl)?.name + "“" : "", $("invSearch").value.trim() ? "Suche „" + $("invSearch").value.trim() + "“" : "", $("invCat").value ? "Kategorie" : ""].filter(Boolean);
+  if (f.length) toast("Die Liste ist weiter gefiltert nach " + f.join(", ") + ".");
+  $("invMode").scrollIntoView({block:"start"});
+}
+function selBar(){
+  $("selBar").hidden = !selected.size;
+  $("selText").textContent = selected.size + (selected.size === 1 ? " Artikel" : " Artikel") + " ausgewählt";
+  $("btnSelTake").hidden = invShowOut;
+}
+
+/* ---------- Geräte ---------- */
+function openApplForm(a){
+  daEditing = a || null;
+  $("daTitle").textContent = a ? "Gerät bearbeiten" : "Gerät anlegen";
+  $("daName").value = a?.name || "";
+  $("daType").value = a?.type || "gefrier";
+  $("daLoc").value = a?.location || "";
+  $("daComps").value = (a?.comps || []).join("\n");
+  $("daDelete").hidden = !a;
+  $("dlgAppl").showModal();
+  $("daName").focus();
+}
+function saveAppl(){
+  const name = $("daName").value.trim();
+  if (!name){ toast("Bitte einen Namen eintragen."); $("daName").focus(); return; }
+  const rec = {name, type:$("daType").value, location:$("daLoc").value.trim(),
+    comps:$("daComps").value.split(/\n|,/).map(s => s.trim()).filter(Boolean)};
+  if (daEditing) Object.assign(daEditing, rec);
+  else { const a = {id:uid(), ...rec}; state.appliances.push(a); curAppl = a.id; }
+  $("dlgAppl").close();
+  commit();
+  toast(name + " gespeichert.");
+}
+async function deleteAppl(){
+  const a = daEditing; if (!a) return;
+  const n = stock().filter(i => i.applianceId === a.id).length;
+  if (!(await ask(n ? "In " + a.name + " liegen noch " + n + " Artikel. Gerät samt allen Artikeln löschen?" : a.name + " löschen?", "Löschen", true))) return;
+  state.appliances = state.appliances.filter(x => x !== a);
+  state.items = state.items.filter(i => i.applianceId !== a.id);
+  curAppl = "all";
+  $("dlgAppl").close();
+  commit();
+  toast("Gerät gelöscht.");
+}
+
+/* ---------- Artikel ---------- */
+function fillComps(sel){
+  const a = appl($("itAppl").value);
+  const comps = a?.comps || [];
+  $("itComp").innerHTML = '<option value="">–</option>' + comps.map(c => "<option>" + h(c) + "</option>").join("");
+  if (sel && !comps.includes(sel)) $("itComp").insertAdjacentHTML("beforeend", "<option>" + h(sel) + "</option>");
+  $("itComp").value = sel || "";
+  $("itComp").disabled = !comps.length && !sel;
+}
+function suggestBB(){
+  const a = appl($("itAppl").value), frozen = isFrozenAppl(a), c = catOf($("itCat").value);
+  $("itInLabel").textContent = frozen ? "Eingefroren am" : "Eingelagert am";
+  const hint = frozen ? "Richtwert: " + c.fz + " Monate im Gefrierer" : "Richtwert: " + c.kd + " Tage im Kühlschrank";
+  $("itBBHint").textContent = hint;
+  if (bbTouched) return;
+  const d = $("itIn").value || isoDay();
+  $("itBB").value = frozen ? addMonths(d, c.fz) : addDays(d, c.kd);
+}
+function openItemForm(it, preset = {}){
+  itEditing = it || null; itPreset = preset;
+  const src = it || {};
+  $("diTitle").textContent = it ? "Artikel bearbeiten" : "Einlagern";
+  $("itName").value = src.name || "";
+  $("itCat").value = src.cat || "gericht";
+  $("itQty").value = inNum(src.qty ?? 1);
+  $("itUnit").value = src.unit || "Portion";
+  $("itAppl").innerHTML = state.appliances.map(a => '<option value="' + a.id + '">' + h(a.name) + "</option>").join("");
+  $("itAppl").value = it ? it.applianceId : (curAppl !== "all" ? curAppl : appl(state.settings.lastAppl) ? state.settings.lastAppl : state.appliances[0].id);
+  fillComps(it ? it.comp : "");
+  $("itIn").value = it ? it.inDate : isoDay();
+  bbTouched = !!it;
+  $("itBB").value = it ? it.bestBefore || "" : "";
+  suggestBB();
+  $("itNote").value = it ? it.note || "" : "";
+  $("itCode").textContent = it ? it.code : preset.code ? preset.code + " (vorhandenes Etikett)" : peekCodes(1).codes[0] + " (wird beim Speichern vergeben)";
+  $("itPrint").checked = !it && !preset.code;
+  $("itDelete").hidden = !it;
+  $("dlgItem").showModal();
+  $("itName").focus();
+}
+function saveItem(){
+  const name = $("itName").value.trim();
+  if (!name){ toast("Bitte eintragen, was es ist."); $("itName").focus(); return; }
+  const rawQty = $("itQty").value.trim(), qty = num(rawQty);
+  if (rawQty && !(qty > 0)){ toast("Bitte eine gültige Menge eintragen."); $("itQty").focus(); return; }
+  const rec = {name, cat:$("itCat").value, qty: qty ?? 1, unit:$("itUnit").value, applianceId:$("itAppl").value,
+    comp:$("itComp").value, inDate:$("itIn").value || isoDay(), bestBefore:$("itBB").value || null, note:$("itNote").value.trim()};
+  let it = itEditing;
+  if (it) Object.assign(it, rec);
+  else {
+    const code = itPreset.code || takeCodes(1)[0];
+    if (stock().some(i => i.code === code)){ toast("Der Code " + code + " gehört schon zu einem Artikel im Bestand."); return; }
+    it = {id:uid(), code, outDate:null, taken:[], ...rec};
+    state.items.push(it);
+  }
+  state.settings.lastAppl = rec.applianceId;
+  const print = $("itPrint").checked;
+  $("dlgItem").close();
+  commit();
+  toast(name + (itEditing ? " gespeichert." : " eingelagert – Code " + it.code + "."));
+  if (print) openPrint({mode:"items", items:[it]});
+}
+async function deleteItem(){
+  const it = itEditing; if (!it) return;
+  if (!(await ask(it.name + " endgültig löschen? (Zum Herausnehmen besser „Entnehmen“ verwenden – dann bleibt der Verlauf erhalten.)", "Endgültig löschen", true))) return;
+  state.items = state.items.filter(i => i !== it);
+  selected.delete(it.id);
+  $("dlgItem").close();
+  commit();
+  toast("Artikel gelöscht.");
+}
+function onNamePicked(){
+  if (itEditing) return;
+  const n = $("itName").value.trim().toLowerCase();
+  const prev = [...state.items].reverse().find(i => i.name.toLowerCase() === n);
+  if (!prev) return;
+  $("itCat").value = prev.cat; $("itUnit").value = prev.unit; $("itQty").value = inNum(prev.qty);
+  suggestBB();
+}
+
+/* ---------- Entnehmen ---------- */
+function openTake(items){
+  takeItems = items.filter(i => !i.outDate);
+  if (!takeItems.length) return;
+  const one = takeItems.length === 1 ? takeItems[0] : null;
+  $("dtTitle").textContent = one ? one.name + " entnehmen" : takeItems.length + " Artikel entnehmen";
+  $("tkText").textContent = one ? qtyText(one) + " in " + whereText(one) + "." : takeItems.map(i => i.name).join(", ");
+  $("tkQty").closest(".fld").hidden = !one;
+  $("tkPart").hidden = !one || !(one.qty > 1);
+  if (one){ $("tkQty").value = "1"; $("tkUnit").textContent = one.unit; }
+  $("dlgTake").showModal();
+  (one && one.qty > 1 ? $("tkQty") : $("tkAll")).focus();
+}
+function doTake(all){
+  const today = isoDay();
+  if (!all){
+    const it = takeItems[0], q = num($("tkQty").value);
+    if (!(q > 0)){ toast("Bitte eine gültige Menge eintragen."); $("tkQty").focus(); return; }
+    if (q < it.qty - 1e-9){
+      it.qty = round(it.qty - q, 3);
+      (it.taken ||= []).push({date:today, qty:q});
+      $("dlgTake").close(); commit();
+      toast(fmt(q, 2) + " " + it.unit + " entnommen, noch " + qtyText(it) + " da.");
+      return;
+    }
+  }
+  takeItems.forEach(it => { (it.taken ||= []).push({date:today, qty:it.qty}); it.outDate = today; selected.delete(it.id); });
+  $("dlgTake").close(); commit();
+  toast(takeItems.length === 1 ? takeItems[0].name + " entnommen. Das Etikett kann für neuen Inhalt wiederverwendet werden." : takeItems.length + " Artikel entnommen.");
+}
+
+/* ---------- Scannen ---------- */
+function handleScan(raw){
+  const code = String(raw || "").trim();
+  if (!code) return;
+  if (!state.appliances.length){ toast("Bitte zuerst ein Gerät anlegen."); return; }
+  const norm = code.toUpperCase();
+  const byCode = state.items.filter(i => i.code && i.code.toUpperCase() === norm);
+  const live = byCode.find(i => !i.outDate);
+  if (live) return showScan({title:"Gefunden", items:[live]});
+  if (byCode.length){
+    const last = byCode.sort((a, b) => (a.outDate || "").localeCompare(b.outDate || "")).pop();
+    return showScan({title:"Etikett " + last.code,
+      text:"Dieses Etikett gehörte zu <b>" + h(last.name) + "</b>, entnommen am " + dDay(last.outDate) + ". Neu belegen, z. B. für eine wiederverwendete Dose?",
+      actions:[["Neu belegen", () => openItemForm(null, {code:last.code}), "btn-solid"]]});
+  }
+  toast("Neues Etikett " + norm + " – jetzt den Inhalt erfassen.");
+  openItemForm(null, {code:norm});
+}
+function showScan({title, text = "", items = [], actions = []}){
+  $("dsTitle").textContent = title;
+  $("dsText").innerHTML = text;
+  $("dsText").hidden = !text;
+  const list = $("dsList"), foot = $("dsFoot");
+  list.innerHTML = ""; foot.innerHTML = "";
+  const close = fn => () => { $("dlgScan").close(); fn(); };
+  items.forEach(it => {
+    const s = itemStatus(it);
+    const div = document.createElement("div");
+    div.className = "scanitem";
+    div.innerHTML = '<div class="nm">' + h(it.name) + '</div><div class="sub">' + h(qtyText(it)) + " · " + h(whereText(it)) + ' · <span class="code">' + h(it.code) + "</span></div>" +
+      '<div class="sub">' + (isFrozen(it) ? "Eingefroren " : "Eingelagert ") + dDay(it.inDate) + ' · <span class="exp ' + s.cls + '">' + s.txt + "</span></div>" +
+      (it.note ? '<div class="sub">' + h(it.note) + "</div>" : "") + '<div class="acts"></div>';
+    const acts = div.querySelector(".acts");
+    toolBtn(acts, "Entnehmen", close(() => openTake([it])), "btn-solid");
+    toolBtn(acts, "Bearbeiten / umlagern", close(() => openItemForm(it)), "btn-line");
+    toolBtn(acts, "Etikett drucken", close(() => openPrint({mode:"items", items:[it]})), "btn-line");
+    list.appendChild(div);
+  });
+  toolBtn(foot, "Schließen", () => $("dlgScan").close(), "btn-line");
+  actions.forEach(([label, fn, cls]) => toolBtn(foot, label, close(fn), cls || "btn-line"));
+  $("dlgScan").showModal();
+  const first = list.querySelector(".btn-solid") || foot.querySelector(".btn-solid");
+  if (first) first.focus();
+}
+
+// Kamera über die BarcodeDetector-API (Chrome/Edge auf Android und macOS)
+let camStream = null, camTimer = null;
+async function openCam(){
+  if (!("BarcodeDetector" in window)){
+    toast("Kamera-Scan klappt in Chrome oder Edge. Alternativ QR-fähigen Handscanner nutzen oder Code eintippen.");
+    return;
+  }
+  try {
+    if (!(await BarcodeDetector.getSupportedFormats()).includes("qr_code")) throw new Error("kein QR");
+    const det = new BarcodeDetector({formats: ["qr_code"]});
+    camStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}, audio:false});
+    const video = $("camVideo");
+    video.srcObject = camStream;
+    $("dlgCam").showModal();
+    await video.play();
+    const tick = async () => {
+      if (!camStream) return;
+      try {
+        const found = await det.detect(video);
+        if (found.length){ const v = found[0].rawValue; $("dlgCam").close(); handleScan(v); return; }
+      } catch(e){}
+      camTimer = setTimeout(tick, 180);
+    };
+    tick();
+  } catch(e){
+    stopCam();
+    if ($("dlgCam").open) $("dlgCam").close();
+    toast("Die Kamera ist nicht verfügbar oder wurde nicht freigegeben.");
+  }
+}
+function stopCam(){
+  clearTimeout(camTimer);
+  if (camStream) camStream.getTracks().forEach(t => t.stop());
+  camStream = null;
+  $("camVideo").srcObject = null;
+}
+
+// Hand-/USB-Scanner tippen sehr schnell und schicken Enter – auch wenn gerade kein Feld den Fokus hat.
+const scanBuf = {s:"", t:0};
+function globalScanKeys(ev){
+  if (current !== "kalt" || document.querySelector("dialog[open]")) return;
+  const tag = (ev.target.tagName || "").toLowerCase();
+  if (["input", "textarea", "select"].includes(tag) || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  const now = Date.now();
+  if (now - scanBuf.t > 80) scanBuf.s = "";
+  scanBuf.t = now;
+  if (ev.key === "Enter"){ if (scanBuf.s.length >= 4){ ev.preventDefault(); handleScan(scanBuf.s); } scanBuf.s = ""; }
+  else if (ev.key.length === 1) scanBuf.s += ev.key;
+}
+
+/* ---------- QR-Code (Byte-Modus, Fehlerkorrektur M, Version 1–10) ---------- */
+// Eigene Umsetzung nach ISO/IEC 18004, damit die Seite ohne Internet funktioniert.
+const QR_ECC = [0, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26];   // EC-Codewörter je Block (Stufe M)
+const QR_BLK = [0, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5];             // Anzahl Blöcke (Stufe M)
+const qrRawModules = v => {
+  let r = (16 * v + 128) * v + 64;
+  if (v >= 2){ const na = Math.floor(v / 7) + 2; r -= (25 * na - 10) * na - 55; if (v >= 7) r -= 36; }
+  return r;
+};
+const qrDataCw = v => Math.floor(qrRawModules(v) / 8) - QR_ECC[v] * QR_BLK[v];
+function rsMul(x, y){
+  let z = 0;
+  for (let i = 7; i >= 0; i--){ z = (z << 1) ^ ((z >>> 7) * 0x11D); z ^= ((y >>> i) & 1) * x; }
+  return z;
+}
+function rsDivisor(deg){
+  const r = Array(deg).fill(0); r[deg - 1] = 1;
+  let root = 1;
+  for (let i = 0; i < deg; i++){
+    for (let j = 0; j < deg; j++){ r[j] = rsMul(r[j], root); if (j + 1 < deg) r[j] ^= r[j + 1]; }
+    root = rsMul(root, 2);
+  }
+  return r;
+}
+function rsRemainder(data, div){
+  const r = div.map(() => 0);
+  data.forEach(b => { const f = b ^ r.shift(); r.push(0); div.forEach((c, i) => r[i] ^= rsMul(c, f)); });
+  return r;
+}
+
+function qrMatrix(text){
+  const data = [...new TextEncoder().encode(text)];
+  let ver = 1;
+  while (ver <= 10 && 4 + (ver < 10 ? 8 : 16) + data.length * 8 > qrDataCw(ver) * 8) ver++;
+  if (ver > 10) throw new Error("Text zu lang für den QR-Code");
+
+  // Datenbits: Modus, Länge, Bytes, Abschluss, Füllbytes
+  const bits = [];
+  const put = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1); };
+  put(4, 4); put(data.length, ver < 10 ? 8 : 16); data.forEach(b => put(b, 8));
+  const cap = qrDataCw(ver) * 8;
+  put(0, Math.min(4, cap - bits.length));
+  put(0, (8 - bits.length % 8) % 8);
+  for (let p = 0xEC; bits.length < cap; p ^= 0xEC ^ 0x11) put(p, 8);
+  const cw = [];
+  for (let i = 0; i < bits.length; i += 8) cw.push(bits.slice(i, i + 8).reduce((a, b) => a * 2 + b, 0));
+
+  // Fehlerkorrektur je Block, dann verschränken
+  const nb = QR_BLK[ver], ecl = QR_ECC[ver], raw = Math.floor(qrRawModules(ver) / 8);
+  const nShort = nb - raw % nb, shortLen = Math.floor(raw / nb), div = rsDivisor(ecl);
+  const blocks = [];
+  for (let i = 0, k = 0; i < nb; i++){
+    const dat = cw.slice(k, k + shortLen - ecl + (i < nShort ? 0 : 1));
+    k += dat.length;
+    const ec = rsRemainder(dat, div);
+    if (i < nShort) dat.push(0);
+    blocks.push(dat.concat(ec));
+  }
+  const all = [];
+  for (let i = 0; i < blocks[0].length; i++) blocks.forEach((b, j) => { if (i !== shortLen - ecl || j >= nShort) all.push(b[i]); });
+
+  // Funktionsmuster
+  const n = ver * 4 + 17;
+  const mod = Array.from({length:n}, () => Array(n).fill(false));
+  const fn = Array.from({length:n}, () => Array(n).fill(false));
+  const setF = (x, y, dark) => { mod[y][x] = dark; fn[y][x] = true; };
+  for (let i = 0; i < n; i++){ setF(6, i, i % 2 === 0); setF(i, 6, i % 2 === 0); }
+  [[3, 3], [n - 4, 3], [3, n - 4]].forEach(([cx, cy]) => {
+    for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++){
+      const x = cx + dx, y = cy + dy, d = Math.max(Math.abs(dx), Math.abs(dy));
+      if (x >= 0 && x < n && y >= 0 && y < n) setF(x, y, d !== 2 && d !== 4);
+    }
+  });
+  if (ver > 1){
+    const na = Math.floor(ver / 7) + 2, step = Math.ceil((ver * 4 + 4) / (na * 2 - 2)) * 2;
+    const pos = [6];
+    for (let p = n - 7; pos.length < na; p -= step) pos.splice(1, 0, p);
+    pos.forEach((ay, i) => pos.forEach((ax, j) => {
+      if ((i === 0 && j === 0) || (i === 0 && j === na - 1) || (i === na - 1 && j === 0)) return;
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) setF(ax + dx, ay + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+    }));
+  }
+  const drawFormat = mask => {
+    const d = mask;                       // Stufe M = 00
+    let rem = d;
+    for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+    const b = ((d << 10) | rem) ^ 0x5412, bit = i => ((b >>> i) & 1) === 1;
+    for (let i = 0; i <= 5; i++) setF(8, i, bit(i));
+    setF(8, 7, bit(6)); setF(8, 8, bit(7)); setF(7, 8, bit(8));
+    for (let i = 9; i < 15; i++) setF(14 - i, 8, bit(i));
+    for (let i = 0; i < 8; i++) setF(n - 1 - i, 8, bit(i));
+    for (let i = 8; i < 15; i++) setF(8, n - 15 + i, bit(i));
+    setF(8, n - 8, true);
+  };
+  drawFormat(0);
+  if (ver >= 7){
+    let rem = ver;
+    for (let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1F25);
+    const b = (ver << 12) | rem;
+    for (let i = 0; i < 18; i++){
+      const dark = ((b >>> i) & 1) === 1, a = n - 11 + i % 3, c = Math.floor(i / 3);
+      setF(a, c, dark); setF(c, a, dark);
+    }
+  }
+
+  // Daten im Zickzack eintragen
+  let i = 0;
+  for (let right = n - 1; right >= 1; right -= 2){
+    if (right === 6) right = 5;
+    for (let v = 0; v < n; v++) for (let j = 0; j < 2; j++){
+      const x = right - j, up = ((right + 1) & 2) === 0, y = up ? n - 1 - v : v;
+      if (!fn[y][x] && i < all.length * 8){ mod[y][x] = ((all[i >>> 3] >>> (7 - (i & 7))) & 1) === 1; i++; }
+    }
+  }
+
+  // Maske mit der geringsten Strafpunktzahl wählen
+  const MASKS = [(x, y) => (x + y) % 2 === 0, (x, y) => y % 2 === 0, x => x % 3 === 0, (x, y) => (x + y) % 3 === 0,
+    (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0, (x, y) => x * y % 2 + x * y % 3 === 0,
+    (x, y) => (x * y % 2 + x * y % 3) % 2 === 0, (x, y) => ((x + y) % 2 + x * y % 3) % 2 === 0];
+  const applyMask = m => { for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (!fn[y][x] && MASKS[m](x, y)) mod[y][x] = !mod[y][x]; };
+  let best = 0, bestScore = Infinity;
+  for (let m = 0; m < 8; m++){
+    applyMask(m); drawFormat(m);
+    const s = qrPenalty(mod);
+    if (s < bestScore){ bestScore = s; best = m; }
+    applyMask(m);                         // XOR rückgängig machen
+  }
+  applyMask(best); drawFormat(best);
+  return mod;
+}
+
+function qrPenalty(m){
+  const n = m.length;
+  const line = get => {
+    let s = 0, run = 1;
+    for (let i = 1; i <= n; i++){
+      if (i < n && get(i) === get(i - 1)) run++;
+      else { if (run >= 5) s += run - 2; run = 1; }
+    }
+    for (let i = 0; i + 7 <= n; i++){
+      if (get(i) && !get(i + 1) && get(i + 2) && get(i + 3) && get(i + 4) && !get(i + 5) && get(i + 6)){
+        const before = [1, 2, 3, 4].every(k => i - k < 0 || !get(i - k));
+        const after = [7, 8, 9, 10].every(k => i + k >= n || !get(i + k));
+        if (before || after) s += 40;
+      }
+    }
+    return s;
+  };
+  let p = 0, dark = 0;
+  for (let k = 0; k < n; k++){ p += line(i => m[k][i]); p += line(i => m[i][k]); }
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++){
+    if (m[y][x]) dark++;
+    if (y < n - 1 && x < n - 1 && m[y][x] === m[y][x + 1] && m[y][x] === m[y + 1][x] && m[y][x] === m[y + 1][x + 1]) p += 3;
+  }
+  return p + (Math.ceil(Math.abs(dark * 20 - n * n * 10) / (n * n)) - 1) * 10;
+}
+
+function qrSvg(text){
+  const m = qrMatrix(text), n = m.length, Q = 2;  // schmale Ruhezone, das Etikett hat zusätzlich Rand
+  let d = "";
+  m.forEach((row, y) => row.forEach((on, x) => { if (on) d += "M" + (x + Q) + " " + (y + Q) + "h1v1h-1z"; }));
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + (n + 2 * Q) + " " + (n + 2 * Q) + '" shape-rendering="crispEdges"><path fill="#000" d="' + d + '"/></svg>';
+}
+
+/* ---------- Etiketten ---------- */
+const LABELS = {
+  "62x29":  {label:"Etikettendrucker 62 × 29 mm (z. B. Brother DK-11209)", w:62, h:29},
+  "57x32":  {label:"Etikettendrucker 57 × 32 mm (z. B. Dymo 11354)", w:57, h:32},
+  "54x25":  {label:"Etikettendrucker 54 × 25 mm (z. B. Dymo 11352)", w:54, h:25},
+  "a4-3x7": {label:"A4-Bogen 3 × 7, 63,5 × 38,1 mm (z. B. Avery L7160)", w:63.5, h:38.1, cols:3, rows:7, top:15.15, left:7.25, gx:2.5, gy:0},
+  "a4-3x8": {label:"A4-Bogen 3 × 8, 70 × 37 mm (z. B. Avery 3474)", w:70, h:37, cols:3, rows:8, top:0.5, left:0, gx:0, gy:0}
+};
+let printJob = null;
+
+function labelHTML(L, x, roll){
+  const style = 'style="--w:' + L.w + "mm;--h:" + L.h + 'mm"';
+  const cls = "label" + (roll ? " roll" : "");
+  if (!x) return '<div class="' + cls + '" ' + style + "></div>";
+  const qr = '<div class="lb-qr">' + qrSvg(x.code) + "</div>";
+  if (x.blank){
+    return '<div class="' + cls + '" ' + style + ">" + qr + '<div class="lb-text"><div class="lb-line">Inhalt</div><div class="lb-line"></div>' +
+      '<div class="lb-line">Datum</div><div class="lb-code">' + h(x.code) + "</div></div></div>";
+  }
+  const it = x, frozen = isFrozen(it);
+  const meta = [(frozen ? "Eingefroren " : "Eingelagert ") + dateShort(it.inDate)];
+  if (it.bestBefore) meta.push("Haltbar bis " + dateShort(it.bestBefore));
+  meta.push(qtyText(it) + " · " + whereText(it));
+  return '<div class="' + cls + '" ' + style + ">" + qr + '<div class="lb-text"><div class="lb-name">' + h(it.name) + "</div>" +
+    meta.map(t => '<div class="lb-meta">' + h(t) + "</div>").join("") + '<div class="lb-code">' + h(it.code) + "</div></div></div>";
+}
+
+function openPrint(job){
+  printJob = job;
+  $("prFormat").value = LABELS[state.settings.labelFormat] ? state.settings.labelFormat : "62x29";
+  $("dpTitle").textContent = job.mode === "blank" ? "Leere Etiketten drucken" : (job.items.length === 1 ? "Etikett drucken" : job.items.length + " Etiketten drucken");
+  $("prSkip").value = "0";
+  $("prCopies").value = "1";
+  renderPrintPreview();
+  $("dlgPrint").showModal();
+}
+function printList(){
+  if (printJob.mode === "blank"){
+    const n = Math.min(Math.max(parseInt($("prCount").value, 10) || 0, 0), 500);
+    return peekCodes(n).codes.map(code => ({blank:true, code}));
+  }
+  const copies = Math.min(Math.max(parseInt($("prCopies").value, 10) || 1, 1), 20);
+  return printJob.items.flatMap(it => Array(copies).fill(it));
+}
+function renderPrintPreview(){
+  const L = LABELS[$("prFormat").value], sheet = !!L.cols;
+  $("prSkipWrap").hidden = !sheet;
+  $("prCountWrap").hidden = printJob.mode !== "blank";
+  $("prCopiesWrap").hidden = printJob.mode === "blank";
+  const list = printList();
+  const skip = sheet ? Math.max(parseInt($("prSkip").value, 10) || 0, 0) : 0;
+  let info = list.length + " Etikett" + (list.length === 1 ? "" : "en");
+  if (sheet){ const per = L.cols * L.rows; info += " auf " + Math.ceil((list.length + skip) / per) + " Bogen (" + per + " pro Bogen)."; }
+  else info += ". Im Druckdialog den Etikettendrucker wählen und als Papiergröße " + L.w + " × " + L.h + " mm einstellen, Ränder „Keine“, Skalierung 100 %.";
+  if (printJob.mode === "blank" && list.length) info += " Codes " + list[0].code + " bis " + list[list.length - 1].code + " werden reserviert.";
+  $("prInfo").textContent = info;
+  $("prPreview").innerHTML = list.slice(0, 4).map(x => labelHTML(L, x)).join("") +
+    (list.length > 4 ? '<span class="empty" style="padding:8px">… und ' + (list.length - 4) + " weitere</span>" : "");
+  $("prGo").disabled = !list.length;
+}
+function doPrint(){
+  const key = $("prFormat").value, L = LABELS[key];
+  let list = printList();
+  if (!list.length) return;
+  if (printJob.mode === "blank"){ takeCodes(list.length); }
+  state.settings.labelFormat = key;
+  let html, page;
+  if (L.cols){
+    const per = L.cols * L.rows, skip = Math.min(Math.max(parseInt($("prSkip").value, 10) || 0, 0), per - 1);
+    const cells = Array(skip).fill(null).concat(list);
+    const pages = [];
+    for (let i = 0; i < cells.length; i += per) pages.push(cells.slice(i, i + per));
+    html = pages.map(p => '<div class="lbl-page" style="padding:' + L.top + "mm 0 0 " + L.left + "mm;grid-template-columns:repeat(" + L.cols + "," + L.w + "mm);grid-auto-rows:" + L.h + "mm;column-gap:" + L.gx + "mm;row-gap:" + L.gy + 'mm">' +
+      p.map(x => labelHTML(L, x)).join("") + "</div>").join("");
+    page = "@page{size:A4 portrait;margin:0}";
+  } else {
+    html = list.map(x => labelHTML(L, x, true)).join("");
+    page = "@page{size:" + L.w + "mm " + L.h + "mm;margin:0}";
+  }
+  $("printArea").innerHTML = html;
+  $("pageStyle").textContent = "@media print{" + page + "}";
+  $("dlgPrint").close();
+  commit();
+  setTimeout(() => window.print(), 60);
+}
+
+/* =====================================================================
+   ZEITVERGLEICH (Monat / Jahr)
+   ===================================================================== */
+let cmpMode = "month", cmpKey = null;     // cmpKey: "2026-10" bzw. "2026"
+const ymKey = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+const curKey = mode => mode === "month" ? ymKey(new Date()) : String(new Date().getFullYear());
+const daysBetween = (a, b) => Math.round((new Date(b + "T12:00") - new Date(a + "T12:00")) / DAY);
+function shiftKey(mode, key, n){
+  if (mode === "year") return String(+key + n);
+  const [y, m] = key.split("-").map(Number);
+  return ymKey(new Date(y, m - 1 + n, 1));
+}
+function periodOf(mode, key){
+  if (mode === "year"){ const y = +key; return {mode, key, p0:new Date(y, 0, 1), p1:new Date(y + 1, 0, 1)}; }
+  const [y, m] = key.split("-").map(Number);
+  return {mode, key, p0:new Date(y, m - 1, 1), p1:new Date(y, m, 1)};
+}
+const periodName = P => P.mode === "year" ? String(P.p0.getFullYear()) : P.p0.toLocaleDateString("de-DE", {month:"long", year:"numeric"});
+const periodShort = P => P.mode === "year" ? String(P.p0.getFullYear()) : P.p0.toLocaleDateString("de-DE", {month:"short", year:"2-digit"});
+// Zeiträume vom frühesten Datensatz bis heute, neueste zuerst
+function periodKeys(mode){
+  const dates = [...state.energy.map(r => r.date.slice(0, 10)), ...state.ventries.map(e => e.date), ...state.vehicles.map(v => v.startDate).filter(Boolean)].sort();
+  const first = dates.length ? (mode === "month" ? dates[0].slice(0, 7) : dates[0].slice(0, 4)) : curKey(mode);
+  const keys = [];
+  for (let k = curKey(mode); keys.length < 240; k = shiftKey(mode, k, -1)){ keys.push(k); if (k <= first) break; }
+  return keys;
+}
+
+// Ableseintervalle je Medium als {t0, t1, v}: Zählerdifferenz bzw. Ertrag des Zeitraums.
+// Negative Differenzen (z. B. Zählerwechsel) bleiben eine Lücke und werden nicht zu Verbrauch 0.
+function energyIntervals(k){
+  const out = [], E = state.energy, period = kindOf(k) === "period";
+  let prev = null;
+  E.forEach((r, i) => {
+    if (r[k] == null) return;
+    const base = prev || (period && i > 0 ? E[i - 1] : null);
+    if (base){
+      const t0 = new Date(base.date).getTime(), t1 = new Date(r.date).getTime();
+      const v = period ? r[k] : r[k] - base[k];
+      if (t1 > t0 && v >= 0) out.push({t0, t1, v});
+    }
+    prev = r;
+  });
+  return out;
+}
+// Verteilt Intervalle zeitanteilig auf den Zeitraum (bis heute). Abdeckung = Anteil der Tage mit Daten.
+function energyPeriod(ivs, P){
+  const now = Date.now(), p0 = P.p0.getTime(), p1 = P.p1.getTime(), end = Math.min(p1, now);
+  if (end <= p0) return null;
+  let val = 0, cov = 0, est = false;
+  ivs.forEach(iv => {
+    const a = Math.max(iv.t0, p0), b = Math.min(iv.t1, end);
+    if (b <= a) return;
+    const share = (b - a) / (iv.t1 - iv.t0);
+    val += iv.v * share; cov += b - a;
+    if (share < 0.999) est = true;
+  });
+  return {val: cov ? val : null, perDay: cov ? val / (cov / DAY) : null, covDays: cov / DAY, days: (end - p0) / DAY,
+    coverage: cov / (end - p0), est, running: now < p1};
+}
+
+// Erfasste Zahlungen und zeitanteilige Fixkosten; limitDays kürzt Vergleichszeiträume auf dieselbe Länge.
+function vehPeriod(vs, P, limitDays){
+  const ids = new Set(vs.map(v => v.id));
+  const a = isoDay(P.p0);
+  let b = isoDay(P.p1);
+  if (limitDays != null){ const c = addDays(a, limitDays); if (c < b) b = c; }
+  const tomorrow = addDays(isoDay(), 1);
+  if (tomorrow < b) b = tomorrow;
+  if (b <= a) return null;
+  const es = state.ventries.filter(e => ids.has(e.vid));
+  const start = [...vs.map(v => v.startDate).filter(Boolean), ...es.map(e => e.date)].sort()[0];
+  if (!start || start >= b) return {none:true};
+  const inP = es.filter(e => e.date >= a && e.date < b);
+  const fuel = sum(inP.filter(e => e.type === "fuel").map(e => e.total));
+  const other = sum(inP.filter(e => e.type === "cost").map(e => e.total));
+  let fixed = 0, anyFixed = false;
+  es.forEach(c => {
+    const m = c.type === "cost" && INTERVALS[c.interval]?.m;
+    if (!m) return;
+    const c1 = addMonths(c.date, m), o0 = c.date > a ? c.date : a, o1 = c1 < b ? c1 : b;
+    if (o1 > o0){ fixed += c.total * daysBetween(o0, o1) / daysBetween(c.date, c1); anyFixed = true; }
+  });
+  return {fuel, other, paid: fuel + other, fixed: anyFixed ? fixed : null, from: start > a ? start : null};
+}
+
+function change(cur, ref){
+  if (cur == null || ref == null) return null;
+  if (ref === 0) return cur === 0 ? {txt:"unverändert"} : {na:"Vergleichswert 0 – kein Prozentwert"};
+  const p = (cur - ref) / Math.abs(ref) * 100, a = Math.abs(p);
+  return {txt: a < 0.5 ? "±0 %" : (p > 0 ? "▲ +" : "▼ −") + fmt(a, a < 10 ? 1 : 0) + " %"};
+}
+function spark(vals, labels, color, fmtV){
+  const W = 132, H = 34, bw = W / vals.length;
+  const max = Math.max(...vals.filter(v => v != null), 0) || 1;
+  let g = "";
+  vals.forEach((v, i) => {
+    const x = i * bw + 1, w = Math.max(1, bw - 2), sel = i === vals.length - 1;
+    if (v == null){ g += '<rect x="' + x + '" y="' + (H - 1.5) + '" width="' + w + '" height="1.5" style="fill:var(--line)"><title>' + h(labels[i]) + ': keine Daten</title></rect>'; return; }
+    const hh = Math.max(1.5, v / max * (H - 3));
+    g += '<rect x="' + x + '" y="' + (H - hh) + '" width="' + w + '" height="' + hh + '" rx="1" style="fill:' + color + '" opacity="' + (sel ? 1 : .4) + '"><title>' + h(labels[i] + ": " + fmtV(v)) + "</title></rect>";
+  });
+  return '<svg class="spark" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" role="img" aria-label="Verlauf der letzten ' + vals.length + ' Zeiträume">' + g + "</svg>";
+}
+const dCell = (label, main, sub) => '<div class="cm-d"><span class="k">' + h(label) + "</span>" + main + (sub ? "<span>" + sub + "</span>" : "") + "</div>";
+const naB = t => '<b class="na">' + h(t) + "</b>";
+
+const CMP_ENERGY = [
+  {k:"strom", label:"Strom", unit:"kWh", d:0, dd:2, c:"var(--strom)"},
+  {k:"wasser", label:"Wasser", unit:"m³", d:2, dd:3, c:"var(--wasser)"},
+  {k:"home", label:"Solar Heimpower", unit:"kWh", d:0, dd:2, c:"var(--home)"},
+  {k:"eet", label:"Solar EET", unit:"kWh", d:0, dd:2, c:"var(--eet)"},
+  {k:"solar", label:"Solar gesamt", unit:"kWh", d:0, dd:2, c:"var(--home)", parts:["home", "eet"]}
+];
+
+// Baut den Vergleich in `box`. opt.energy: Zählerzeilen; opt.vehicles: Fahrzeugliste (oder null)
+function renderCompare(box, opt){
+  const keys = periodKeys(cmpMode);
+  if (!keys.includes(cmpKey)) cmpKey = keys[0];
+  const P = periodOf(cmpMode, cmpKey), month = cmpMode === "month";
+  const refs = [{label: month ? "Vormonat" : "Vorjahr", P: periodOf(cmpMode, shiftKey(cmpMode, cmpKey, -1))}];
+  if (month) refs.push({label:"Vorjahresmonat", P: periodOf("month", shiftKey("month", cmpKey, -12))});
+  const nSpark = month ? 12 : 6;
+  const sparkP = Array.from({length:nSpark}, (_, i) => periodOf(cmpMode, shiftKey(cmpMode, cmpKey, i - nSpark + 1)));
+  const sparkLabels = sparkP.map(periodShort);
+  const running = Date.now() < P.p1.getTime();
+  const showE = opt.energy && state.energy.length > 0;
+  const vs = opt.vehicles && opt.vehicles.length ? opt.vehicles : null;
+  const idx = keys.indexOf(cmpKey);
+
+  let html = '<div class="cmpbar"><div class="seg" role="group" aria-label="Zeitraum-Art">' +
+    '<button data-ctl="m-month" aria-pressed="' + month + '">Monat</button><button data-ctl="m-year" aria-pressed="' + !month + '">Jahr</button></div>' +
+    '<button class="btn-line btn-step" data-ctl="prev" aria-label="Früherer Zeitraum"' + (idx >= keys.length - 1 ? " disabled" : "") + ">‹</button>" +
+    '<select data-ctl="sel" aria-label="Zeitraum wählen">' + keys.map(k => '<option value="' + k + '"' + (k === cmpKey ? " selected" : "") + ">" + h(periodName(periodOf(cmpMode, k))) + "</option>").join("") + "</select>" +
+    '<button class="btn-line btn-step" data-ctl="next" aria-label="Späterer Zeitraum"' + (idx <= 0 ? " disabled" : "") + ">›</button>" +
+    '<span class="cmpstate">' + (running ? "Laufender " + (month ? "Monat" : "Jahr") + ", Stand heute." : "Abgeschlossener Zeitraum.") + "</span></div>";
+
+  if (!showE && !vs){
+    html += '<p class="empty">Sobald Zählerablesungen oder Fahrzeugkosten vorliegen, erscheinen hier Monats- und Jahresvergleiche.</p>';
+    box.innerHTML = html; wireCompare(box, opt); return;
+  }
+  const yCls = month ? "" : " y";
+  html += '<div class="cmp' + yCls + '"><div class="cmp-head"><span></span><span>' + h(periodName(P)) + (running ? " (bis heute)" : "") + "</span>" +
+    refs.map(R => "<span>ggü. " + h(R.label) + " · " + h(periodName(R.P)) + "</span>").join("") + "<span>Verlauf</span></div>";
+
+  if (showE){
+    if (opt.vehicles) html += '<div class="cmp-group">Zähler</div>';
+    const ivCache = {};
+    const ivs = k => ivCache[k] || (ivCache[k] = energyIntervals(k));
+    // Solar gesamt nur, wenn beide Anlagen Daten für den Zeitraum haben
+    const calc = (m, Pp) => {
+      if (!m.parts) return energyPeriod(ivs(m.k), Pp);
+      const ps = m.parts.map(k => energyPeriod(ivs(k), Pp));
+      if (ps.some(p => !p || p.val == null)) return ps.every(p => p) ? {val:null} : null;
+      return {val: sum(ps.map(p => p.val)), perDay: sum(ps.map(p => p.perDay)), covDays: Math.min(...ps.map(p => p.covDays)), days: ps[0].days,
+        coverage: Math.min(...ps.map(p => p.coverage)), est: ps.some(p => p.est), running: ps[0].running};
+    };
+    CMP_ENERGY.forEach(m => {
+      const cur = calc(m, P), u = m.unit;
+      const has = cur && cur.val != null;
+      const tags = has ? (cur.est ? '<span class="tag est">geschätzt*</span>' : "") +
+        (cur.coverage < 0.98 ? '<span class="tag">Daten für ' + fmt(cur.covDays, 0) + " von " + fmt(Math.ceil(cur.days), 0) + " Tagen</span>" : "") : "";
+      html += '<div class="cmp-row"><div class="cm-name" style="--c:' + m.c + '">' + h(m.label) + (m.parts ? "<small>Summe beider Anlagen</small>" : "") + "</div>" +
+        '<div class="cm-val">' + (has ? "<b>" + fmt(cur.val, m.d) + " " + u + "</b><span>Ø " + fmt(cur.perDay, m.dd) + " " + u + " pro Tag</span>" + tags
+          : naB("keine Daten") + "<span>" + (m.parts ? "Nicht für beide Anlagen erfasst." : "Keine passenden Ablesungen.") + "</span>") + "</div>";
+      refs.forEach(R => {
+        const r = calc(m, R.P), lab = "ggü. " + R.label;
+        if (!r || r.val == null){ html += dCell(lab, naB("kein Vergleichswert"), "keine Daten für " + h(periodName(R.P))); return; }
+        const c = has ? change(cur.perDay, r.perDay) : null;
+        html += dCell(lab, c ? (c.na ? naB(c.na) : "<b>" + c.txt + "</b>") : naB("–"),
+          fmt(r.val, m.d) + " " + u + " · Ø " + fmt(r.perDay, m.dd) + "/Tag" + (r.est ? " *" : "") + (r.coverage < 0.98 ? " · Teilabdeckung" : ""));
+      });
+      html += spark(sparkP.map(Pp => { const r = calc(m, Pp); return r && r.val != null ? r.perDay : null; }), sparkLabels, m.c, v => "Ø " + fmt(v, m.dd) + " " + u + "/Tag") + "</div>";
+    });
+  }
+
+  if (vs){
+    if (opt.energy) html += '<div class="cmp-group">' + h(vs.length > 1 ? "Fahrzeuge (alle)" : vs[0].name) + "</div>";
+    const limit = running ? daysBetween(isoDay(P.p0), isoDay()) + 1 : null;
+    const cur = vehPeriod(vs, P, null);
+    const refVals = refs.map(R => vehPeriod(vs, R.P, limit));
+    const sparkV = sparkP.map(Pp => vehPeriod(vs, Pp, null));
+    const u = fuelUnit(vs[0]) === "kWh" && vs.length === 1 ? "Laden" : "Tanken";
+    [{k:"paid", label:"Erfasste Zahlungen", small:"Summe der eingetragenen Beträge"},
+     {k:"fuel", label:"davon " + u, small:""},
+     {k:"other", label:"davon sonstige Kosten", small:"Versicherung, Steuer, Werkstatt …"},
+     {k:"fixed", label:"Fixkosten zeitanteilig", small:"rechnerisch verteilt, kein gezahlter Betrag"}].forEach(m => {
+      const has = cur && !cur.none && cur[m.k] != null;
+      const why = !cur || cur.none ? "vor Beginn der Erfassung" : m.k === "fixed" ? "keine wiederkehrenden Zahlungen erfasst" : "";
+      html += '<div class="cmp-row"><div class="cm-name" style="--c:var(--kfz)">' + h(m.label) + (m.small ? "<small>" + h(m.small) + "</small>" : "") + "</div>" +
+        '<div class="cm-val">' + (has ? "<b>" + fmtEur(cur[m.k]) + "</b>" + (cur.from ? '<span class="tag">erfasst ab ' + dDay(cur.from) + "</span>" : "") + (running ? '<span class="tag">bis heute</span>' : "")
+          : naB("nicht erfasst") + "<span>" + h(why) + "</span>") + "</div>";
+      refs.forEach((R, i) => {
+        const r = refVals[i], lab = "ggü. " + R.label;
+        if (!r || r.none || r[m.k] == null){ html += dCell(lab, naB("kein Vergleichswert"), r && !r.none && m.k === "fixed" ? "keine wiederkehrenden Zahlungen" : "nicht erfasst in " + h(periodName(R.P))); return; }
+        const c = has ? change(cur[m.k], r[m.k]) : null;
+        html += dCell(lab, c ? (c.na ? naB(c.na) : "<b>" + c.txt + "</b>") : naB("–"), fmtEur(r[m.k]) + (limit ? " · gleicher Zeitraum" : "") + (r.from ? " · erfasst ab " + dDay(r.from) : ""));
+      });
+      html += spark(sparkV.map(r => r && !r.none ? r[m.k] : null), sparkLabels, "var(--kfz)", v => fmtEur(v)) + "</div>";
+    });
+  }
+  html += "</div>";
+
+  const notes = [];
+  if (showE) notes.push("* Zeitanteilig geschätzt: Liegen Ablesungen nicht genau auf den Grenzen des Zeitraums, wird der Verbrauch eines Ableseintervalls gleichmäßig auf seine Tage verteilt. " +
+    "Prozentwerte vergleichen den Tagesdurchschnitt, damit unterschiedlich lange oder laufende Zeiträume vergleichbar bleiben. Tage ohne Ablesung zählen nicht als Verbrauch 0.");
+  if (vs) notes.push("Erfasste Zahlungen sind die eingetragenen Beträge mit Datum im Zeitraum. Fixkosten zeitanteilig verteilen wiederkehrende Zahlungen (z. B. Versicherung jährlich) gleichmäßig auf ihre Laufzeit – eine Rechengröße." +
+    (running ? " Weil der Zeitraum noch läuft, werden die Kosten mit derselben Anzahl Tage der Vergleichszeiträume verglichen." : ""));
+  html += notes.map(n => '<p class="footnote">' + n + "</p>").join("");
+  box.innerHTML = html;
+  wireCompare(box, opt);
+}
+function wireCompare(box, opt){
+  const rerender = ctl => {
+    renderCompare(box, opt);
+    const el = box.querySelector('[data-ctl="' + ctl + '"]');
+    if (el && !el.disabled) el.focus(); else box.querySelector('[data-ctl="sel"]')?.focus();
+  };
+  box.querySelectorAll("[data-ctl]").forEach(el => {
+    const ctl = el.dataset.ctl;
+    if (ctl === "sel") el.addEventListener("change", () => { cmpKey = el.value; rerender("sel"); });
+    else el.addEventListener("click", () => {
+      if (ctl === "m-month" && cmpMode !== "month"){ cmpMode = "month"; cmpKey = cmpKey === curKey("year") ? curKey("month") : cmpKey + "-12"; }
+      else if (ctl === "m-year" && cmpMode !== "year"){ cmpMode = "year"; cmpKey = cmpKey.slice(0, 4); }
+      else if (ctl === "prev") cmpKey = shiftKey(cmpMode, cmpKey, -1);
+      else if (ctl === "next") cmpKey = shiftKey(cmpMode, cmpKey, 1);
+      rerender(ctl);
+    });
+  });
+}
+
+/* =====================================================================
+   ÜBERSICHT
+   ===================================================================== */
+function reminders(rows){
+  const out = [];
+  state.vehicles.forEach(v => {
+    const S = vehStats(v);
+    S.dues.forEach(d => {
+      const days = daysUntil(d.date);
+      if (days <= 45 && days >= -120) out.push({days, mod:"Fahrzeug", c:"var(--kfz)", text: v.name + ": " + d.label, sub: dDay(d.date) + (d.amount != null ? " · " + fmtEur(d.amount) : ""), href:"#kfz", veh:v.id});
+    });
+    if (S.serviceKmLeft != null && S.serviceKmLeft < 1500) out.push({days: S.serviceKmLeft < 0 ? -1 : 14, mod:"Fahrzeug", c:"var(--kfz)", text: v.name + ": Inspektion", sub: S.serviceKmLeft < 0 ? fmt(-S.serviceKmLeft, 0) + " km überzogen" : "noch " + fmt(S.serviceKmLeft, 0) + " km", href:"#kfz", veh:v.id, label: S.serviceKmLeft < 0 ? "überfällig" : "bald"});
+  });
+  stock().forEach(it => {
+    const s = itemStatus(it);
+    if (s.cls) out.push({days: s.days, mod: isFrozen(it) ? "Gefrierer" : "Kühlschrank", c:"var(--kalt)", text: it.name + " (" + qtyText(it) + ")", sub: whereText(it) + " · bis " + dDay(it.bestBefore), href:"#kalt", item: it.id,
+      label: s.days < 0 ? "Bitte prüfen" : s.txt});
+  });
+  const g = gasEstimate(rows);
+  if (g.status === "ok" && g.daysLeft <= 30) out.push({days: Math.round(g.daysLeft), mod:"Zähler", c:"var(--lng)", text:"Gastank bald leer (Schätzung)",
+    sub:"leer etwa am " + dDay(isoDay(g.emptyDate)) + " · Ablesung vom " + dDay(g.last.date.slice(0, 10)), href:"#zaehler", label:"in etwa " + Math.round(g.daysLeft) + " Tagen"});
+  if (g.status === "stale" || g.status === "empty") out.push({days:-1, mod:"Zähler", c:"var(--lng)", text: g.status === "empty" ? "Gastank laut Ablesung leer" : "Gastank: Vorrat rechnerisch aufgebraucht",
+    sub:"Bitte neu ablesen · letzte Ablesung " + dDay(g.last.date.slice(0, 10)), href:"#zaehler", label:"neue Ablesung nötig"});
+  return out.sort((a, b) => a.days - b.days);
+}
+
+let homeRemAll = false;
+function renderHome(){
+  $("homeDate").textContent = new Date().toLocaleDateString("de-DE", {weekday:"long", day:"numeric", month:"long", year:"numeric"});
+  const rows = computed();
+  const rem = reminders(rows);
+  const box = $("homeRemind");
+  box.innerHTML = rem.length ? "" : '<p class="empty" style="padding:8px 0">Nichts Dringendes – keine Termine in den nächsten Wochen und nichts läuft ab.</p>';
+  (homeRemAll ? rem : rem.slice(0, 12)).forEach(r => {
+    const t = dueText(r.days, 14);
+    const a = document.createElement("a");
+    a.href = r.href;
+    a.innerHTML = '<span class="rw ' + t.cls + '">' + h(r.label || t.txt) + '</span><span class="rt"><span class="mod" style="--c:' + r.c + '">' + h(r.mod) + "</span>" + h(r.text) + '</span><span class="rs">' + h(r.sub) + "</span>";
+    if (r.veh) a.addEventListener("click", () => { curVeh = r.veh; });
+    if (r.item) a.addEventListener("click", ev => { ev.preventDefault(); ev.stopPropagation(); focusItem(r.item); });
+    box.appendChild(a);
+  });
+  if (rem.length > 12){
+    const bar = document.createElement("div");
+    bar.className = "morebar";
+    toolBtn(bar, homeRemAll ? "Weniger anzeigen" : "… und " + (rem.length - 12) + " weitere anzeigen", () => {
+      homeRemAll = !homeRemAll; renderHome();
+      $("homeRemind").querySelector(".morebar button")?.focus({preventScroll: homeRemAll});
+      if (!homeRemAll) $("homeRemindPanel").scrollIntoView({block:"nearest"});
+    }, "btn-line");
+    box.appendChild(bar);
+  }
+
+  renderCompare($("homeCmp"), {energy:true, vehicles:state.vehicles});
+  $("homeEnergy").innerHTML = state.energy.length ? energyCards(rows) : '<div class="stat"><div class="sub">Noch keine Ablesung. <a href="#zaehler">Jetzt eintragen</a></div></div>';
+
+  const kb = $("homeKfz");
+  kb.innerHTML = "";
+  if (!state.vehicles.length) kb.innerHTML = '<div class="emptybox"><p>Noch kein Fahrzeug angelegt.</p><a href="#kfz">Fahrzeug anlegen</a></div>';
+  state.vehicles.forEach(v => {
+    const S = vehStats(v), u = fuelUnit(v);
+    const nd = S.dues.find(d => daysUntil(d.date) >= -60);
+    const a = document.createElement("a");
+    a.className = "vehrow"; a.href = "#kfz";
+    a.innerHTML = '<div><div class="v">' + h(v.name) + "</div>" + (v.plate ? '<span class="plate">' + h(v.plate) + "</span>" : "") + "</div>" +
+      '<div><div class="k">Kilometerstand</div><div class="v">' + fmt(S.kmNow, 0) + " km</div></div>" +
+      '<div><div class="k">Ø Verbrauch</div><div class="v">' + fmt(S.cons.avg, 1) + " " + u + "/100</div></div>" +
+      '<div><div class="k">Kosten / km</div><div class="v">' + (S.perKm != null ? fmtEur(S.perKm) : "–") + "</div></div>" +
+      '<div><div class="k">Nächster Termin</div><div class="v">' + (nd ? h(dueText(daysUntil(nd.date)).txt) : "–") + "</div></div>";
+    a.addEventListener("click", () => { curVeh = v.id; state.settings.lastVeh = v.id; });
+    kb.appendChild(a);
+  });
+
+  const W = weekItems(false), wn = W.over.length + W.week.length;
+  $("homeWeek").hidden = !state.appliances.length;
+  $("homeWeek").textContent = "Diese Woche verbrauchen (" + wn + ")";
+  const st = stock(), frozenN = st.filter(isFrozen).length;
+  const soon = st.filter(i => itemStatus(i).cls === "soon").length, bad = st.filter(i => itemStatus(i).cls === "bad").length;
+  $("homeKalt").innerHTML = state.appliances.length
+    ? card("Eingefroren", frozenN, "Artikel", state.appliances.filter(isFrozenAppl).map(a => h(a.name)).join(", ") || "Kein Gefriergerät", "var(--kalt)") +
+      card("Im Kühlschrank", st.length - frozenN, "Artikel", state.appliances.filter(a => !isFrozenAppl(a)).map(a => h(a.name)).join(", ") || "Kein Kühlschrank", "var(--kalt)") +
+      card("Läuft bald ab", soon, "", "Gefrierer: 30 Tage, Kühlschrank: 2 Tage Vorlauf", "var(--warn)") +
+      card("Datum überschritten", bad, "", bad ? "Bitte prüfen" : "Keine überschrittenen Daten", "var(--bad)")
+    : '<div class="stat"><div class="sub">Noch kein Gerät angelegt. <a href="#kalt">Kühl- oder Gefrierschrank anlegen</a></div></div>';
+}
+
+/* =====================================================================
+   DATEN
+   ===================================================================== */
+/* ---------- Updates (nur Desktop-App) ---------- */
+// Die App prüft die GitHub-Releases; installiert wird nur ein Paket mit gültiger Signatur (siehe desktop/core/src/update.rs).
+const upd = {checking:false, installing:false, available:null, dismissed:false, msg:""};
+async function checkUpdates(manual){
+  if (!native || upd.checking || upd.installing) return;
+  upd.checking = true; upd.msg = "Suche nach Updates …"; renderUpd();
+  try {
+    upd.available = await native.invoke("check_update", {beta: !!state.settings.betaUpdates});
+    upd.dismissed = false;
+    upd.msg = upd.available ? "HomeStats " + upd.available.version + " ist verfügbar." : "HomeStats ist auf dem neuesten Stand (Version " + nativeInfo.version + ").";
+  } catch(e){
+    upd.msg = "Update-Prüfung fehlgeschlagen: " + e;
+    if (manual) toast(upd.msg);
+  }
+  upd.checking = false; renderUpd();
+}
+async function installUpdate(){
+  if (!upd.available || upd.installing) return;
+  upd.installing = true; upd.msg = "Update wird geladen und geprüft …"; renderUpd();
+  await saveChain;          // offene Speichervorgänge abschließen, bevor die App neu startet
+  try { upd.msg = await native.invoke("install_update"); }
+  catch(e){ upd.msg = String(e); toast(upd.msg); }
+  upd.installing = false; renderUpd();
+}
+function renderUpd(){
+  if (!native) return;
+  $("appSection").hidden = false;
+  $("appVersion").textContent = "HomeStats " + (nativeInfo?.version || "") + " · Desktop-App";
+  $("btnUpdCheck").disabled = upd.checking || upd.installing;
+  $("btnUpdInstall").hidden = $("btnUpdPage").hidden = !upd.available;
+  $("btnUpdInstall").disabled = $("updBarInstall").disabled = upd.installing;
+  if (upd.available) $("btnUpdInstall").textContent = "Update auf " + upd.available.version + " installieren";
+  $("updStatus").textContent = upd.msg;
+  $("setAutoUpd").checked = state.settings.autoUpdate !== false;
+  $("setBetaUpd").checked = !!state.settings.betaUpdates;
+  $("updBar").hidden = !upd.available || upd.dismissed;
+  if (upd.available) $("updBarText").textContent = "HomeStats " + upd.available.version + (upd.available.prerelease ? " (Beta)" : "") + " ist verfügbar." + (upd.installing ? " Wird installiert …" : "");
+}
+
+function renderData(){
+  fileStatus();
+  renderUpd();
+  const s = state.settings;
+  $("setStrom").value = inNum(s.priceStrom);
+  $("setWasser").value = inNum(s.priceWasser);
+  $("setPrefix").value = s.codePrefix || "HS";
+  $("setNext").textContent = peekCodes(1).codes[0];
+  $("dataSummary").textContent = state.energy.length + " Ablesungen · " + state.vehicles.length + " Fahrzeuge mit " + state.ventries.length + " Einträgen · " +
+    state.appliances.length + " Kühl-/Gefriergeräte · " + stock().length + " Artikel im Bestand" +
+    (state.updated ? " · zuletzt geändert " + dateLong(state.updated) : "");
+}
+function saveSettings(){
+  const s = state.settings;
+  for (const [id, k] of [["setStrom", "priceStrom"], ["setWasser", "priceWasser"]]){
+    const raw = $(id).value.trim(), v = num(raw);
+    if (raw && v == null){ toast("Bitte eine gültige Zahl eintragen."); $(id).focus(); return; }
+    s[k] = v;
+  }
+  const p = $("setPrefix").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  s.codePrefix = p || "HS";
+  commit();
+  toast("Einstellungen gespeichert.");
+}
+function vehCSV(){
+  const head = ["Fahrzeug","Kennzeichen","Datum","Art","Kilometerstand","Menge","Einheit","Betrag_EUR","Vollgetankt","Kategorie","Intervall","Tankstelle","Notiz"];
+  const rows = [];
+  state.vehicles.forEach(v => vEntries(v.id).forEach(e => rows.push([
+    v.name, v.plate || "", e.date, TYPE_LABEL[e.type], csvNum(e.km), csvNum(e.amount), e.type === "fuel" ? fuelUnit(v) : "",
+    csvNum(e.total), e.type === "fuel" ? (e.full ? "ja" : "nein") : "", e.cat || "", e.type === "cost" ? (INTERVALS[e.interval] || INTERVALS.once).label : "",
+    e.station || "", e.note || ""])));
+  return csvOut(head, rows);
+}
+function itemsCSV(){
+  const head = ["Code","Name","Kategorie","Menge","Einheit","Geraet","Fach","Eingelagert","Haltbar_bis","Entnommen","Notiz"];
+  return csvOut(head, state.items.map(i => [i.code, i.name, catOf(i.cat).label, csvNum(i.qty), i.unit, appl(i.applianceId)?.name || "", i.comp || "",
+    i.inDate || "", i.bestBefore || "", i.outDate || "", i.note || ""]));
+}
+
+/* ============ Bedienung ============ */
+function wire(){
+  window.addEventListener("hashchange", route);
+  document.addEventListener("click", ev => {
+    const c = ev.target.closest("[data-close]");
+    if (c){ c.closest("dialog").close(); return; }
+    const a = ev.target.closest('a[href^="#"]');
+    if (a && VIEWS.includes(a.getAttribute("href").slice(1))){ ev.preventDefault(); route(a.getAttribute("href").slice(1)); }
+  });
+  document.addEventListener("keydown", globalScanKeys);
+
+  // Zähler
+  const order = [...KEYS.map(k => inputs[k]), $("note")];
+  order.forEach((el, i) => {
+    el.addEventListener("keydown", ev => {
+      if (ev.key !== "Enter") return;
+      ev.preventDefault();
+      if (ev.ctrlKey || ev.metaKey || i === order.length - 1) saveEntry();
+      else order[i + 1].focus();
+    });
+  });
+  KEYS.forEach(k => inputs[k].addEventListener("input", preview));
+  ["lngUnit", "lngRefill", "date"].forEach(id => $(id).addEventListener("change", preview));
+  $("note").addEventListener("input", saveDraft);
+  $("btnSave").addEventListener("click", saveEntry);
+  $("btnNow").addEventListener("click", () => { $("date").value = localNow(); preview(); });
+  $("btnCancelEdit").addEventListener("click", cancelEdit);
+  const box = $("chartTabs");
+  MEDIA.forEach(m => {
+    const b = document.createElement("button");
+    b.className = "tab"; b.textContent = m.label;
+    b.setAttribute("aria-pressed", m.k === chartKey);
+    b.addEventListener("click", () => {
+      chartKey = m.k;
+      [...box.children].forEach(c => c.setAttribute("aria-pressed", c === b));
+      renderEnergyChart(computed());
+    });
+    box.appendChild(b);
+  });
+
+  // Fahrzeuge
+  $("veCat").innerHTML = COSTCATS.map(c => "<option>" + h(c) + "</option>").join("");
+  $("veInterval").innerHTML = Object.entries(INTERVALS).map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>").join("");
+  $("dvFuel").innerHTML = Object.entries(FUELS).map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>").join("");
+  $("veSeg").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b) setVeType(b.dataset.t); });
+  ["veKm", "veAmount", "vePpu", "veTotal", "veCost", "veDate", "veFull", "veInterval"].forEach(id => $(id).addEventListener("input", vePreview));
+  const veOrder = ["veKm", "veAmount", "vePpu", "veTotal", "veStation", "veCost", "veNote"];
+  veOrder.forEach(id => $(id).addEventListener("keydown", ev => {
+    if (ev.key !== "Enter") return;
+    ev.preventDefault();
+    const vis = veOrder.filter(x => !$(x).closest("[data-for]")?.hidden);
+    const i = vis.indexOf(id);
+    if (ev.ctrlKey || ev.metaKey || i === vis.length - 1) veSave(); else $(vis[i + 1]).focus();
+  }));
+  // Kategorie mit typischem Intervall vorbelegen
+  $("veCat").addEventListener("change", () => {
+    const c = $("veCat").value;
+    if (!veEditing) $("veInterval").value = ["Versicherung", "Kfz-Steuer"].includes(c) ? "m12" : c === "Leasing/Finanzierung" || c === "Stellplatz/Garage" ? "m1" : "once";
+    vePreview();
+  });
+  $("btnVeSave").addEventListener("click", veSave);
+  $("btnVeCancel").addEventListener("click", () => { veCancel(); vePreview(); });
+  $("btnVehNew").addEventListener("click", () => openVehForm(null));
+  $("btnVehFirst").addEventListener("click", () => openVehForm(null));
+  $("dvSave").addEventListener("click", saveVeh);
+  $("dvDelete").addEventListener("click", deleteVeh);
+  $("dvFuel").addEventListener("change", dvFuelChanged);
+
+  // Kühlen & Gefrieren
+  $("daType").innerHTML = Object.entries(APPL_TYPES).map(([k, v]) => '<option value="' + k + '">' + v.label + "</option>").join("");
+  $("itCat").innerHTML = FOODCATS.map(c => '<option value="' + c.k + '">' + h(c.label) + "</option>").join("");
+  $("invCat").innerHTML = '<option value="">Alle Kategorien</option>' + FOODCATS.map(c => '<option value="' + c.k + '">' + h(c.label) + "</option>").join("");
+  $("itUnit").innerHTML = UNITS.map(u => "<option>" + u + "</option>").join("");
+  $("btnApplNew").addEventListener("click", () => openApplForm(null));
+  $("btnApplFirst").addEventListener("click", () => openApplForm(null));
+  $("btnApplEdit").addEventListener("click", () => openApplForm(appl(curAppl)));
+  $("daSave").addEventListener("click", saveAppl);
+  $("daDelete").addEventListener("click", deleteAppl);
+  $("btnItemNew").addEventListener("click", () => {
+    $("nameList").innerHTML = [...new Set(state.items.map(i => i.name))].map(n => "<option value=\"" + h(n) + "\">").join("");
+    openItemForm(null);
+  });
+  $("itSave").addEventListener("click", saveItem);
+  $("itDelete").addEventListener("click", deleteItem);
+  $("itAppl").addEventListener("change", () => { fillComps(""); $("itPrint").checked = !itEditing && !itPreset.code; suggestBB(); });
+  $("itCat").addEventListener("change", suggestBB);
+  $("itIn").addEventListener("change", suggestBB);
+  $("itBB").addEventListener("input", () => bbTouched = true);
+  $("itName").addEventListener("change", onNamePicked);
+  $("dlgItem").addEventListener("keydown", ev => { if (ev.key === "Enter" && ev.target.tagName === "INPUT" && ev.target.type !== "checkbox"){ ev.preventDefault(); saveItem(); } });
+  ["dlgVeh", "dlgAppl"].forEach(id => $(id).addEventListener("keydown", ev => { if (ev.key === "Enter" && ev.target.tagName === "INPUT"){ ev.preventDefault(); (id === "dlgVeh" ? saveVeh : saveAppl)(); } }));
+  $("scanInput").addEventListener("keydown", ev => { if (ev.key === "Enter"){ ev.preventDefault(); const v = ev.target.value; ev.target.value = ""; handleScan(v); } });
+  $("btnCam").addEventListener("click", openCam);
+  $("dlgCam").addEventListener("close", stopCam);
+  $("btnBlank").addEventListener("click", () => openPrint({mode:"blank"}));
+  ["invSearch", "invCat", "invSort", "invOut"].forEach(id => $(id).addEventListener("input", renderInv));
+  $("homeWeek").addEventListener("click", ev => { ev.preventDefault(); ev.stopPropagation(); openWeek(); });
+  $("invMode").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b){ invMode = b.dataset.v; selected.clear(); renderInv(); } });
+  $("btnSelPrint").addEventListener("click", () => openPrint({mode:"items", items:[...selected].map(itemById).filter(Boolean)}));
+  $("btnSelTake").addEventListener("click", () => openTake([...selected].map(itemById).filter(Boolean)));
+  $("btnSelClear").addEventListener("click", () => { selected.clear(); renderInv(); });
+  $("tkAll").addEventListener("click", () => doTake(true));
+  $("tkPart").addEventListener("click", () => doTake(false));
+  $("tkQty").addEventListener("keydown", ev => { if (ev.key === "Enter"){ ev.preventDefault(); doTake(false); } });
+  $("prFormat").innerHTML = Object.entries(LABELS).map(([k, v]) => '<option value="' + k + '">' + h(v.label) + "</option>").join("");
+  ["prFormat", "prCount", "prCopies", "prSkip"].forEach(id => $(id).addEventListener("input", renderPrintPreview));
+  $("prGo").addEventListener("click", doPrint);
+  // Nach dem Schließen eines Dialogs wieder bereit zum Scannen
+  document.querySelectorAll("dialog").forEach(d => d.addEventListener("close", () => {
+    if (current === "kalt" && !document.querySelector("dialog[open]") && state.appliances.length) setTimeout(() => $("scanInput").focus({preventScroll:true}), 0);
+  }));
+  window.addEventListener("afterprint", () => { $("printArea").innerHTML = ""; });
+
+  // Updates (Desktop-App)
+  $("btnUpdCheck").addEventListener("click", () => checkUpdates(true));
+  $("btnUpdInstall").addEventListener("click", installUpdate);
+  $("updBarInstall").addEventListener("click", installUpdate);
+  $("updBarLater").addEventListener("click", () => { upd.dismissed = true; renderUpd(); });
+  $("btnUpdPage").addEventListener("click", () => native.invoke("open_release_page").catch(e => toast(String(e))));
+  $("setAutoUpd").addEventListener("change", ev => { state.settings.autoUpdate = ev.target.checked; commit(); });
+  $("setBetaUpd").addEventListener("change", ev => { state.settings.betaUpdates = ev.target.checked; commit(); checkUpdates(true); });
+
+  // Daten
+  $("btnSettings").addEventListener("click", saveSettings);
+  $("btnBackup").addEventListener("click", () => download("homestats-" + isoDay() + ".json", JSON.stringify(state, null, 1), "application/json"));
+  $("btnRestore").addEventListener("click", () => $("restoreInput").click());
+  $("restoreInput").addEventListener("change", async ev => {
+    const f = ev.target.files[0]; ev.target.value = "";
+    if (!f) return;
+    try {
+      const raw = JSON.parse(await f.text());
+      if (!raw || !("version" in raw)) throw new Error();
+      if (!(await ask("Die Sicherung ersetzt alle aktuellen Daten in HomeStats. Fortfahren?", "Ersetzen", true))) return;
+      state = normalize(raw);
+      nativeBlocked = false;
+      commit();
+      toast("Sicherung eingespielt.");
+    } catch(e){ toast("Das ist keine gültige HomeStats-Sicherung."); }
+  });
+  $("btnCsvEnergy").addEventListener("click", () => download("energie_verbrauch.csv", energyCSV(), "text/csv;charset=utf-8"));
+  $("btnCsvKfz").addEventListener("click", () => download("fahrzeuge.csv", vehCSV(), "text/csv;charset=utf-8"));
+  $("btnCsvKalt").addEventListener("click", () => download("gefriergut.csv", itemsCSV(), "text/csv;charset=utf-8"));
+  $("btnImport").addEventListener("click", () => $("fileInput").click());
+  $("fileInput").addEventListener("change", async ev => {
+    const f = ev.target.files[0]; ev.target.value = "";
+    if (!f) return;
+    const list = energyFromCSV(await f.text());
+    if (!list.length){ toast("In dieser Datei stehen keine lesbaren Ablesungen."); return; }
+    mergeEnergy(list);
+    commit();
+    toast(list.length + " Ablesungen eingelesen.");
+  });
+}
+
+async function init(){
+  $("date").value = localNow();
+  wire();
+  if (native){
+    // Desktop-App: Daten liegen in homestats.json im App-Datenordner
+    try {
+      nativeInfo = await native.invoke("app_info");
+      const loaded = await native.invoke("load_state");
+      if (loaded){
+        state = normalize(JSON.parse(loaded.text));
+        if (loaded.recovered) toast("Die Datendatei war beschädigt oder fehlte – der zuletzt gesicherte Stand wurde geladen.");
+      }
+    } catch(e){
+      nativeBlocked = true;
+      toast("Die Daten konnten nicht geladen werden: " + e);
+    }
+    loadDraft();
+    fileStatus();
+    route();
+    renderUpd();
+    if (!nativeBlocked && state.settings.autoUpdate !== false) setTimeout(() => checkUpdates(false), 2000);
+    return;
+  }
+  try {
+    const saved = localStorage.getItem(LS_STATE);
+    if (saved) state = normalize(JSON.parse(saved));
+    else {
+      // Einmalige Übernahme aus der alten Zähler-Seite
+      const old = JSON.parse(localStorage.getItem(LS_OLD) || "[]");
+      if (Array.isArray(old) && old.length){ state.energy = old; state = normalize(state); state.updated = new Date().toISOString(); saveLocal(); }
+    }
+  } catch(e){ state = blankState(); }
+  loadDraft();
+  fileStatus();
+  route();
+
+  if (canFile){
+    try {
+      const hd = await idb.get("handle");
+      if (hd){
+        fileHandle = hd;
+        const p = await hd.queryPermission({mode:"readwrite"});
+        if (p === "granted"){ fileOk = true; await readFile("auto"); }
+        fileStatus();
+      }
+    } catch(e){ /* ohne Handle einfach weiter */ }
+  }
+}
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# Rust / Tauri
+desktop/target/
+desktop/src-tauri/gen/
+# Generated from homestats.html by desktop/scripts/sync-ui.mjs
+desktop/ui/
+desktop/dist/
+# Node
+desktop/node_modules/
+# macOS
+.DS_Store
