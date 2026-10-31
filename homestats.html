@@ -312,8 +312,8 @@ a{color:inherit; text-underline-offset:2px}
 .bankprev tr.skip td:last-child{text-decoration:none}
 
 /* ---------- Aufbau der Bereiche: Kopfleiste, Ansichten, Aufklappbereiche, Menü ---------- */
-.viewhead h2:focus{outline:none}
-.viewhead h2:focus-visible{outline:2px solid var(--ink); outline-offset:4px; border-radius:4px}
+/* Die Überschrift bekommt den Fokus nur als Startpunkt nach dem Bereichswechsel; sie ist nicht bedienbar (WebKit zeigt sonst einen Rahmen) */
+.viewhead h2:focus,.viewhead h2:focus-visible{outline:none}
 .topbar{display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; margin:0 0 16px}
 .topbar-info{flex:1 1 220px; min-width:0; font-size:var(--fs-md)}
 .topbar-info b{font-weight:600}
