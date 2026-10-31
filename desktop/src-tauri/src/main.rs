@@ -105,6 +105,8 @@ async fn check_update(app: AppHandle, pending: State<'_, PendingUpdate>, beta: b
 #[tauri::command]
 async fn install_update(app: AppHandle, pending: State<'_, PendingUpdate>) -> Result<String, String> {
     let release = pending.0.lock().map_err(|e| e.to_string())?.clone().ok_or("Es liegt kein Update bereit.")?;
+    // macOS startet nach der Installation neu und braucht die Meldung nicht.
+    #[cfg_attr(target_os = "macos", allow(unused_variables))]
     let version = release.version.clone();
     blocking(move || update::download_package(&release).and_then(|path| update::install(&path, &release.version)))
         .await?
